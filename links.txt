@@ -1,0 +1,3 @@
+Colisão: https://jonathanwhiting.com/tutorial/collision/
+
+https://github.com/raysan5/raylib
