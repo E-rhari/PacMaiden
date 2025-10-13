@@ -1,3 +1,8 @@
+/**
+ * @brief Versão fajuta da renderização de mapas para testar a colisão do personagem.
+ */
+
+
 #include "raylib.h"
 #include<stdio.h>
 

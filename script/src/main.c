@@ -8,7 +8,6 @@
 #include "../include/WindowControl.h"
 #include "../include/Map.h"
 
-// #pragma once
 
 int main(){
     InitWindow(LARGURA, ALTURA, "Jogo Irado!!!");
@@ -24,15 +23,12 @@ int main(){
         input.x = IsKeyDown(KEY_RIGHT) - IsKeyDown(KEY_LEFT);
 	    input.y = IsKeyDown(KEY_DOWN) - IsKeyDown(KEY_UP);
 
-        if(!Vector2Equals(input, Vector2Zero())) direction = input;
+        if(!Vector2Equals(input, Vector2Zero())) 
+            direction = input;
 
         move(&pacMaiden.chara, direction);
 
         BeginDrawing();
-
-        char texto[100];
-        // sprintf(texto, "%d %d", (int)pacMaidenBlockPosition.x, (int)pacMaidenBlockPosition.y);
-        // DrawText(texto, 100, 100, 100, BLACK);
 
         ClearBackground(RAYWHITE);
         renderizaMapa(mapa, 20, 20);
