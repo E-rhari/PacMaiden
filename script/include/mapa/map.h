@@ -1,46 +1,58 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "raylib.h"
-void lerMapa (char** matriz, char* arq)
+
+
+typedef char Mapa[20][40];
+
+void lerMapa (int nivel)
 {
-    FILE* arq = fopen("mapa.txt", "r");
+    Mapa mapa;
+    char path[50]="../../../sprites/mapas/mapa";
+    char* nivelString;
+
+    itoa(nivel,nivelString,10);
+    strcmp(path,nivelString);
+    strcmp(path,".txt");
+
+    FILE* arq = fopen(path, "r");
     if(arq == NULL)
     {
         printf("Erro de abertura de arquivo\n");
         return;
     }
     for(int i = 0; i < 20; i++)
-    {
         for(int j = 0; j < 40; j++)
-        {
-            *(*(matriz + i) + j) = getc(arq);
-        }
-    }
+           mapa[i][j]= getc(arq);
+
     fclose(arq);
+
+    renderizaMapa(mapa);
 }
 
-void renderizaMapa(char** matriz)
+void renderizaMapa(Mapa mapa)
 {
     int cell = 40;
     for(int i = 0; i < 20; i++)
     {
         for(int j = 0; j < 40; j++)
         {
-            switch(*(*(matriz + i) + j))
+            switch(mapa[i][j])
             {
-                case "#":
+                case '#':
                     DrawRectangle(i * cell, j * cell, cell, cell, DARKBLUE);
                     break;
                 
-                case ".":
+                case '.':
                     DrawCircle(i * cell + cell/2, j * cell + cell/2, 1.5, WHITE);
                     break;
                 
-                case "o":
+                case 'o':
                     DrawCircle(i * cell + cell/2, j * cell + cell/2, 3, GOLD);
-                    break.
+                    break;
                 
-                case "T":
+                case 'T':
                     DrawRectangle(i * cell, j * cell, cell, cell, PURPLE);
                     break;
             }
