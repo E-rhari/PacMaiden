@@ -29,7 +29,7 @@ int main(){
 
         move(&pacMaiden.chara, direction);
 
-        
+
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
@@ -37,12 +37,11 @@ int main(){
         
         DrawCircleV(pacMaiden.chara.circle.center, pacMaiden.chara.circle.radius, pacMaiden.chara.color);
 
-        if(DEBUG_MODE){
-            for(int i=0; i<20; i++)
-                for(int j=0; j<20; j++)
+        if(DEBUG_MODE)
+            for(int i=0; i<LARGURA/40; i++)
+                for(int j=0; j<ALTURA/40; j++)
                     DrawCircle(i*40, j*40, 3, BLACK);
-        }
-
+        
         EndDrawing();
     }
     CloseWindow();
