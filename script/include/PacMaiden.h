@@ -36,7 +36,7 @@ typedef struct {
  * @param points Valor inicial do contador de pontos
  */
 PacMaiden initPacMaiden(Vector2 position, int radius, float speed, Color color, int lifes, int points){
-    Circle characterRec = {(Vector2){position.x, position.y}, radius};
+    Circle characterRec = {(Vector2){position.x+radius, position.y+radius}, radius};
     Character chara = (Character){characterRec, speed, color};
     return (PacMaiden){chara, lifes, points};
 }

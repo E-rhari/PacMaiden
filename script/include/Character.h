@@ -50,7 +50,7 @@ typedef struct {
  * @param color Cor do personagem a partir das definições da Raylib.
  */
 Character initCharacter(Vector2 position, int speed, float radius, Color color){
-    Circle characterCircle = {(Vector2){position.x, position.y}, radius};
+    Circle characterCircle = {(Vector2){position.x+radius, position.y+radius}, radius};
     return (Character){characterCircle, speed, color};
 }
 
@@ -67,7 +67,7 @@ bool move(Character* character, Vector2 direction){
                            dest.y + character->circle.radius * direction.y};
     Vector2 gridBound = Vector2Scale(movingBound, PIX2GRID);
 
-    if(DEBUG){
+    if(DEBUG_MODE){
         char texto[100];
         sprintf(texto, "x: %.2f, y: %.2f.", gridBound.x, gridBound.y);
         DrawText(texto, 100, 100, 50, BLACK);

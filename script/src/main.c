@@ -7,6 +7,7 @@
 #include "../include/PacMaiden.h"
 #include "../include/WindowControl.h"
 #include "../include/Map.h"
+#include "../include/Input.h"
 
 
 int main(){
@@ -14,30 +15,33 @@ int main(){
     SetTargetFPS(60);
 
     PacMaiden pacMaiden = initPacMaiden((Vector2){400, 400}, 20, 100, RED, 3, 0);
-    Vector2 input = {0, 0};
-    Vector2 bufferedInput = {0,0};
+    Vector2 input = {0, 1};
     Vector2 direction = {0,0};
 
     while(!WindowShouldClose()){
         userClose();
 
-        input.x = IsKeyDown(KEY_RIGHT) - IsKeyDown(KEY_LEFT);
-	    input.y = IsKeyDown(KEY_DOWN) - IsKeyDown(KEY_UP);
-
-        // if((int)pacMaiden.chara.rec.x%40 < 10 && (int)pacMaiden.chara.rec.y%40 < 10)
-        //     input = bufferedInput;
+        getBufferedInput(&input, (int)(pacMaiden.chara.circle.center.x+pacMaiden.chara.circle.radius)%40 < 2 
+                              && (int)(pacMaiden.chara.circle.center.y+pacMaiden.chara.circle.radius)%40 < 2);
 
         if(!Vector2Equals(input, Vector2Zero())) 
             direction = input;
 
         move(&pacMaiden.chara, direction);
 
+        
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
         renderizaMapa(mapa, 20, 20);
         
-        DrawCircleV(pacMaiden.chara.collider.center, pacMaiden.chara.collider.radius, pacMaiden.chara.color);
+        DrawCircleV(pacMaiden.chara.circle.center, pacMaiden.chara.circle.radius, pacMaiden.chara.color);
+
+        if(DEBUG_MODE){
+            for(int i=0; i<20; i++)
+                for(int j=0; j<20; j++)
+                    DrawCircle(i*40, j*40, 3, BLACK);
+        }
 
         EndDrawing();
     }
