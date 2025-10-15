@@ -67,11 +67,13 @@ bool move(Character* character, Vector2 direction){
                            dest.y + character->circle.radius * direction.y};
     Vector2 gridBound = Vector2Scale(movingBound, PIX2GRID);
 
+    if(DEBUG){
         char texto[100];
         sprintf(texto, "x: %.2f, y: %.2f.", gridBound.x, gridBound.y);
         DrawText(texto, 100, 100, 50, BLACK);
         
         DrawCircleV(movingBound, 5, BLACK);
+    }
 
     if (mapa[(int)gridBound.y][(int)gridBound.x] == '@') {
         dest.x = (int)gridBound.x-1;
