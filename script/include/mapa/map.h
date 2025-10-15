@@ -5,33 +5,9 @@
 
 
 typedef char Mapa[20][40];
+Mapa mapa;
 
-void lerMapa (int nivel)
-{
-    Mapa mapa;
-    char path[50]="../../../sprites/mapas/mapa";
-    char* nivelString;
-
-    itoa(nivel,nivelString,10);
-    strcmp(path,nivelString);
-    strcmp(path,".txt");
-
-    FILE* arq = fopen(path, "r");
-    if(arq == NULL)
-    {
-        printf("Erro de abertura de arquivo\n");
-        return;
-    }
-    for(int i = 0; i < 20; i++)
-        for(int j = 0; j < 40; j++)
-           mapa[i][j]= getc(arq);
-
-    fclose(arq);
-
-    renderizaMapa(mapa);
-}
-
-void renderizaMapa(Mapa mapa)
+void renderizaMapa()
 {
     int cell = 40;
     for(int i = 0; i < 20; i++)
@@ -59,3 +35,29 @@ void renderizaMapa(Mapa mapa)
         }
     }
 }
+
+void lerMapa (int nivel)
+{
+
+    char path[50]="../../../sprites/mapas/mapa";
+    char* nivelString;
+
+    itoa(nivel,nivelString,10);
+    strcmp(path,nivelString);
+    strcmp(path,".txt");
+
+    FILE* arq = fopen(path, "r");
+    if(arq == NULL)
+    {
+        printf("Erro de abertura de arquivo\n");
+        return;
+    }
+    for(int i = 0; i < 20; i++)
+        for(int j = 0; j < 40; j++)
+           mapa[i][j]= getc(arq);
+
+    fclose(arq);
+
+    renderizaMapa();
+}
+
