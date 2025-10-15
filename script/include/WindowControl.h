@@ -4,13 +4,19 @@
 
 #include<raylib.h>
 
-#pragma once
-
 #define LARGURA 800
 #define ALTURA 800
 
+/**
+ * @brief Constante de conversão de pixels para blocos do grid. Cada bloco do grid em 40x40px
+ */
 #define PIX2GRID 0.025f
+/**
+ * @brief Constante de conversão de blocos do grid para pixels. Cada bloco do grid em 40x40px
+ */
 #define GRID2PIX 40.0f
+
+#pragma once
 
 
 /**
