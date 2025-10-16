@@ -1,29 +1,50 @@
-#include "../include/mapa/map.h"
+#include<raylib.h>
+#include<raymath.h>
+#include<string.h>
+#include<stdbool.h>
 
+#include "../include/Character.h"
+#include "../include/PacMaiden.h"
+#include "../include/WindowControl.h"
+#include "../include/Map.h"
+#include "../include/Input.h"
 
-void start(Mapa mapa){
-    InitWindow(1600, 840, "Teclas");
-    lerMapa(1,mapa);
-}
-
-void update(Mapa mapa){
-  
-
-    while(!WindowShouldClose()){
-        BeginDrawing();
-        renderizaMapa(mapa);
-        EndDrawing();
-        if(IsKeyDown(KEY_D))
-            return;    
-    }
-
-}
 
 int main(){
-    Mapa mapa=setUpMapa();
+    InitWindow(LARGURA, ALTURA, "Jogo Irado!!!");
+    SetTargetFPS(60);
 
-    start(mapa);
-    update(mapa);
+    PacMaiden pacMaiden = initPacMaiden((Vector2){400, 400}, 20, 100, YELLOW, 3, 0);
+    Vector2 input = {0, 1};
+    Vector2 direction = {0,0};
+
+    while(!WindowShouldClose()){
+        userClose();
+
+        getBufferedInput(&input, (int)(pacMaiden.chara.circle.center.x+pacMaiden.chara.circle.radius)%40 < 2 
+                              && (int)(pacMaiden.chara.circle.center.y+pacMaiden.chara.circle.radius)%40 < 2);
+
+        if(!Vector2Equals(input, Vector2Zero())) 
+            direction = input;
+
+        move(&pacMaiden.chara, direction);
+        portalBorders(&pacMaiden.chara);
+
+
+        BeginDrawing();
+
+        ClearBackground(RAYWHITE);
+        renderizaMapa(mapa, 20, 20);
+        
+        DrawCircleV(pacMaiden.chara.circle.center, pacMaiden.chara.circle.radius, pacMaiden.chara.color);
+
+        if(DEBUG_MODE)
+            for(int i=0; i<LARGURA/40; i++)
+                for(int j=0; j<ALTURA/40; j++)
+                    DrawCircle(i*40, j*40, 3, BLACK);
+        
+        EndDrawing();
+    }
     CloseWindow();
-    
+    return 0;
 }

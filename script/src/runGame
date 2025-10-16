@@ -1,0 +1,5 @@
+#!/bin/bash
+
+rm ./main.bin
+gcc main.c -o main.bin -lraylib -lm -lpthread -ldl -lrt -lX11
+./main.bin
