@@ -14,7 +14,7 @@ int main(){
     InitWindow(LARGURA, ALTURA, "Jogo Irado!!!");
     SetTargetFPS(60);
 
-    PacMaiden pacMaiden = initPacMaiden((Vector2){400, 400}, 20, 100, RED, 3, 0);
+    PacMaiden pacMaiden = initPacMaiden((Vector2){400, 400}, 20, 100, YELLOW, 3, 0);
     Vector2 input = {0, 1};
     Vector2 direction = {0,0};
 
@@ -28,6 +28,7 @@ int main(){
             direction = input;
 
         move(&pacMaiden.chara, direction);
+        portalBorders(&pacMaiden.chara);
 
 
         BeginDrawing();

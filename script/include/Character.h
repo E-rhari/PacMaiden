@@ -59,12 +59,17 @@ Character initCharacter(Vector2 position, int speed, float radius, Color color){
  * 
  * @param character* Referência para a struct de personagem que irá ser movimentada. 
  * @param direction Vetor de módulo 1 que indica a direção do movimento.
+ * 
+ * @returns Se o personagem fio movimentado ou não.
  */
 bool move(Character* character, Vector2 direction){
+    // determina posição que a pacmaiden quer ir
     Vector2 dest = (Vector2){character->circle.center.x + direction.x * character->speed*GetFrameTime(),
                              character->circle.center.y + direction.y * character->speed*GetFrameTime()};
+    // define o ponto em que será detectada a colisão com a parede
     Vector2 movingBound = {dest.x + character->circle.radius * direction.x,
                            dest.y + character->circle.radius * direction.y};
+    // converte essa posição do mapa do jogo para a posição na matriz do mapa
     Vector2 gridBound = Vector2Scale(movingBound, PIX2GRID);
 
     if(DEBUG_MODE){
@@ -76,7 +81,17 @@ bool move(Character* character, Vector2 direction){
     }
 
     if (mapa[(int)gridBound.y][(int)gridBound.x] == '@') {
-        dest.x = (int)gridBound.x-1;
+        // arredonda vetor
+        dest = Vector2Scale(character->circle.center, PIX2GRID);
+        dest.x = (int)dest.x;
+        dest.y = (int)dest.y;
+        dest = Vector2Scale(dest, GRID2PIX);
+
+        // executa correção de posição apenas no eixo do movimento
+        if(direction.x != 0)
+            character->circle.center.x = dest.x + character->circle.radius;
+        if(direction.y!= 0)
+            character->circle.center.y = dest.y + character->circle.radius;
         return false;
     }
 
