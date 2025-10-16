@@ -6,7 +6,7 @@
 #include<stdbool.h>
 
 #include "./WindowControl.h"
-#include "./Map.h"
+#include "./Map/Map.h"
 // #include "./Degub.h"
 
 #pragma once
@@ -62,7 +62,7 @@ Character initCharacter(Vector2 position, int speed, float radius, Color color){
  * 
  * @returns Se o personagem fio movimentado ou não.
  */
-bool move(Character* character, Vector2 direction){
+bool move(Character* character, Vector2 direction, Mapa mapa){
     // determina posição que a pacmaiden quer ir
     Vector2 dest = (Vector2){character->circle.center.x + direction.x * character->speed*GetFrameTime(),
                              character->circle.center.y + direction.y * character->speed*GetFrameTime()};

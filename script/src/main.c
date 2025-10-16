@@ -6,7 +6,7 @@
 #include "../include/Character.h"
 #include "../include/PacMaiden.h"
 #include "../include/WindowControl.h"
-#include "../include/Map.h"
+#include "../include/Map/Map.h"
 #include "../include/Input.h"
 
 
@@ -18,6 +18,10 @@ int main(){
     Vector2 input = {0, 1};
     Vector2 direction = {0,0};
 
+    Mapa mapa=setUpMapa();
+    lerMapa(1,mapa);
+    
+
     while(!WindowShouldClose()){
         userClose();
 
@@ -27,14 +31,16 @@ int main(){
         if(!Vector2Equals(input, Vector2Zero())) 
             direction = input;
 
-        move(&pacMaiden.chara, direction);
+        move(&pacMaiden.chara, direction, mapa);
         portalBorders(&pacMaiden.chara);
+
+        printf("\n ----------- Chirashizushi ------------- \n");
 
 
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
-        renderizaMapa(mapa, 20, 20);
+        renderizaMapa(mapa);
         
         DrawCircleV(pacMaiden.chara.circle.center, pacMaiden.chara.circle.radius, pacMaiden.chara.color);
 

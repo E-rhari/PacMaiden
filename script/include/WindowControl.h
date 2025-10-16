@@ -5,7 +5,7 @@
 #include<raylib.h>
 #include<stdbool.h>
 
-#define LARGURA 800
+#define LARGURA 1600
 #define ALTURA 800
 
 /**
