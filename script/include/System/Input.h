@@ -25,7 +25,7 @@ bool getBufferedInput(Vector2* lastInput, int refreshCondition){
     if(abs((int)recievedInput.x) != abs((int)recievedInput.y))
         if(recievedInput.x != 0 || recievedInput.y != 0)    
                 bufferedInput = recievedInput;
-    
+
     if(refreshCondition || (lastInput->x!=0 && recievedInput.x!=0) || (lastInput->y!=0 && recievedInput.y!=0)){
         *lastInput = bufferedInput;
         return true;

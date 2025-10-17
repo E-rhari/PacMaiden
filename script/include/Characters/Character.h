@@ -5,9 +5,8 @@
 #include "raylib.h"
 #include<stdbool.h>
 
-#include "./WindowControl.h"
-#include "./Map/Map.h"
-// #include "./Degub.h"
+#include "../System/WindowControl.h"
+#include "../Map/Map.h"
 
 #pragma once
 
@@ -112,7 +111,7 @@ void portalBorders(Character* chara){
     else if(chara->circle.center.x > LARGURA)
         chara->circle.center.x = 0 - chara->circle.radius;
     if(chara->circle.center.y < 0 - chara->circle.radius)
-        chara->circle.center.y = LARGURA + chara->circle.radius;
-    else if(chara->circle.center.y > LARGURA)
+        chara->circle.center.y = ALTURA + chara->circle.radius;
+    else if(chara->circle.center.y > ALTURA)
         chara->circle.center.y = 0 - chara->circle.radius;   
 }

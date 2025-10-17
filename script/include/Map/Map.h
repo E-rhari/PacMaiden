@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "raylib.h"
-#include "../WindowControl.h"
+#include "../System/WindowControl.h"
 
 #pragma once
 
@@ -46,10 +46,10 @@ void lerMapa (int nivel,Mapa mapa)
     char path[50];
     
     #ifdef _WIN32
-        path="PacMaiden/sprites/maps/map";
+        strcpy(path,"PacMaiden/sprites/maps/map");
         char nivelString[3];
 
-        itoa(nivel,nivelString,10);
+      itoa(nivel,nivelString,10);
         strcat(path,nivelString);
         strcat(path,".txt");
     #elif __linux__
@@ -81,11 +81,12 @@ void lerMapa (int nivel,Mapa mapa)
     return;
 }
 
-void setUpMapa(Mapa mapa){
-    mapa = (char**)malloc(sizeof(char*)*20);
+Mapa setUpMapa(){
+    Mapa mapa = (char**)malloc(sizeof(char*)*20);
 
     for(int i=0;i<20;i++)
         *(mapa+i) = (char*)malloc(sizeof(char)*40);
+    return mapa;
 }
 
 void freeMapa(Mapa mapa){
