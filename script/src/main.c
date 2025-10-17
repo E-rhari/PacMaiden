@@ -1,5 +1,5 @@
-#include<raylib.h>
-#include<raymath.h>
+#include "raylib.h"
+#include"raymath.h"
 #include<string.h>
 #include<stdbool.h>
 
@@ -18,9 +18,16 @@ int main(){
     Vector2 input = {0, 1};
     Vector2 direction = {0,0};
 
-    Mapa mapa=setUpMapa();
+    // Mapa mapa=setUpMapa();
+    Mapa mapa = (Mapa)malloc(sizeof(char*)*20);
+
+    for(int i=0;i<20;i++)
+        *(mapa+i) = (char*)malloc(sizeof(char)*40);
+
+    // char mapa[20][40];
+
     lerMapa(1,mapa);
-    
+
 
     while(!WindowShouldClose()){
         userClose();
@@ -34,23 +41,20 @@ int main(){
         move(&pacMaiden.chara, direction, mapa);
         portalBorders(&pacMaiden.chara);
 
-        printf("\n ----------- Chirashizushi ------------- \n");
-
 
         BeginDrawing();
 
-        ClearBackground(RAYWHITE);
+        ClearBackground(BLACK);
         renderizaMapa(mapa);
-        
         DrawCircleV(pacMaiden.chara.circle.center, pacMaiden.chara.circle.radius, pacMaiden.chara.color);
 
-        if(DEBUG_MODE)
-            for(int i=0; i<LARGURA/40; i++)
-                for(int j=0; j<ALTURA/40; j++)
-                    DrawCircle(i*40, j*40, 3, BLACK);
-        
+ 
         EndDrawing();
     }
-    CloseWindow();
+    
+    free(mapa);
+    for(int i=0;i<20;i++)
+        free(*(mapa+i));
+
     return 0;
 }
