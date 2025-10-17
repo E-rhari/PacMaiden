@@ -14,7 +14,7 @@ int main(){
     InitWindow(LARGURA, ALTURA, "Jogo Irado!!!");
     SetTargetFPS(60);
 
-    PacMaiden pacMaiden = initPacMaiden((Vector2){400, 400}, 20, 100, YELLOW, 3, 0);
+    PacMaiden pacMaiden = initPacMaiden((Vector2){400, 400}, 20, 160, YELLOW, 3, 0);
     Vector2 direction = {0,0};
 
     Map map=setUpMap();
@@ -25,9 +25,8 @@ int main(){
     while(!WindowShouldClose()){
         userClose();
 
-        getBufferedInput(&direction, (int)(pacMaiden.chara.circle.center.x+pacMaiden.chara.circle.radius)%40 < 2 
-                                  && (int)(pacMaiden.chara.circle.center.y+pacMaiden.chara.circle.radius)%40 < 2);
-
+        getBufferedInput(&direction, (int)(pacMaiden.chara.circle.center.x+pacMaiden.chara.circle.radius)%40 < 3 
+                                  && (int)(pacMaiden.chara.circle.center.y+pacMaiden.chara.circle.radius)%40 < 3);
 
         move(&pacMaiden.chara, direction, map);
         portalBorders(&pacMaiden.chara);

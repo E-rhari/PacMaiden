@@ -76,23 +76,25 @@ bool move(Character* character, Vector2 direction, Map map){
         sprintf(texto, "x: %.2f, y: %.2f.", gridBound.x, gridBound.y);
         DrawText(texto, 100, 100, 50, BLACK);
         
-        DrawCircleV(movingBound, 5, BLACK);
+        DrawCircleV(movingBound, 5, RED);
     }
 
-    if (map[(int)gridBound.y][(int)gridBound.x] == '#') {
-        // arredonda vetor
-        dest = Vector2Scale(character->circle.center, PIX2GRID);
-        dest.x = (int)dest.x;
-        dest.y = (int)dest.y;
-        dest = Vector2Scale(dest, GRID2PIX);
+    if((int)gridBound.y>=0 && (int)gridBound.y<20
+    && (int)gridBound.x>=0 && (int)gridBound.x<40)
+        if (map[(int)gridBound.y][(int)gridBound.x] == '#') {
+            // arredonda vetor
+            dest = Vector2Scale(character->circle.center, PIX2GRID);
+            dest.x = (int)dest.x;
+            dest.y = (int)dest.y;
+            dest = Vector2Scale(dest, GRID2PIX);
 
-        // executa correção de posição apenas no eixo do movimento
-        if(direction.x != 0)
-            character->circle.center.x = dest.x + character->circle.radius;
-        if(direction.y!= 0)
-            character->circle.center.y = dest.y + character->circle.radius;
-        return false;
-    }
+            // executa correção de posição apenas no eixo do movimento
+            if(direction.x != 0)
+                character->circle.center.x = dest.x + character->circle.radius;
+            if(direction.y!= 0)
+                character->circle.center.y = dest.y + character->circle.radius;
+            return false;
+        }
 
     character->circle.center.x = dest.x;
     character->circle.center.y = dest.y;
@@ -106,12 +108,13 @@ bool move(Character* character, Vector2 direction, Map map){
  * @param chara Personagem que irá ser teletransportado
  */
 void portalBorders(Character* chara){
-    if(chara->circle.center.x < 0 - chara->circle.radius)
-        chara->circle.center.x = LARGURA + chara->circle.radius;
+    if(chara->circle.center.x < 0 - chara->circle.radius*2)
+        chara->circle.center.x = LARGURA;
     else if(chara->circle.center.x > LARGURA)
-        chara->circle.center.x = 0 - chara->circle.radius;
-    if(chara->circle.center.y < 0 - chara->circle.radius)
-        chara->circle.center.y = ALTURA + chara->circle.radius;
+        chara->circle.center.x = 0 - chara->circle.radius*2;
+        
+    if(chara->circle.center.y < 0 - chara->circle.radius*2)
+        chara->circle.center.y = ALTURA;
     else if(chara->circle.center.y > ALTURA)
-        chara->circle.center.y = 0 - chara->circle.radius;   
+        chara->circle.center.y = 0 - chara->circle.radius*2;   
 }
