@@ -17,9 +17,9 @@ int main(){
     PacMaiden pacMaiden = initPacMaiden((Vector2){400, 400}, 20, 100, YELLOW, 3, 0);
     Vector2 direction = {0,0};
 
-    Mapa mapa=setUpMapa();
+    Map map=setUpMap();
 
-    lerMapa(1,mapa);
+    readMap(1,map);
 
 
     while(!WindowShouldClose()){
@@ -29,14 +29,14 @@ int main(){
                               && (int)(pacMaiden.chara.circle.center.y+pacMaiden.chara.circle.radius)%40 < 2);
 
 
-        move(&pacMaiden.chara, direction, mapa);
+        move(&pacMaiden.chara, direction, map);
         portalBorders(&pacMaiden.chara);
 
 
         BeginDrawing();
 
         ClearBackground(BLACK);
-        renderizaMapa(mapa);
+        drawMap(map);
         DrawCircleV(pacMaiden.chara.circle.center, pacMaiden.chara.circle.radius, pacMaiden.chara.color);
         
         if(DEBUG_MODE){
@@ -48,9 +48,9 @@ int main(){
         EndDrawing();
     }
     
-    free(mapa);
+    free(map);
     for(int i=0;i<20;i++)
-        free(*(mapa+i));
+        free(*(map+i));
 
     return 0;
 }

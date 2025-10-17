@@ -7,14 +7,14 @@
 #pragma once
 
 
-typedef char** Mapa;
+typedef char** Map;
 
-void renderizaMapa(Mapa mapa)
+void drawMap(Map map)
 {
     int cell = 40;
     for(int i = 0; i < 20; i++){
         for(int j = 0; j < 40; j++)
-            switch(mapa[i][j])
+            switch(map[i][j])
             {
                 case '#':
                     DrawRectangle(j * cell, i * cell, cell, cell, DARKBLUE);
@@ -36,11 +36,10 @@ void renderizaMapa(Mapa mapa)
                     DrawCircle(j * cell + cell/2, i * cell + cell/2, 10, GREEN);
                     break;
             } 
-        printf("\n");
     }
 }
 
-void lerMapa (int nivel,Mapa mapa)
+void readMap (int level, Map map)
 {
     char temp;
     char path[50];
@@ -49,15 +48,15 @@ void lerMapa (int nivel,Mapa mapa)
         strcpy(path,"PacMaiden/sprites/maps/map");
         char nivelString[3];
 
-      itoa(nivel,nivelString,10);
+      itoa(level,nivelString,10);
         strcat(path,nivelString);
         strcat(path,".txt");
     #elif __linux__
-        sprintf(path, "../../sprites/maps/map%d.txt", nivel);
+        sprintf(path, "../../sprites/maps/map%d.txt", level);
         printf(path);
     #else
         printf("Sistema operacional não detectado. Proseguindo com configuração do linux");
-        sprintf(path, "../../sprites/maps/map%d.txt", nivel);
+        sprintf(path, "../../sprites/maps/map%d.txt", level);
         printf(path);
     #endif
 
@@ -73,7 +72,7 @@ void lerMapa (int nivel,Mapa mapa)
         for(int j = 0; j < 40; j++){
             temp = getc(arq);
             if(temp !='\n')
-                mapa[i][j] = temp;
+                map[i][j] = temp;
         }
         temp = getc(arq);
     }
@@ -81,16 +80,16 @@ void lerMapa (int nivel,Mapa mapa)
     return;
 }
 
-Mapa setUpMapa(){
-    Mapa mapa = (char**)malloc(sizeof(char*)*20);
+Map setUpMap(){
+    Map map = (char**)malloc(sizeof(char*)*20);
 
     for(int i=0;i<20;i++)
-        *(mapa+i) = (char*)malloc(sizeof(char)*40);
-    return mapa;
+        *(map+i) = (char*)malloc(sizeof(char)*40);
+    return map;
 }
 
-void freeMapa(Mapa mapa){
+void freeMap(Map map){
     for(int i=0; i<20;i++)
-        free(*(mapa+i));
-    free(mapa);
+        free(*(map+i));
+    free(map);
 }

@@ -61,7 +61,7 @@ Character initCharacter(Vector2 position, int speed, float radius, Color color){
  * 
  * @returns Se o personagem fio movimentado ou não.
  */
-bool move(Character* character, Vector2 direction, Mapa mapa){
+bool move(Character* character, Vector2 direction, Map map){
     // determina posição que a pacmaiden quer ir
     Vector2 dest = (Vector2){character->circle.center.x + direction.x * character->speed*GetFrameTime(),
                              character->circle.center.y + direction.y * character->speed*GetFrameTime()};
@@ -79,7 +79,7 @@ bool move(Character* character, Vector2 direction, Mapa mapa){
         DrawCircleV(movingBound, 5, BLACK);
     }
 
-    if (mapa[(int)gridBound.y][(int)gridBound.x] == '#') {
+    if (map[(int)gridBound.y][(int)gridBound.x] == '#') {
         // arredonda vetor
         dest = Vector2Scale(character->circle.center, PIX2GRID);
         dest.x = (int)dest.x;
