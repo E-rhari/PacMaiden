@@ -2,12 +2,11 @@
  * @brief Arquivo de implementação de tudo que diz respeito à struct abstrata Character
  */
 
-#include<raylib.h>
+#include "raylib.h"
 #include<stdbool.h>
 
-#include "./WindowControl.h"
-#include "./Map.h"
-// #include "./Degub.h"
+#include "../System/WindowControl.h"
+#include "../Map/Map.h"
 
 #pragma once
 
@@ -62,7 +61,7 @@ Character initCharacter(Vector2 position, int speed, float radius, Color color){
  * 
  * @returns Se o personagem fio movimentado ou não.
  */
-bool move(Character* character, Vector2 direction){
+bool move(Character* character, Vector2 direction, Mapa mapa){
     // determina posição que a pacmaiden quer ir
     Vector2 dest = (Vector2){character->circle.center.x + direction.x * character->speed*GetFrameTime(),
                              character->circle.center.y + direction.y * character->speed*GetFrameTime()};
@@ -80,7 +79,7 @@ bool move(Character* character, Vector2 direction){
         DrawCircleV(movingBound, 5, BLACK);
     }
 
-    if (mapa[(int)gridBound.y][(int)gridBound.x] == '@') {
+    if (mapa[(int)gridBound.y][(int)gridBound.x] == '#') {
         // arredonda vetor
         dest = Vector2Scale(character->circle.center, PIX2GRID);
         dest.x = (int)dest.x;
@@ -112,7 +111,7 @@ void portalBorders(Character* chara){
     else if(chara->circle.center.x > LARGURA)
         chara->circle.center.x = 0 - chara->circle.radius;
     if(chara->circle.center.y < 0 - chara->circle.radius)
-        chara->circle.center.y = LARGURA + chara->circle.radius;
-    else if(chara->circle.center.y > LARGURA)
+        chara->circle.center.y = ALTURA + chara->circle.radius;
+    else if(chara->circle.center.y > ALTURA)
         chara->circle.center.y = 0 - chara->circle.radius;   
 }

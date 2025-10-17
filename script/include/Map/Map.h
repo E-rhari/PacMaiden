@@ -2,20 +2,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include "raylib.h"
+#include "../System/WindowControl.h"
+
+#pragma once
 
 
 typedef char** Mapa;
 
 void renderizaMapa(Mapa mapa)
 {
-    
     int cell = 40;
-
-    for(int i = 0; i < 20; i++)
-    {
+    for(int i = 0; i < 20; i++){
         for(int j = 0; j < 40; j++)
-        {
-
             switch(mapa[i][j])
             {
                 case '#':
@@ -37,26 +35,31 @@ void renderizaMapa(Mapa mapa)
                 case 'P':
                     DrawCircle(j * cell + cell/2, i * cell + cell/2, 10, GREEN);
                     break;
-
-            }
-            
-        }
+            } 
+        printf("\n");
     }
-
 }
 
 void lerMapa (int nivel,Mapa mapa)
 {
-
     char temp;
+    char path[50];
+    
+    #ifdef _WIN32
+        strcpy(path,"PacMaiden/sprites/maps/map");
+        char nivelString[3];
 
-    char path[50]="PacMaiden/sprites/mapas/mapa";
-    char nivelString[3];
-
-    itoa(nivel,nivelString,10);
-    strcat(path,nivelString);
-    strcat(path,".txt");
-
+      itoa(nivel,nivelString,10);
+        strcat(path,nivelString);
+        strcat(path,".txt");
+    #elif __linux__
+        sprintf(path, "../../sprites/maps/map%d.txt", nivel);
+        printf(path);
+    #else
+        printf("Sistema operacional não detectado. Proseguindo com configuração do linux");
+        sprintf(path, "../../sprites/maps/map%d.txt", nivel);
+        printf(path);
+    #endif
 
     FILE* arq = fopen(path, "r");
 
@@ -65,25 +68,24 @@ void lerMapa (int nivel,Mapa mapa)
         printf("Erro de abertura de arquivo\n");
         return;
     }
-
     
     for(int i = 0; i < 20; i++){
-        for(int j = 0; j < 41; j++){
-            temp= getc(arq);
-            if(temp =='\n')
-                continue;
-            mapa[i][j]= temp;
+        for(int j = 0; j < 40; j++){
+            temp = getc(arq);
+            if(temp !='\n')
+                mapa[i][j] = temp;
         }
+        temp = getc(arq);
     }
     fclose(arq);
+    return;
 }
 
 Mapa setUpMapa(){
-    Mapa mapa=malloc(sizeof(char*)*20);
+    Mapa mapa = (char**)malloc(sizeof(char*)*20);
 
     for(int i=0;i<20;i++)
-        *(mapa+i)=malloc(sizeof(char)*40);
-
+        *(mapa+i) = (char*)malloc(sizeof(char)*40);
     return mapa;
 }
 

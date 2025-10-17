@@ -2,10 +2,10 @@
  * @brief Arquivo de configuração de constantes de tela e de funções de controle dela.
  */
 
-#include<raylib.h>
+#include "raylib.h"
 #include<stdbool.h>
 
-#define LARGURA 800
+#define LARGURA 1600
 #define ALTURA 800
 
 /**
