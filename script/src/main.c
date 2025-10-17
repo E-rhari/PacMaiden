@@ -25,8 +25,8 @@ int main(){
     while(!WindowShouldClose()){
         userClose();
 
-        int x=getBufferedInput(&direction, (int)(pacMaiden.chara.circle.center.x+pacMaiden.chara.circle.radius)%40 < 2 
-                              && (int)(pacMaiden.chara.circle.center.y+pacMaiden.chara.circle.radius)%40 < 2);
+        getBufferedInput(&direction, (int)(pacMaiden.chara.circle.center.x+pacMaiden.chara.circle.radius)%40 < 2 
+                                  && (int)(pacMaiden.chara.circle.center.y+pacMaiden.chara.circle.radius)%40 < 2);
 
 
         move(&pacMaiden.chara, direction, map);
@@ -38,12 +38,6 @@ int main(){
         ClearBackground(BLACK);
         drawMap(map);
         DrawCircleV(pacMaiden.chara.circle.center, pacMaiden.chara.circle.radius, pacMaiden.chara.color);
-        
-        if(DEBUG_MODE){
-            char txt[5];
-            sprintf(txt,"%d",x);
-            DrawText(txt,300,300,200,PINK);
-        }
  
         EndDrawing();
     }

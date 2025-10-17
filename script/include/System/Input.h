@@ -15,20 +15,21 @@
  *
  * @returns Se o input foi alterado ou não.
  */
-bool getBufferedInput(Vector2* lastInput, int refreshCondition){
+bool getBufferedInput(Vector2* lastInput, bool refreshCondition){
     static Vector2 bufferedInput = {0,0};
     Vector2 recievedInput = {0,0};
+    bool moved = false;
 
     recievedInput.x = IsKeyDown(KEY_RIGHT) - IsKeyDown(KEY_LEFT);
     recievedInput.y = IsKeyDown(KEY_DOWN) - IsKeyDown(KEY_UP);
 
     if(abs((int)recievedInput.x) != abs((int)recievedInput.y))
         if(recievedInput.x != 0 || recievedInput.y != 0)    
-                bufferedInput = recievedInput;
+            bufferedInput = recievedInput;
 
-    if(refreshCondition || (lastInput->x!=0 && recievedInput.x!=0) || (lastInput->y!=0 && recievedInput.y!=0)){
+    if(refreshCondition || (lastInput->x!=0 && bufferedInput.x!=0) || (lastInput->y!=0 && bufferedInput.y!=0)){
         *lastInput = bufferedInput;
-        return true;
+        moved = true;
     }
-    return false;
+    return moved;
 }
