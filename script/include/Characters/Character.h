@@ -74,10 +74,6 @@ bool move(Character* character, Map map){
     Vector2 gridBound = Vector2Scale(movingBound, PIX2GRID);
 
     if(DEBUG_MODE){
-        char texto[100];
-        sprintf(texto, "x: %.2f, y: %.2f.", gridBound.x, gridBound.y);
-        DrawText(texto, 100, 100, 50, RED);
-        
         DrawCircleV(movingBound, 5, RED);
     }
 
