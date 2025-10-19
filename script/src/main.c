@@ -16,6 +16,7 @@
 int main(){
     InitWindow(LARGURA, ALTURA, "Jogo Irado!!!");
     SetTargetFPS(60);
+    srand(time(NULL));
 
     PacMaiden pacMaiden = initPacMaiden((Vector2){40*15, 40*10}, 20, 160, YELLOW, 3, 0);
 
@@ -39,7 +40,7 @@ int main(){
         portalBorders(&pacMaiden.chara);
 
         for(int i=0; i<4; i++){
-            moveGhost(&ghosts[i], map);
+            moveUnaware(&ghosts[i], map);
             portalBorders(&ghosts[i].chara);
         }
 
