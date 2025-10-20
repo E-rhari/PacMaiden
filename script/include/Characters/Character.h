@@ -55,6 +55,22 @@ Character initCharacter(Vector2 position, int speed, float radius, Color color){
     return (Character){characterCircle, speed, color, (Vector2){0,0}};
 }
 
+
+bool isInGridCenter(Character character){
+    return (int)(character.circle.center.x+character.circle.radius)%40 < 3 
+        && (int)(character.circle.center.y+character.circle.radius)%40 < 3;
+}
+
+
+char readPositionInMap(Vector2 position, Map map, Vector2 displacement){
+    Vector2 gridBound = Vector2Scale(position, PIX2GRID);
+
+    if((int)gridBound.y+(int)displacement.y>=0 && (int)gridBound.y+(int)displacement.y<20
+    && (int)gridBound.x+(int)displacement.x>=0 && (int)gridBound.x+(int)displacement.x<40)
+        return map[(int)gridBound.y+(int)displacement.y][(int)gridBound.x + (int)displacement.x];
+    return ' ';
+}
+
 /**
  * @brief Move o personagem para um espaço não ocupado por um bloco de parede.
  * 
@@ -70,29 +86,24 @@ bool move(Character* character, Map map){
     // define o ponto em que será detectada a colisão com a parede
     Vector2 movingBound = {destination.x + character->circle.radius * character->moveDirection.x,
                            destination.y + character->circle.radius * character->moveDirection.y};
-    // converte essa posição do mapa do jogo para a posição na matriz do mapa
-    Vector2 gridBound = Vector2Scale(movingBound, PIX2GRID);
-
     if(DEBUG_MODE){
         DrawCircleV(movingBound, 5, RED);
     }
 
-    if((int)gridBound.y>=0 && (int)gridBound.y<20
-    && (int)gridBound.x>=0 && (int)gridBound.x<40)
-        if (map[(int)gridBound.y][(int)gridBound.x] == '#') {
-            // arredonda vetor
-            destination = Vector2Scale(character->circle.center, PIX2GRID);
-            destination.x = (int)destination.x;
-            destination.y = (int)destination.y;
-            destination = Vector2Scale(destination, GRID2PIX);
+    if (readPositionInMap(movingBound, map, (Vector2){0,0}) == '#') {
+        // arredonda vetor
+        destination = Vector2Scale(character->circle.center, PIX2GRID);
+        destination.x = (int)destination.x;
+        destination.y = (int)destination.y;
+        destination = Vector2Scale(destination, GRID2PIX);
 
-            // executa correção de posição apenas no eixo do movimento
-            if(character->moveDirection.x != 0)
-                character->circle.center.x = destination.x + character->circle.radius;
-            if(character->moveDirection.y!= 0)
-                character->circle.center.y = destination.y + character->circle.radius;
-            return false;
-        }
+        // executa correção de posição apenas no eixo do movimento
+        if(character->moveDirection.x != 0)
+            character->circle.center.x = destination.x + character->circle.radius;
+        if(character->moveDirection.y!= 0)
+            character->circle.center.y = destination.y + character->circle.radius;
+        return false;
+    }
 
     character->circle.center.x = destination.x;
     character->circle.center.y = destination.y;

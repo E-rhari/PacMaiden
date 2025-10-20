@@ -24,7 +24,7 @@ int main(){
     Ghost sora   = initGhost((Vector2){40*5, 40*5}, 20, 160, BLUE);
     Ghost hikari = initGhost((Vector2){40*35,40*15}, 20, 160, GOLD);
     Ghost hana   = initGhost((Vector2){40*25,40*5 }, 20, 160, PINK);
-    Ghost ghosts[4] = {homura, sora, hana, hikari};
+    Ghost ghosts[4] = {homura, sora, hikari, hana};
 
     Map map=setUpMap();
     readMap(1,map);
@@ -33,14 +33,13 @@ int main(){
     while(!WindowShouldClose()){
         userClose();
 
-        getBufferedInput(&pacMaiden.chara.moveDirection, (int)(pacMaiden.chara.circle.center.x+pacMaiden.chara.circle.radius)%40 < 3 
-                                                      && (int)(pacMaiden.chara.circle.center.y+pacMaiden.chara.circle.radius)%40 < 3);
+        getBufferedInput(&pacMaiden.chara.moveDirection, isInGridCenter(pacMaiden.chara));
 
         move(&pacMaiden.chara, map);
         portalBorders(&pacMaiden.chara);
 
-        for(int i=0; i<4; i++){
-            moveUnaware(&ghosts[i], map);
+        for(int i=0; i<sizeof(ghosts)/sizeof(Ghost); i++){
+            moveAware(&ghosts[i], map);
             portalBorders(&ghosts[i].chara);
         }
 
