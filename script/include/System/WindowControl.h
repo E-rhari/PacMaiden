@@ -7,6 +7,7 @@
 
 #define LARGURA 1600
 #define ALTURA 800
+#define ALTURAHUD 840
 
 /**
  * @brief Constante de conversão de pixels para blocos do grid. Cada bloco do grid em 40x40px

@@ -11,7 +11,7 @@
 
 
 int main(){
-    InitWindow(LARGURA, ALTURA, "Jogo Irado!!!");
+    InitWindow(LARGURA, ALTURAHUD, "Jogo Irado!!!");
     SetTargetFPS(60);
 
     PacMaiden pacMaiden = initPacMaiden((Vector2){400, 400}, 20, 100, YELLOW, 3, 0);
@@ -31,13 +31,15 @@ int main(){
 
         move(&pacMaiden.chara, direction, map);
         portalBorders(&pacMaiden.chara);
-
+        Vector2 pelletPos = pelletEaten(pacMaiden, map);
+        if (pelletPos.x > 0) map[(int)pelletPos.x][(int)pelletPos.y] = ' ';
 
         BeginDrawing();
 
         ClearBackground(BLACK);
         drawMap(map);
         DrawCircleV(pacMaiden.chara.circle.center, pacMaiden.chara.circle.radius, pacMaiden.chara.color);
+        DrawRectangle(0, 800, LARGURA, 40, DARKBLUE);
  
         EndDrawing();
     }

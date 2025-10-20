@@ -40,3 +40,13 @@ PacMaiden initPacMaiden(Vector2 position, int radius, float speed, Color color, 
     Character chara = (Character){characterRec, speed, color};
     return (PacMaiden){chara, lifes, points};
 }
+
+Vector2 pelletEaten(PacMaiden pacMaiden, Map map){
+    Vector2 vetor = {-1, -1};
+    Vector2 convertedPos = Vector2Scale(pacMaiden.chara.circle.center, PIX2GRID);
+    if ((map[(int)convertedPos.x][(int)convertedPos.y] == '.')
+        && (int)(pacMaiden.chara.circle.center.x+pacMaiden.chara.circle.radius)%40 < 3
+        && (int)(pacMaiden.chara.circle.center.y+pacMaiden.chara.circle.radius)%40 < 3)
+            vetor = convertedPos;
+    return vetor;
+}
