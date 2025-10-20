@@ -20,7 +20,7 @@
 typedef struct {
     Character chara;
     int lifes;
-    int ponits;
+    int points;
 } PacMaiden;
 
 
@@ -40,13 +40,32 @@ PacMaiden initPacMaiden(Vector2 position, int radius, float speed, Color color, 
     Character chara = (Character){characterRec, speed, color};
     return (PacMaiden){chara, lifes, points};
 }
-
-Vector2 pelletEaten(PacMaiden pacMaiden, Map map){
-    Vector2 vetor = {-1, -1};
+char charCollided(PacMaiden pacMaiden, Map map){
     Vector2 convertedPos = Vector2Scale(pacMaiden.chara.circle.center, PIX2GRID);
-    if ((map[(int)convertedPos.x][(int)convertedPos.y] == '.')
-        && (int)(pacMaiden.chara.circle.center.x+pacMaiden.chara.circle.radius)%40 < 3
+    if((int)convertedPos.y>=0 && (int)convertedPos.y<20
+        && (int)convertedPos.x>=0 && (int)convertedPos.x<40
+        && (int)(pacMaiden.chara.circle.center.x+pacMaiden.chara.circle.radius)%40 < 3 
         && (int)(pacMaiden.chara.circle.center.y+pacMaiden.chara.circle.radius)%40 < 3)
-            vetor = convertedPos;
-    return vetor;
+            return map[(int)convertedPos.y][(int)convertedPos.x];
+    return ' ';
+}
+
+void countPoints(PacMaiden* pacMaiden, Map map, char c){
+    Vector2 convertedPos = Vector2Scale(pacMaiden->chara.circle.center, PIX2GRID);
+    switch(c)
+    {
+        case '.':
+            pacMaiden->points += 10;
+            break;
+        case 'o':
+            pacMaiden->points += 50;
+            break;
+        case 'B':
+            pacMaiden->points += 300;
+            break;
+        default:
+            return;
+    }
+    map[(int)convertedPos.y][(int)convertedPos.x] = ' ';
+
 }

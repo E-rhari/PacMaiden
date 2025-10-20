@@ -31,8 +31,8 @@ int main(){
 
         move(&pacMaiden.chara, direction, map);
         portalBorders(&pacMaiden.chara);
-        Vector2 pelletPos = pelletEaten(pacMaiden, map);
-        if (pelletPos.x > 0) map[(int)pelletPos.x][(int)pelletPos.y] = ' ';
+        countPoints(&pacMaiden, map, charCollided(pacMaiden, map));
+        DrawText(TextFormat("Pontuação: %d", pacMaiden.points), 10, 10, 40, RAYWHITE);
 
         BeginDrawing();
 

@@ -32,6 +32,7 @@ void drawMap(Map map)
                 case 't':
                     DrawRectangle(j * cell, i * cell, cell, cell, PURPLE);
                     break;
+                    
                 default:
                     DrawRectangleLines(j * cell, i * cell, cell, cell, LIGHTGRAY);
             } 
