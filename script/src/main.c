@@ -32,7 +32,6 @@ int main(){
         move(&pacMaiden.chara, direction, map);
         portalBorders(&pacMaiden.chara);
         countPoints(&pacMaiden, map, charCollided(pacMaiden, map));
-        DrawText(TextFormat("Pontuação: %d", pacMaiden.points), 10, 10, 40, RAYWHITE);
 
         BeginDrawing();
 
@@ -40,6 +39,7 @@ int main(){
         drawMap(map);
         DrawCircleV(pacMaiden.chara.circle.center, pacMaiden.chara.circle.radius, pacMaiden.chara.color);
         DrawRectangle(0, 800, LARGURA, 40, DARKBLUE);
+        DrawText(TextFormat("Pontuação: %d", pacMaiden.points), 10, 800, 40, RAYWHITE);
  
         EndDrawing();
     }
