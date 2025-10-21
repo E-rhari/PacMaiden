@@ -38,7 +38,14 @@ typedef struct {
     float speed;
     Color color;
     Vector2 moveDirection;
+    bool immortality;
 } Character;
+
+
+bool checkCharacterCollision(Character chara1, Character chara2){
+    return CheckCollisionCircles(chara1.circle.center, chara1.circle.radius, 
+                                 chara2.circle.center,  chara2.circle.radius);
+}
 
 
 
@@ -52,7 +59,8 @@ typedef struct {
  */
 Character initCharacter(Vector2 position, int speed, float radius, Color color){
     Circle characterCircle = {(Vector2){position.x+radius, position.y+radius}, radius};
-    return (Character){characterCircle, speed, color, (Vector2){0,0}};
+
+    return (Character){characterCircle, speed, color, (Vector2){0,0},false};
 }
 
 

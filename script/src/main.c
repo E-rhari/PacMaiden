@@ -41,6 +41,8 @@ int main(){
         for(int i=0; i<sizeof(ghosts)/sizeof(Ghost); i++){
             moveAware(&ghosts[i], map);
             portalBorders(&ghosts[i].chara);
+            if(checkCharacterCollision(pacMaiden.chara, ghosts[i].chara))
+                hurt(&pacMaiden);
         }
 
 
@@ -48,11 +50,17 @@ int main(){
 
         ClearBackground(BLACK);
         drawMap(map);
-
+        
         DrawCircleV(pacMaiden.chara.circle.center, pacMaiden.chara.circle.radius, pacMaiden.chara.color);
-        for(int i=0; i<4; i++)
+        for(int i=0; i<sizeof(ghosts)/sizeof(Ghost); i++)
             DrawCircleV(ghosts[i].chara.circle.center, ghosts[i].chara.circle.radius, ghosts[i].chara.color);
  
+        if(DEBUG_MODE){
+            char vida[200];
+            sprintf(vida, "Vida: %d", pacMaiden.lifes);
+            DrawText(vida, 300, 300, 100, RED);
+        }
+
         EndDrawing();
     }
     

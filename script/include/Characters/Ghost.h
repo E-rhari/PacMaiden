@@ -32,7 +32,6 @@ void choseDestinationAware(Ghost* ghost, Map map){
                 possibleDirections = (Vector2*)realloc(possibleDirections, length+1);
                 possibleDirections[length] = directions[i];
                 length++;
-                printf("Direcao valid: %d , %f %f\n", i, possibleDirections[i].x, possibleDirections[i].y);
             }
         }
         if(length>0){
