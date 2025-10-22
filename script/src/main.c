@@ -33,7 +33,8 @@ int main(){
     while(!WindowShouldClose()){
         userClose();
 
-        getBufferedInput(&pacMaiden.chara.moveDirection, isInGridCenter(pacMaiden.chara));
+        getBufferedInput(&pacMaiden.chara.moveDirection, isInGridCenter(pacMaiden.chara)
+                                                      && validadePosition(pacMaiden.chara, (Vector2){0,0}));
 
         move(&pacMaiden.chara, map);
         portalBorders(&pacMaiden.chara);
@@ -54,12 +55,6 @@ int main(){
         DrawCircleV(pacMaiden.chara.circle.center, pacMaiden.chara.circle.radius, pacMaiden.chara.color);
         for(int i=0; i<sizeof(ghosts)/sizeof(Ghost); i++)
             DrawCircleV(ghosts[i].chara.circle.center, ghosts[i].chara.circle.radius, ghosts[i].chara.color);
- 
-        if(DEBUG_MODE){
-            char vida[200];
-            sprintf(vida, "Vida: %d", pacMaiden.lifes);
-            DrawText(vida, 300, 300, 100, RED);
-        }
 
         EndDrawing();
     }

@@ -20,7 +20,7 @@ Ghost initGhost(Vector2 position, int radius, float speed, Color color){
 
 
 void choseDestinationAware(Ghost* ghost, Map map){
-    if (isInGridCenter(ghost->chara)){
+    if (isInGridCenter(ghost->chara) && validadePosition(ghost->chara, (Vector2){0,0})){
         Vector2 directions[4] = {{-1,0}, {1,0}, {0,-1}, {0,1}};
         
         Vector2 *possibleDirections= (Vector2*)malloc(1);
@@ -51,7 +51,7 @@ bool moveAware(Ghost* ghost, Map map){
 
 
 void choseDestinationUnaware(Ghost* ghost){
-    if (isInGridCenter(ghost->chara)){
+    if (isInGridCenter(ghost->chara) && validadePosition(ghost->chara, (Vector2){0,0})){
         int random = (rand()%4) + 1;
         if(random == 1)
             ghost->chara.moveDirection = (Vector2){0,-1};

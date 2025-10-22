@@ -38,7 +38,6 @@ typedef struct {
     float speed;
     Color color;
     Vector2 moveDirection;
-    bool immortality;
 } Character;
 
 
@@ -60,7 +59,7 @@ bool checkCharacterCollision(Character chara1, Character chara2){
 Character initCharacter(Vector2 position, int speed, float radius, Color color){
     Circle characterCircle = {(Vector2){position.x+radius, position.y+radius}, radius};
 
-    return (Character){characterCircle, speed, color, (Vector2){0,0},false};
+    return (Character){characterCircle, speed, color, (Vector2){0,0}};
 }
 
 
@@ -69,6 +68,10 @@ bool isInGridCenter(Character character){
         && (int)(character.circle.center.y+character.circle.radius)%40 < 3;
 }
 
+bool validadePosition(Character character,Vector2 displacement){
+    return (int)character.circle.center.y+(int)displacement.y>=0 && (int)character.circle.center.y+(int)displacement.y<ALTURA
+        && (int)character.circle.center.x+(int)displacement.x>=0 && (int)character.circle.center.x+(int)displacement.x<LARGURA;
+}
 
 char readPositionInMap(Vector2 position, Map map, Vector2 displacement){
     Vector2 gridBound = Vector2Scale(position, PIX2GRID);
@@ -76,7 +79,7 @@ char readPositionInMap(Vector2 position, Map map, Vector2 displacement){
     if((int)gridBound.y+(int)displacement.y>=0 && (int)gridBound.y+(int)displacement.y<20
     && (int)gridBound.x+(int)displacement.x>=0 && (int)gridBound.x+(int)displacement.x<40)
         return map[(int)gridBound.y+(int)displacement.y][(int)gridBound.x + (int)displacement.x];
-    return ' ';
+    return '@';
 }
 
 /**
