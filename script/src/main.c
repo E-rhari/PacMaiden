@@ -34,7 +34,7 @@ int main(){
         userClose();
 
         getBufferedInput(&pacMaiden.chara.moveDirection, isInGridCenter(pacMaiden.chara)
-                                                      && validadePosition(pacMaiden.chara, (Vector2){0,0}));
+                                                      && isInsideScreen(pacMaiden.chara, (Vector2){0,0}));
 
         move(&pacMaiden.chara, map);
         portalBorders(&pacMaiden.chara);

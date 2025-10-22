@@ -10,6 +10,7 @@
 
 #pragma once
 
+
 /**
  * @brief Personagem do jogador e protagonista do jogo :-)
  * 
@@ -26,7 +27,6 @@ typedef struct {
 } PacMaiden;
 
 
-
 /**
  * @brief Cria a instância da Struct PacMaiden a partir dos parâmetros fornecidos.
  * 
@@ -38,23 +38,23 @@ typedef struct {
  * @param points Valor inicial do contador de pontos
  */
 PacMaiden initPacMaiden(Vector2 position, int radius, float speed, Color color, int lifes, int points){
-    int inicializeLastHurtTime = 0;
-    Circle characterRec = {(Vector2){position.x+radius, position.y+radius}, radius};
-    Character chara = (Character){characterRec, speed, color};
+    Character chara = initCharacter((Vector2){position.x, position.y}, speed, radius, color);
     return (PacMaiden){chara, lifes, points, 0};
 }
 
 
-
 /**
  * @brief Dá dano a pacmaiden caso o cooldown seja obedecido.
+ * @return Se a pacmaiden levou dano ou não
  */
-void hurt(PacMaiden* pacmaiden){
+bool hurt(PacMaiden* pacmaiden){
     int curretTime = GetTime();
     int cooldown = 1;
     
     if(curretTime > pacmaiden->lastHurtTime + cooldown){
         pacmaiden->lifes--;
         pacmaiden->lastHurtTime = GetTime();
+        return true;
     }
+    return false;
 }
