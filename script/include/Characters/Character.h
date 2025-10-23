@@ -41,18 +41,65 @@ typedef struct {
 } Character;
 
 
+/**
+ * @brief Detecta a colisão entre dois personagens. 
+ * @returns Se os Circles dos personagens estão se tocando.
+ */
+bool checkCharacterCollision(Character chara1, Character chara2){
+    return CheckCollisionCircles(chara1.circle.center, chara1.circle.radius, 
+                                 chara2.circle.center,  chara2.circle.radius);
+}
+
 
 /**
  * @brief Cria a instância da Struct personagem a partir dos parâmetros fornecidos.
  * 
- * @param position Vector de posição.
+ * @param position Vector da posição.
  * @param speed (px/s) Velocidade, em pixels por segundo, que o personagem se move.
  * @param radius (px) Raio do círculo de colisão do personagem.
  * @param color Cor do personagem a partir das definições da Raylib.
+ * 
+ * @return Objeto inicializado do personagem.
  */
 Character initCharacter(Vector2 position, int speed, float radius, Color color){
     Circle characterCircle = {(Vector2){position.x+radius, position.y+radius}, radius};
+
     return (Character){characterCircle, speed, color, (Vector2){0,0}};
+}
+
+/**
+ * @brief Confere se o personagem está no centro de uma célula do grid do jogo.
+ */
+bool isInGridCenter(Character character){
+    return (int)(character.circle.center.x+character.circle.radius)%40 < 3 
+        && (int)(character.circle.center.y+character.circle.radius)%40 < 3;
+}
+
+/**
+ * @brief Verifica se o personagem está dentro da tela do jogo
+ */
+bool isInsideScreen(Character character,Vector2 displacement){
+    return (int)character.circle.center.y+(int)displacement.y>=0 && (int)character.circle.center.y+(int)displacement.y<ALTURA
+        && (int)character.circle.center.x+(int)displacement.x>=0 && (int)character.circle.center.x+(int)displacement.x<LARGURA;
+}
+
+
+/**
+ * @brief Lê o valor da matriz na posição enviada. A posição est
+ * 
+ * @param position (px) Vetor da posição a ser lida no mapa. Ela deve estar em pixels e na
+ *                 escala da tela do jogo. A conversão de pixel para célula da matriz é intera na função.
+ * @param map Mapa do qual será lido o valor.
+ * @param displacement (matrix cell) Deslocamento da posição que será lida na matriz. 
+ */
+char readPositionInMap(Vector2 position, Map map, Vector2 displacement){
+    // Muda a medida de pixels para células do grid
+    Vector2 gridBound = Vector2Scale(position, PIX2GRID);
+
+    if((int)gridBound.y+(int)displacement.y>=0 && (int)gridBound.y+(int)displacement.y<ALTURA/40
+    && (int)gridBound.x+(int)displacement.x>=0 && (int)gridBound.x+(int)displacement.x<LARGURA/40)
+        return map[(int)gridBound.y+(int)displacement.y][(int)gridBound.x + (int)displacement.x];
+    return '@';
 }
 
 /**
@@ -61,7 +108,7 @@ Character initCharacter(Vector2 position, int speed, float radius, Color color){
  * @param character* Referência para a struct de personagem que irá ser movimentada. 
  * @param moveDirection Vetor de módulo 1 que indica a direção do movimento.
  * 
- * @returns Se o personagem fio movimentado ou não.
+ * @returns Se o personagem foi movimentado ou não.
  */
 bool move(Character* character, Map map){
     // determina posição que a pacmaiden quer ir
@@ -70,33 +117,25 @@ bool move(Character* character, Map map){
     // define o ponto em que será detectada a colisão com a parede
     Vector2 movingBound = {destination.x + character->circle.radius * character->moveDirection.x,
                            destination.y + character->circle.radius * character->moveDirection.y};
-    // converte essa posição do mapa do jogo para a posição na matriz do mapa
-    Vector2 gridBound = Vector2Scale(movingBound, PIX2GRID);
-
     if(DEBUG_MODE){
-        char texto[100];
-        sprintf(texto, "x: %.2f, y: %.2f.", gridBound.x, gridBound.y);
-        DrawText(texto, 100, 100, 50, RED);
-        
+        // Coloca a bolinha vermelha na frente do personagem
         DrawCircleV(movingBound, 5, RED);
     }
 
-    if((int)gridBound.y>=0 && (int)gridBound.y<20
-    && (int)gridBound.x>=0 && (int)gridBound.x<40)
-        if (map[(int)gridBound.y][(int)gridBound.x] == '#') {
-            // arredonda vetor
-            destination = Vector2Scale(character->circle.center, PIX2GRID);
-            destination.x = (int)destination.x;
-            destination.y = (int)destination.y;
-            destination = Vector2Scale(destination, GRID2PIX);
+    if (readPositionInMap(movingBound, map, (Vector2){0,0}) == '#') {
+        // arredonda vetor
+        destination = Vector2Scale(character->circle.center, PIX2GRID);
+        destination.x = (int)destination.x;
+        destination.y = (int)destination.y;
+        destination = Vector2Scale(destination, GRID2PIX);
 
-            // executa correção de posição apenas no eixo do movimento
-            if(character->moveDirection.x != 0)
-                character->circle.center.x = destination.x + character->circle.radius;
-            if(character->moveDirection.y!= 0)
-                character->circle.center.y = destination.y + character->circle.radius;
-            return false;
-        }
+        // executa correção de posição apenas no eixo do movimento
+        if(character->moveDirection.x != 0)
+            character->circle.center.x = destination.x + character->circle.radius;
+        if(character->moveDirection.y!= 0)
+            character->circle.center.y = destination.y + character->circle.radius;
+        return false;
+    }
 
     character->circle.center.x = destination.x;
     character->circle.center.y = destination.y;
@@ -110,11 +149,13 @@ bool move(Character* character, Map map){
  * @param chara Personagem que irá ser teletransportado
  */
 void portalBorders(Character* chara){
+    // Horizontal
     if(chara->circle.center.x < 0 - chara->circle.radius*2)
         chara->circle.center.x = LARGURA;
     else if(chara->circle.center.x > LARGURA)
         chara->circle.center.x = 0 - chara->circle.radius*2;
         
+    // Vertical
     if(chara->circle.center.y < 0 - chara->circle.radius*2)
         chara->circle.center.y = ALTURA;
     else if(chara->circle.center.y > ALTURA)
