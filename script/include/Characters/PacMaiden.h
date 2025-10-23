@@ -38,6 +38,40 @@ typedef struct {
  * @param points Valor inicial do contador de pontos
  */
 PacMaiden initPacMaiden(Vector2 position, int radius, float speed, Color color, int lifes, int points){
+    Circle characterRec = {(Vector2){position.x+radius, position.y+radius}, radius};
+    Character chara = (Character){characterRec, speed, color};
+    return (PacMaiden){chara, lifes, points};
+}
+
+
+char charCollided(PacMaiden pacMaiden, Map map){
+    Vector2 convertedPos = Vector2Scale(pacMaiden.chara.circle.center, PIX2GRID);
+    if((int)convertedPos.y>=0 && (int)convertedPos.y<20
+        && (int)convertedPos.x>=0 && (int)convertedPos.x<40
+        && (int)(pacMaiden.chara.circle.center.x+pacMaiden.chara.circle.radius)%40 < 30 
+        && (int)(pacMaiden.chara.circle.center.y+pacMaiden.chara.circle.radius)%40 < 30)
+            return map[(int)convertedPos.y][(int)convertedPos.x];
+    return ' ';
+}
+
+void countPoints(PacMaiden* pacMaiden, Map map, char c){
+    Vector2 convertedPos = Vector2Scale(pacMaiden->chara.circle.center, PIX2GRID);
+    switch(c)
+    {
+        case '.':
+            pacMaiden->points += 10;
+            break;
+        case 'o':
+            pacMaiden->points += 50;
+            break;
+        case 'B':
+            pacMaiden->points += 300;
+            break;
+        default:
+            return;
+    }
+    map[(int)convertedPos.y][(int)convertedPos.x] = ' ';
+
     Character chara = initCharacter((Vector2){position.x, position.y}, speed, radius, color);
     return (PacMaiden){chara, lifes, points, 0};
 }

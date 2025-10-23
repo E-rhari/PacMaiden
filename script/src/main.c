@@ -14,7 +14,7 @@
 
 
 int main(){
-    InitWindow(LARGURA, ALTURA, "Jogo Irado!!!");
+    InitWindow(LARGURA, ALTURAHUD, "Jogo Irado!!!");
     SetTargetFPS(60);
     srand(time(NULL));
 
@@ -38,6 +38,7 @@ int main(){
 
         move(&pacMaiden.chara, map);
         portalBorders(&pacMaiden.chara);
+        countPoints(&pacMaiden, map, charCollided(pacMaiden, map));
 
         for(int i=0; i<sizeof(ghosts)/sizeof(Ghost); i++){
             moveAware(&ghosts[i], map);
@@ -53,6 +54,9 @@ int main(){
         drawMap(map);
         
         DrawCircleV(pacMaiden.chara.circle.center, pacMaiden.chara.circle.radius, pacMaiden.chara.color);
+        DrawRectangle(0, 800, LARGURA, 40, DARKBLUE);
+        DrawText(TextFormat("Pontuação: %d", pacMaiden.points), 10, 800, 40, RAYWHITE);
+ 
         for(int i=0; i<sizeof(ghosts)/sizeof(Ghost); i++)
             DrawCircleV(ghosts[i].chara.circle.center, ghosts[i].chara.circle.radius, ghosts[i].chara.color);
 
