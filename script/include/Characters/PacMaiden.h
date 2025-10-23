@@ -22,7 +22,7 @@
 typedef struct {
     Character chara;
     int lifes;
-    int ponits;
+    int points;
     int lastHurtTime;
 } PacMaiden;
 
@@ -38,9 +38,8 @@ typedef struct {
  * @param points Valor inicial do contador de pontos
  */
 PacMaiden initPacMaiden(Vector2 position, int radius, float speed, Color color, int lifes, int points){
-    Circle characterRec = {(Vector2){position.x+radius, position.y+radius}, radius};
-    Character chara = (Character){characterRec, speed, color};
-    return (PacMaiden){chara, lifes, points};
+    Character chara = initCharacter((Vector2){position.x, position.y}, speed, radius, color);
+    return (PacMaiden){chara, lifes, points, 0};
 }
 
 
@@ -71,9 +70,6 @@ void countPoints(PacMaiden* pacMaiden, Map map, char c){
             return;
     }
     map[(int)convertedPos.y][(int)convertedPos.x] = ' ';
-
-    Character chara = initCharacter((Vector2){position.x, position.y}, speed, radius, color);
-    return (PacMaiden){chara, lifes, points, 0};
 }
 
 
