@@ -105,18 +105,14 @@ bool move(Character* character, Vector2 direction, Map map){
  * 
  * @param chara Personagem que irá ser teletransportado
  */
-void portalBorders(Character* chara) {
-    float r = chara->circle.radius;
-
-    // Eixo X
-    if (chara->circle.center.x < -r)
-        chara->circle.center.x = LARGURA + r;
-    else if (chara->circle.center.x > LARGURA + r)
-        chara->circle.center.x = -r;
-
-    // Eixo Y
-    if (chara->circle.center.y < -r)
-        chara->circle.center.y = ALTURA + r;
-    else if (chara->circle.center.y > ALTURA + r)
-        chara->circle.center.y = -r;
+void portalBorders(Character* chara){
+    if(chara->circle.center.x < 0 - chara->circle.radius*2)
+        chara->circle.center.x = LARGURA;
+    else if(chara->circle.center.x > LARGURA)
+        chara->circle.center.x = 0 - chara->circle.radius*2;
+        
+    if(chara->circle.center.y < 0 - chara->circle.radius*2)
+        chara->circle.center.y = ALTURA;
+    else if(chara->circle.center.y > ALTURA)
+        chara->circle.center.y = 0 - chara->circle.radius*2;   
 }

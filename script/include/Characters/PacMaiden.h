@@ -40,12 +40,14 @@ PacMaiden initPacMaiden(Vector2 position, int radius, float speed, Color color, 
     Character chara = (Character){characterRec, speed, color};
     return (PacMaiden){chara, lifes, points};
 }
+
+
 char charCollided(PacMaiden pacMaiden, Map map){
     Vector2 convertedPos = Vector2Scale(pacMaiden.chara.circle.center, PIX2GRID);
     if((int)convertedPos.y>=0 && (int)convertedPos.y<20
         && (int)convertedPos.x>=0 && (int)convertedPos.x<40
-        && (int)(pacMaiden.chara.circle.center.x+pacMaiden.chara.circle.radius)%40 < 3 
-        && (int)(pacMaiden.chara.circle.center.y+pacMaiden.chara.circle.radius)%40 < 3)
+        && (int)(pacMaiden.chara.circle.center.x+pacMaiden.chara.circle.radius)%40 < 30 
+        && (int)(pacMaiden.chara.circle.center.y+pacMaiden.chara.circle.radius)%40 < 30)
             return map[(int)convertedPos.y][(int)convertedPos.x];
     return ' ';
 }
