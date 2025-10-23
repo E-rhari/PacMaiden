@@ -10,19 +10,21 @@
 
 #pragma once
 
+
 /**
  * @brief Personagem do jogador e protagonista do jogo :-)
  * 
  * @param chara Struct abstrata dos personagens. Lida com a posição, tamanho e velocidade da PacMaiden.
  * @param life Contador de vidas
  * @param points Contador de pontos
+ * @param lastHurtTime (s) Segundos entre o início do jogo e a última vez que a pacmaiden levou dano.
  */
 typedef struct {
     Character chara;
     int lifes;
-    int points;
+    int ponits;
+    int lastHurtTime;
 } PacMaiden;
-
 
 
 /**
@@ -70,4 +72,23 @@ void countPoints(PacMaiden* pacMaiden, Map map, char c){
     }
     map[(int)convertedPos.y][(int)convertedPos.x] = ' ';
 
+    Character chara = initCharacter((Vector2){position.x, position.y}, speed, radius, color);
+    return (PacMaiden){chara, lifes, points, 0};
+}
+
+
+/**
+ * @brief Dá dano a pacmaiden caso o cooldown seja obedecido.
+ * @return Se a pacmaiden levou dano ou não
+ */
+bool hurt(PacMaiden* pacmaiden){
+    int curretTime = GetTime();
+    int cooldown = 1;
+    
+    if(curretTime > pacmaiden->lastHurtTime + cooldown){
+        pacmaiden->lifes--;
+        pacmaiden->lastHurtTime = GetTime();
+        return true;
+    }
+    return false;
 }
