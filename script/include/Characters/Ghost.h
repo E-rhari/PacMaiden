@@ -11,6 +11,7 @@
  */
 typedef struct {
     Character chara;
+    bool canChooseDestination;
 } Ghost;
 
 
@@ -25,7 +26,7 @@ typedef struct {
 Ghost initGhost(Vector2 position, int radius, float speed, Color color){
     Circle characterRec = {(Vector2){position.x+radius, position.y+radius}, radius};
     Character chara = (Character){characterRec, speed, color};
-    return (Ghost){chara};
+    return (Ghost){chara,true};
 }
 
 /**
@@ -35,31 +36,44 @@ Ghost initGhost(Vector2 position, int radius, float speed, Color color){
  * @return Se a direção foi alterada.
  */
 bool choseDestinationAware(Ghost* ghost, Map map){
-    if (isInGridCenter(ghost->chara) && isInsideScreen(ghost->chara, (Vector2){0,0})){
-        Vector2 directions[4] = {{-1,0}, {1,0}, {0,-1}, {0,1}};
-        
-        Vector2 *possibleDirections= (Vector2*)malloc(1);
-        int length=0;
 
-        for(int i=0; i<4; i++)
-            // Detectas as direções possíveis, desconsiderando a retrograda
-            if(readPositionInMap(ghost->chara.circle.center, map, directions[i]) != '#'
-            && !Vector2Equals(directions[i], Vector2Scale(ghost->chara.moveDirection,-1))){
-                possibleDirections = (Vector2*)realloc(possibleDirections, length+1);
-                possibleDirections[length] = directions[i];
-                length++;
-            }
-        if(length>0){
-            // Escolhe aleatoriamente uma direção possível
-            int random = (rand()%length);
-            ghost->chara.moveDirection = possibleDirections[random];
-        }
-        else
-            // Determina a direção como retrograda
-            ghost->chara.moveDirection = Vector2Scale(ghost->chara.moveDirection,-1);
-        return true;
+    if (!isInGridCenter(ghost->chara)){
+        ghost->canChooseDestination=true;
+        return false;
     }
-    return false;
+
+    if(!isInsideScreen(ghost->chara, (Vector2){0,0}))
+        return false;
+
+    if(!ghost->canChooseDestination)
+        return false;
+    
+    
+    Vector2 directions[4] = {{-1,0}, {1,0}, {0,-1}, {0,1}};
+    
+    Vector2 *possibleDirections= (Vector2*)malloc(1);
+    int length=0;
+
+    for(int i=0; i<4; i++)
+        // Detectas as direções possíveis, desconsiderando a retrograda
+        if(readPositionInMap(ghost->chara.circle.center, map, directions[i]) != '#'
+        && !Vector2Equals(directions[i], Vector2Scale(ghost->chara.moveDirection,-1))){
+            possibleDirections = (Vector2*)realloc(possibleDirections, (length+1)*sizeof(Vector2));
+            possibleDirections[length] = directions[i];
+            length++;
+        }
+    if(length>0){
+        // Escolhe aleatoriamente uma direção possível
+        int random = (rand()%length);
+        ghost->chara.moveDirection = possibleDirections[random];
+    }
+    else
+    // Determina a direção como retrograda
+        ghost->chara.moveDirection = Vector2Scale(ghost->chara.moveDirection,-1);
+
+    ghost->canChooseDestination=false;
+    return true;
+
 }
 
 

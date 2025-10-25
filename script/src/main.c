@@ -29,7 +29,7 @@ int main(){
     Map map=setUpMap();
     readMap(1,map);
 
-
+   
     while(!WindowShouldClose()){
         userClose();
 
@@ -40,7 +40,7 @@ int main(){
         portalBorders(&pacMaiden.chara);
         countPoints(&pacMaiden, map, charCollided(pacMaiden, map));
 
-        for(int i=0; i<sizeof(ghosts)/sizeof(Ghost); i++){
+        for(int i=0; i<4; i++){
             moveAware(&ghosts[i], map);
             portalBorders(&ghosts[i].chara);
             if(checkCharacterCollision(pacMaiden.chara, ghosts[i].chara))
@@ -55,6 +55,7 @@ int main(){
         
         DrawCircleV(pacMaiden.chara.circle.center, pacMaiden.chara.circle.radius, pacMaiden.chara.color);
         DrawRectangle(0, 800, LARGURA, 40, DARKBLUE);
+
         DrawText(TextFormat("Pontuação: %d", pacMaiden.points), 10, 800, 40, RAYWHITE);
  
         for(int i=0; i<sizeof(ghosts)/sizeof(Ghost); i++)
