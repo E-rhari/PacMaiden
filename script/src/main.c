@@ -11,6 +11,7 @@
 #include "../include/System/WindowControl.h"
 #include "../include/System/Input.h"
 #include "../include/Map/Map.h"
+#include "../include/Map/Menu.h"
 
 
 int main(){
@@ -25,6 +26,8 @@ int main(){
     Ghost hikari = initGhost((Vector2){40*35,40*15}, 20, 160, GOLD);
     Ghost hana   = initGhost((Vector2){40*25,40*5 }, 20, 160, PINK);
     Ghost ghosts[4] = {homura, sora, hikari, hana};
+    menuButton button = {(Vector2){800, 820}, 25, BUTTONBASE, BUTTONHOVER, BUTTONBAR};
+    bool menuOpen = false;
 
     Map map=setUpMap();
     readMap(1,map);
@@ -60,7 +63,9 @@ int main(){
  
         for(int i=0; i<sizeof(ghosts)/sizeof(Ghost); i++)
             DrawCircleV(ghosts[i].chara.circle.center, ghosts[i].chara.circle.radius, ghosts[i].chara.color);
-
+        drawMenuButton(button);
+        drawMenu(button, &menuOpen);
+        
         EndDrawing();
     }
     
