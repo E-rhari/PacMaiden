@@ -11,6 +11,10 @@
 #pragma once
 
 
+#define RADIUS 20
+#define SPEED 160
+
+
 /**
  * @brief Struct de um círculo no Raylib. A biblioteca não trás uma struct pra esse objeto, mesmo ele sendo usado com frequência
  *        e ter uma função de colisão dedicada a ele. Como será muito usado no código, criamos uma estrutura para isso.
@@ -134,11 +138,16 @@ bool move(Character* character, Map map){
             character->circle.center.x = destination.x + character->circle.radius;
         if(character->moveDirection.y!= 0)
             character->circle.center.y = destination.y + character->circle.radius;
+
+        if(DEBUG_MODE && character->speed==SPEED+1){
+            printf("%f %f || %f %f\n",destination.x,destination.y,character->circle.center.x,character->circle.center.y);
+        }
         return false;
     }
 
     character->circle.center.x = destination.x;
     character->circle.center.y = destination.y;
+
     return true;
 }
 
