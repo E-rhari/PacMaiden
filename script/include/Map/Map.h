@@ -75,10 +75,24 @@ void readMap (int level, Map map)
             if(temp !='\n')
                 map[i][j] = temp;
         }
-        temp = getc(arq);
+        getc(arq);
     }
     fclose(arq);
     return;
+}
+
+Vector2* searchInMap(Map map, char object){
+    Vector2 *occurrences = (Vector2*)malloc(1);
+    int length = 0;
+    
+    for(int i=0; i<20; i++)
+        for(int j=0; j<40; j++)
+            if(map[i][j] == object){
+                occurrences = (Vector2*)realloc(occurrences, (length+1)*sizeof(Vector2));
+                occurrences[length] = (Vector2){j*40, i*40};
+                length++;
+            }
+    return occurrences;
 }
 
 Map setUpMap(){

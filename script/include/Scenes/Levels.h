@@ -8,13 +8,14 @@
 #pragma once
 
 
-Ghost* inicializeGhost(){
+Ghost* inicializeGhost(Map map){
     Ghost *laidies = malloc(sizeof(Ghost)*4); 
+    Vector2* positions = searchInMap(map, 'f');
 
-    laidies[0] = initGhost((Vector2){40*10,40*10}, RADIUS, SPEED, RED);//homura
-    laidies[1] = initGhost((Vector2){40*5, 40*5}, RADIUS, SPEED, BLUE);//sora
-    laidies[2] = initGhost((Vector2){40*35,40*15}, RADIUS, SPEED, GOLD);//hikari
-    laidies[3] = initGhost((Vector2){40*25,40*5 }, RADIUS, SPEED, PINK);//hana
+    laidies[0] = initGhost(positions[0], RADIUS, SPEED, RED); //homura
+    laidies[1] = initGhost(positions[1], RADIUS, SPEED, BLUE);//sora
+    laidies[2] = initGhost(positions[2], RADIUS, SPEED, GOLD);//hikari
+    laidies[3] = initGhost(positions[3], RADIUS, SPEED, PINK);//hana
 
     return laidies;
 }
@@ -61,11 +62,11 @@ void update(PacMaiden* pacMaiden,Ghost* ghosts, Map map){
 
 
 int level(){
-    PacMaiden pacMaiden = initPacMaiden((Vector2){40*15, 40*10}, RADIUS, SPEED+1, YELLOW, 3, 0);
-    Ghost* ghosts = inicializeGhost();
-
     Map map=setUpMap();
     readMap(1,map);
+
+    PacMaiden pacMaiden = initPacMaiden(searchInMap(map, 'P')[0], RADIUS, SPEED+1, YELLOW, 3, 0);
+    Ghost* ghosts = inicializeGhost(map);
 
     update(&pacMaiden,ghosts,map);
 
