@@ -49,7 +49,7 @@ void readMap (int level, Map map)
         strcpy(path,"PacMaiden/sprites/maps/map");
         char nivelString[3];
 
-      itoa(level,nivelString,10);
+        itoa(level,nivelString,10);
         strcat(path,nivelString);
         strcat(path,".txt");
     #elif __linux__

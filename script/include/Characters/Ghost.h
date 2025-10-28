@@ -15,6 +15,7 @@ typedef struct {
 } Ghost;
 
 
+
 /**
  * @brief Cria a instância do fantasma
  * 

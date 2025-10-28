@@ -9,6 +9,9 @@
 #define ALTURA 800
 #define ALTURAHUD 840
 
+#define SCORESIZE 40
+#define SCOREPOSY 10
+
 /**
  * @brief Constante de conversão de pixels para blocos do grid. Cada bloco do grid em 40x40px
  */
@@ -32,4 +35,11 @@
 void userClose(){
     if(IsKeyDown(KEY_LEFT_CONTROL) && IsKeyDown(KEY_C))
         CloseWindow();
+}
+
+void inicializeWindown(){
+    InitWindow(LARGURA, ALTURAHUD, "Jogo Irado!!!");
+    SetTargetFPS(60);
+    srand(time(NULL));
+
 }
