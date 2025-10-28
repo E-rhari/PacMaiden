@@ -6,7 +6,7 @@
 #include<time.h>
 
 #include "../include/System/WindowControl.h"
-#include "../include/Sceans/Levels.h"
+#include "../include/Scenes/Levels.h"
 
 enum Screen{
     TITLE,
