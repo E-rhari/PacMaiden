@@ -1,50 +1,38 @@
-#include<raylib.h>
-#include<raymath.h>
+#include "raylib.h"
+#include"raymath.h"
 #include<string.h>
 #include<stdbool.h>
+#include<stdlib.h>
+#include<time.h>
 
-#include "../include/Character.h"
-#include "../include/PacMaiden.h"
-#include "../include/WindowControl.h"
-#include "../include/Map.h"
-#include "../include/Input.h"
+#include "../include/System/WindowControl.h"
+#include "../include/Scenes/Levels.h"
 
+enum Screen{
+    TITLE,
+    LEVEL,
+    DEATH,
+    MENU //temporário
+};
 
 int main(){
-    InitWindow(LARGURA, ALTURA, "Jogo Irado!!!");
-    SetTargetFPS(60);
+    inicializeWindown();
 
-    PacMaiden pacMaiden = initPacMaiden((Vector2){400, 400}, 20, 100, YELLOW, 3, 0);
-    Vector2 input = {0, 1};
-    Vector2 direction = {0,0};
+    enum Screen myScreen = LEVEL;
 
     while(!WindowShouldClose()){
-        userClose();
-
-        getBufferedInput(&input, (int)(pacMaiden.chara.circle.center.x+pacMaiden.chara.circle.radius)%40 < 2 
-                              && (int)(pacMaiden.chara.circle.center.y+pacMaiden.chara.circle.radius)%40 < 2);
-
-        if(!Vector2Equals(input, Vector2Zero())) 
-            direction = input;
-
-        move(&pacMaiden.chara, direction);
-        portalBorders(&pacMaiden.chara);
-
-
-        BeginDrawing();
-
-        ClearBackground(RAYWHITE);
-        renderizaMapa(mapa, 20, 20);
-        
-        DrawCircleV(pacMaiden.chara.circle.center, pacMaiden.chara.circle.radius, pacMaiden.chara.color);
-
-        if(DEBUG_MODE)
-            for(int i=0; i<LARGURA/40; i++)
-                for(int j=0; j<ALTURA/40; j++)
-                    DrawCircle(i*40, j*40, 3, BLACK);
-        
-        EndDrawing();
+        switch (myScreen)
+        {
+            case TITLE:
+                //
+            break;
+            case LEVEL:
+                level();
+            break;
+            case DEATH:
+                //
+            break;
+        }
     }
-    CloseWindow();
-    return 0;
+
 }
