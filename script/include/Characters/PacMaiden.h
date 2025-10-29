@@ -77,13 +77,17 @@ void countPoints(PacMaiden* pacMaiden, Map map, char c){
  * @brief Dá dano a pacmaiden caso o cooldown seja obedecido.
  * @return Se a pacmaiden levou dano ou não
  */
-bool hurt(PacMaiden* pacmaiden){
+bool hurt(PacMaiden* pacmaiden, Map map){
     int curretTime = GetTime();
     int cooldown = 1;
     
     if(curretTime > pacmaiden->lastHurtTime + cooldown){
         pacmaiden->lifes--;
         pacmaiden->lastHurtTime = GetTime();
+
+        setPosition(&pacmaiden->chara, searchInMap(map, 'P')[0]);
+        pacmaiden->chara.moveDirection = (Vector2){0,0};
+        
         return true;
     }
     return false;

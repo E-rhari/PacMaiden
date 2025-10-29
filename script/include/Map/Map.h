@@ -81,6 +81,26 @@ void readMap (int level, Map map)
     return;
 }
 
+
+/**
+ * @brief Lê o valor da matriz na posição enviada. A posição est
+ * 
+ * @param position (px) Vetor da posição a ser lida no mapa. Ela deve estar em pixels e na
+ *                 escala da tela do jogo. A conversão de pixel para célula da matriz é intera na função.
+ * @param map Mapa do qual será lido o valor.
+ * @param displacement (matrix cell) Deslocamento da posição que será lida na matriz. 
+ */
+char readPositionInMap(Vector2 position, Map map, Vector2 displacement){
+    // Muda a medida de pixels para células do grid
+    Vector2 gridBound = Vector2Scale(position, PIX2GRID);
+
+    if((int)gridBound.y+(int)displacement.y>=0 && (int)gridBound.y+(int)displacement.y<ALTURA/40
+    && (int)gridBound.x+(int)displacement.x>=0 && (int)gridBound.x+(int)displacement.x<LARGURA/40)
+        return map[(int)gridBound.y+(int)displacement.y][(int)gridBound.x + (int)displacement.x];
+    return '@';
+}
+
+
 Vector2* searchInMap(Map map, char object){
     Vector2 *occurrences = (Vector2*)malloc(1);
     int length = 0;

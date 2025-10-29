@@ -42,7 +42,7 @@ void update(PacMaiden* pacMaiden,Ghost* ghosts, Map map){
         userClose();
 
         getBufferedInput(&pacMaiden->chara.moveDirection, isInGridCenter(pacMaiden->chara)
-                                                      && isInsideScreen(pacMaiden->chara, (Vector2){0,0}));
+                                                       && isCharacterInsideScreen(pacMaiden->chara, (Vector2){0,0}));
 
         move(&pacMaiden->chara, map);
         portalBorders(&pacMaiden->chara);
@@ -52,7 +52,7 @@ void update(PacMaiden* pacMaiden,Ghost* ghosts, Map map){
             moveAware(&ghosts[i], map);
             portalBorders(&ghosts[i].chara);
             if(checkCharacterCollision(pacMaiden->chara, ghosts[i].chara))
-                hurt(pacMaiden);
+                hurt(pacMaiden, map);
         }
 
         draw(map,pacMaiden,ghosts);

@@ -43,7 +43,7 @@ bool choseDestinationAware(Ghost* ghost, Map map){
         return false;
     }
 
-    if(!isInsideScreen(ghost->chara, (Vector2){0,0}))
+    if(!isCharacterInsideScreen(ghost->chara, (Vector2){0,0}))
         return false;
 
     if(!ghost->canChooseDestination)
@@ -97,7 +97,7 @@ bool moveAware(Ghost* ghost, Map map){
  * @return Se a direção foi alterada.
  */
 bool choseDestinationUnaware(Ghost* ghost){
-    if (isInGridCenter(ghost->chara) && isInsideScreen(ghost->chara, (Vector2){0,0})){
+    if (isInGridCenter(ghost->chara) && isCharacterInsideScreen(ghost->chara, (Vector2){0,0})){
         int random = (rand()%4) + 1;
         if(random == 1)
             ghost->chara.moveDirection = (Vector2){0,-1};
