@@ -51,18 +51,23 @@ void drawMenuButton(menuButton button) {
     }
 }
 
+bool isOptionButtonHovered(optionButton button) {
+    Vector2 mousePos = GetMousePosition();
+    return CheckCollisionPointRec(mousePos, button.optionBox);
+}
+
 void drawOpenedMenu(void) {
     Rectangle menuBox = {650, 200, 300, 400};
     DrawRectangleRounded(menuBox, 0.1f, 10, (Color){ 30, 80, 255, 150 });
     DrawRectangle(0, 0, LARGURA, ALTURAHUD, (Color){0, 20, 60, 10});
     Vector2 textSize = MeasureTextEx(GetFontDefault(), "Menu", 18, 1);
     DrawTextEx(GetFontDefault(), "Menu", (Vector2){menuBox.x + (menuBox.width - textSize.x) / 2, menuBox.y + (50 - textSize.y) / 2}, 18, 1, RAYWHITE);
-    Rectangle optionBox = {700, 250, 200, 50};
+    optionButton buttons[] = {(optionButton){(Rectangle){700, 250, 200, 50}, BUTTONBASE, BUTTONHOVER}, (optionButton){(Rectangle){700, 340, 200, 50}, BUTTONBASE, BUTTONHOVER}, (optionButton){(Rectangle){700, 430, 200, 50}, BUTTONBASE, BUTTONHOVER}, (optionButton){(Rectangle){700, 520, 200, 50}, BUTTONBASE, BUTTONHOVER}};
     for(int i = 0; i < 4; i++){
-        DrawRectangleRounded(optionBox, 0.1f, 10, BUTTONBASE);
-        optionBox.y += 90;
+        bool hovered = isOptionButtonHovered(buttons[i]);
+        Color optionColor = hovered ? buttons[i].colorHover : buttons[i].colorBase;
+        DrawRectangleRec(buttons[i].optionBox, optionColor);
     }
-    optionButton buttons[] = {(optionButton){(Rectangle){700, 250, 200, 50}, BUTTONBASE, BUTTONHOVER}, (optionButton){(Rectangle){700, 250, 200, 140}, BUTTONBASE, BUTTONHOVER}, (optionButton){(Rectangle){700, 250, 200, 230}, BUTTONBASE, BUTTONHOVER}};
     int gap = 50;
     const char *menuOptions[] = {"Retornar (TAB)", "Salvar (S)", "Carregar (C)", "Sair (Q)"};
     for(int i = 0; i < 4; i++){
