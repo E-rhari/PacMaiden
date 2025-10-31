@@ -11,19 +11,34 @@
 #pragma once
 
 
+#define HURT_COOLDOWN 3
+
+typedef enum {
+    NORMAL,
+    DYING,
+    POWERED,
+    IMMORTAL
+} State;
+
+
 /**
  * @brief Personagem do jogador e protagonista do jogo :-)
  * 
- * @param chara Struct abstrata dos personagens. Lida com a posição, tamanho e velocidade da PacMaiden.
+ * @param chara Struct abstrata dos personagens. Lida com a posição, tamanho, velocidade e cor da PacMaiden.
+ * @param initialValues Struct constante do tip Character para salver os valores iniciais de posição, tamanho, velocidade e cor.
  * @param life Contador de vidas
  * @param points Contador de pontos
  * @param lastHurtTime (s) Segundos entre o início do jogo e a última vez que a pacmaiden levou dano.
+ * @param state Estado atual da pacmaiden.
  */
 typedef struct {
     Character chara;
+    Character initialValues;
     int lifes;
     int points;
     int lastHurtTime;
+    State state;
+
 } PacMaiden;
 
 
@@ -39,7 +54,7 @@ typedef struct {
  */
 PacMaiden initPacMaiden(Vector2 position, int radius, float speed, Color color, int lifes, int points){
     Character chara = initCharacter((Vector2){position.x, position.y}, speed, radius, color);
-    return (PacMaiden){chara, lifes, points, 0};
+    return (PacMaiden){chara, chara, lifes, points, 0, IMMORTAL};
 }
 
 
@@ -73,22 +88,49 @@ void countPoints(PacMaiden* pacMaiden, Map map, char c){
 }
 
 
+void die(PacMaiden* pacmaiden){
+    printf("Damn morri omg");
+}
+
+
+void changeState(PacMaiden* pacmaiden, State state){
+    pacmaiden->state = state;
+
+    switch (state){
+        case NORMAL:
+            break;
+
+        case DYING:
+            pacmaiden->chara.procAnimation.initTime = GetTime();
+            break;
+
+        case POWERED:
+            break;
+
+        case IMMORTAL:
+            pacmaiden->chara.moveDirection = (Vector2){0,0};
+            pacmaiden->chara.procAnimation.initTime = GetTime();
+            pacmaiden->chara.circle.center = pacmaiden->initialValues.circle.center;
+            break;
+
+        default:
+            break;
+    }
+}
+
+
 /**
  * @brief Dá dano a pacmaiden caso o cooldown seja obedecido.
  * @return Se a pacmaiden levou dano ou não
  */
 bool hurt(PacMaiden* pacmaiden, Map map){
-    int curretTime = GetTime();
-    int cooldown = 1;
+    pacmaiden->lifes--;
+    pacmaiden->lastHurtTime = GetTime();
     
-    if(curretTime > pacmaiden->lastHurtTime + cooldown){
-        pacmaiden->lifes--;
-        pacmaiden->lastHurtTime = GetTime();
-
-        setPosition(&pacmaiden->chara, searchInMap(map, 'P')[0]);
-        pacmaiden->chara.moveDirection = (Vector2){0,0};
-        
-        return true;
-    }
-    return false;
+    changeState(pacmaiden, DYING);
+    
+    if(pacmaiden->lifes <= 0)
+        die(pacmaiden);
+    
+    return true;
 }

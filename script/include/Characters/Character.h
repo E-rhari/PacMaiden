@@ -7,6 +7,7 @@
 
 #include "../System/WindowControl.h"
 #include "../Map/Map.h"
+#include "../Animations/ProceduralAnimation.h"
 
 #pragma once
 
@@ -42,6 +43,7 @@ typedef struct {
     float speed;
     Color color;
     Vector2 moveDirection;
+    ProceduralAnimation procAnimation; 
 } Character;
 
 
@@ -68,7 +70,7 @@ bool checkCharacterCollision(Character chara1, Character chara2){
 Character initCharacter(Vector2 position, int speed, float radius, Color color){
     Circle characterCircle = {(Vector2){position.x+radius, position.y+radius}, radius};
 
-    return (Character){characterCircle, speed, color, (Vector2){0,0}};
+    return (Character){characterCircle, speed, color, (Vector2){0,0}, (ProceduralAnimation){0,false}};
 }
 
 /**
@@ -132,9 +134,7 @@ bool move(Character* character, Map map){
         if(character->moveDirection.y!= 0)
             character->circle.center.y = destination.y + character->circle.radius;
 
-        if(DEBUG_MODE && character->speed==SPEED+1){
-            printf("%f %f || %f %f\n",destination.x,destination.y,character->circle.center.x,character->circle.center.y);
-        }
+
         return false;
     }
 
