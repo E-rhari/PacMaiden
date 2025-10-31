@@ -7,6 +7,7 @@
 
 #include "../System/WindowControl.h"
 #include "../Map/Map.h"
+#include "../Animations/ProceduralAnimation.h"
 
 #pragma once
 
@@ -42,6 +43,7 @@ typedef struct {
     float speed;
     Color color;
     Vector2 moveDirection;
+    ProceduralAnimation procAnimation; 
 } Character;
 
 
@@ -68,7 +70,7 @@ bool checkCharacterCollision(Character chara1, Character chara2){
 Character initCharacter(Vector2 position, int speed, float radius, Color color){
     Circle characterCircle = {(Vector2){position.x+radius, position.y+radius}, radius};
 
-    return (Character){characterCircle, speed, color, (Vector2){0,0}};
+    return (Character){characterCircle, speed, color, (Vector2){0,0}, (ProceduralAnimation){0,false}};
 }
 
 /**
@@ -82,28 +84,21 @@ bool isInGridCenter(Character character){
 /**
  * @brief Verifica se o personagem está dentro da tela do jogo
  */
-bool isInsideScreen(Character character,Vector2 displacement){
-    return (int)character.circle.center.y+(int)displacement.y>=0 && (int)character.circle.center.y+(int)displacement.y<ALTURA
-        && (int)character.circle.center.x+(int)displacement.x>=0 && (int)character.circle.center.x+(int)displacement.x<LARGURA;
+bool isCharacterInsideScreen(Character character,Vector2 displacement){
+    return isPositionInsideScreen(character.circle.center, (Vector2){0,0});
 }
 
-
 /**
- * @brief Lê o valor da matriz na posição enviada. A posição est
- * 
- * @param position (px) Vetor da posição a ser lida no mapa. Ela deve estar em pixels e na
- *                 escala da tela do jogo. A conversão de pixel para célula da matriz é intera na função.
- * @param map Mapa do qual será lido o valor.
- * @param displacement (matrix cell) Deslocamento da posição que será lida na matriz. 
+ * @brief determina a posição de um personagem se a posição for válida.
+ * @return Se a determinação da posição foi bem sucedida.
  */
-char readPositionInMap(Vector2 position, Map map, Vector2 displacement){
-    // Muda a medida de pixels para células do grid
-    Vector2 gridBound = Vector2Scale(position, PIX2GRID);
-
-    if((int)gridBound.y+(int)displacement.y>=0 && (int)gridBound.y+(int)displacement.y<ALTURA/40
-    && (int)gridBound.x+(int)displacement.x>=0 && (int)gridBound.x+(int)displacement.x<LARGURA/40)
-        return map[(int)gridBound.y+(int)displacement.y][(int)gridBound.x + (int)displacement.x];
-    return '@';
+bool setPosition(Character* chara, Vector2 position){
+    Vector2 centeredPosition = {position.x + chara->circle.radius, position.y + chara->circle.radius};
+    if(isPositionInsideScreen(centeredPosition, (Vector2){0,0})){
+        chara->circle.center = centeredPosition;
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -139,9 +134,7 @@ bool move(Character* character, Map map){
         if(character->moveDirection.y!= 0)
             character->circle.center.y = destination.y + character->circle.radius;
 
-        if(DEBUG_MODE && character->speed==SPEED+1){
-            printf("%f %f || %f %f\n",destination.x,destination.y,character->circle.center.x,character->circle.center.y);
-        }
+
         return false;
     }
 

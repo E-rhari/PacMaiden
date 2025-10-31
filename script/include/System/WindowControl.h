@@ -43,3 +43,12 @@ void inicializeWindown(){
     srand(time(NULL));
 
 }
+
+
+/**
+ * @brief Verifica se a posição está dentro da tela do jogo
+ */
+bool isPositionInsideScreen(Vector2 position,Vector2 displacement){
+    return (int)position.y+(int)displacement.y>=0 && (int)position.y+(int)displacement.y<ALTURA
+        && (int)position.x+(int)displacement.x>=0 && (int)position.x+(int)displacement.x<LARGURA;
+}
