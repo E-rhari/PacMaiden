@@ -14,6 +14,12 @@ typedef struct MenuButton {
     Color barColor;
 } menuButton;
 
+typedef struct{
+    Rectangle optionBox;
+    Color colorBase;
+    Color colorHover;
+} optionButton;
+
 bool isMenuButtonHovered(menuButton button) {
     Vector2 mousePos = GetMousePosition();
     return CheckCollisionPointCircle(mousePos, button.center, button.radius);
@@ -47,17 +53,23 @@ void drawMenuButton(menuButton button) {
 
 void drawOpenedMenu(void) {
     Rectangle menuBox = {650, 200, 300, 400};
-    DrawRectangleRounded(menuBox, 0.1f, 10, (Color){ 20, 40, 80, 230 });
-    DrawText("Menu", menuBox.x + (menuBox.x / 5) , menuBox.y + 40, 20, RAYWHITE);
-    Rectangle optionBox = {700, 300, 200, 50};
-    for(int i = 0; i < 3; i++){
-        DrawRectangleRounded(optionBox, 0.1f, 10, (Color){ 0, 0, 0, 230 });
+    DrawRectangleRounded(menuBox, 0.1f, 10, (Color){ 30, 80, 255, 150 });
+    DrawRectangle(0, 0, LARGURA, ALTURAHUD, (Color){0, 20, 60, 10});
+    Vector2 textSize = MeasureTextEx(GetFontDefault(), "Menu", 18, 1);
+    DrawTextEx(GetFontDefault(), "Menu", (Vector2){menuBox.x + (menuBox.width - textSize.x) / 2, menuBox.y + (50 - textSize.y) / 2}, 18, 1, RAYWHITE);
+    Rectangle optionBox = {700, 250, 200, 50};
+    for(int i = 0; i < 4; i++){
+        DrawRectangleRounded(optionBox, 0.1f, 10, BUTTONBASE);
         optionBox.y += 90;
     }
-
-    DrawText("Retomar (TAB)", menuBox.x + 40, menuBox.y + 100, 18, RAYWHITE);
-    DrawText("Salvar (S)", menuBox.x + 40, menuBox.y + 140, 18, RAYWHITE);
-    DrawText("Sair (Q)", menuBox.x + 40, menuBox.y + 180, 18, RAYWHITE);
+    optionButton buttons[] = {(optionButton){(Rectangle){700, 250, 200, 50}, BUTTONBASE, BUTTONHOVER}, (optionButton){(Rectangle){700, 250, 200, 140}, BUTTONBASE, BUTTONHOVER}, (optionButton){(Rectangle){700, 250, 200, 230}, BUTTONBASE, BUTTONHOVER}};
+    int gap = 50;
+    const char *menuOptions[] = {"Retornar (TAB)", "Salvar (S)", "Carregar (C)", "Sair (Q)"};
+    for(int i = 0; i < 4; i++){
+        Vector2 optionSize = MeasureTextEx(GetFontDefault(), menuOptions[i], 18, 1);
+        DrawTextEx(GetFontDefault(), menuOptions[i], (Vector2){menuBox.x + (menuBox.width - optionSize.x) / 2, menuBox.y + gap + (50 - optionSize.y) / 2}, 18, 1, RAYWHITE);
+        gap += 90;
+    }
 }
 
 void drawMenu(menuButton button, bool* menuOpen){
