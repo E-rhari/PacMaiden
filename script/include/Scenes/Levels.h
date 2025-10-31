@@ -40,9 +40,11 @@ void draw(Map map,PacMaiden* pacmaiden, Ghost* ghosts){
     drawMap(map);
     
     DrawCircleV(pacmaiden->chara.circle.center, pacmaiden->chara.circle.radius, pacmaiden->chara.color);
-    DrawRectangle(0, 800, LARGURA, (int)GRID2PIX, DARKBLUE);
 
+    DrawRectangle(0, 800, LARGURA, (int)GRID2PIX, BLACK);
     DrawText(TextFormat("Pontuação: %d", pacmaiden->points), SCOREPOSY, ALTURA, SCORESIZE, RAYWHITE);
+    for(int i=0; i<pacmaiden->lifes; i++)
+        DrawCircle(LARGURA-(i+1)*(20)-(i*20), ALTURA+20, 20, pacmaiden->initialValues.color);
 
     for(int i=0; i<4; i++)
         DrawCircleV(ghosts[i].chara.circle.center, ghosts[i].chara.circle.radius, ghosts[i].chara.color);
@@ -51,35 +53,38 @@ void draw(Map map,PacMaiden* pacmaiden, Ghost* ghosts){
 }
 
 
-void update(PacMaiden* pacmaiden,Ghost* ghosts, Map map){
-    while(!WindowShouldClose()){
-        userClose();
+void moveCharacters(PacMaiden* pacmaiden, Ghost* ghosts, Map map){
+    if(pacmaiden->state != DYING){
+        getBufferedInput(&pacmaiden->chara.moveDirection, isInGridCenter(pacmaiden->chara)
+                                                    && isCharacterInsideScreen(pacmaiden->chara, (Vector2){0,0}));
 
-        if(pacmaiden->state != DYING){
-            getBufferedInput(&pacmaiden->chara.moveDirection, isInGridCenter(pacmaiden->chara)
-                                                        && isCharacterInsideScreen(pacmaiden->chara, (Vector2){0,0}));
+        move(&pacmaiden->chara, map);
+        portalBorders(&pacmaiden->chara);
+        countPoints(pacmaiden, map, charCollided(*pacmaiden, map));
 
-            move(&pacmaiden->chara, map);
-            portalBorders(&pacmaiden->chara);
-            countPoints(pacmaiden, map, charCollided(*pacmaiden, map));
-
-            for(int i=0; i<4; i++){
-                moveAware(&ghosts[i], map);
-                portalBorders(&ghosts[i].chara);
-                checkPacmaidenGhostCollision(pacmaiden, &ghosts[i], map);
-            }
+        for(int i=0; i<4; i++){
+            moveAware(&ghosts[i], map);
+            portalBorders(&ghosts[i].chara);
+            checkPacmaidenGhostCollision(pacmaiden, &ghosts[i], map);
         }
-        else{
-            fadeOut(&pacmaiden->chara.color, &pacmaiden->chara.procAnimation, 3);
-            if(!pacmaiden->chara.procAnimation.running)
-                changeState(pacmaiden, IMMORTAL);
-        }
-
-        draw(map,pacmaiden,ghosts);
+    }
+    else{
+        fadeOut(&pacmaiden->chara.color, &pacmaiden->chara.procAnimation, 3);
+        if(!pacmaiden->chara.procAnimation.running)
+            changeState(pacmaiden, IMMORTAL);
     }
 }
 
 
+void update(PacMaiden* pacmaiden,Ghost* ghosts, Map map){
+    while(!WindowShouldClose()){
+        userClose();
+
+        moveCharacters(pacmaiden, ghosts, map);
+
+        draw(map,pacmaiden,ghosts);
+    }
+}
 
 int level(){
     Map map=setUpMap();

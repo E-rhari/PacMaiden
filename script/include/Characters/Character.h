@@ -134,7 +134,6 @@ bool move(Character* character, Map map){
         if(character->moveDirection.y!= 0)
             character->circle.center.y = destination.y + character->circle.radius;
 
-
         return false;
     }
 
