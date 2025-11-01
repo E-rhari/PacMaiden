@@ -56,31 +56,64 @@ bool isOptionButtonHovered(optionButton button) {
     return CheckCollisionPointRec(mousePos, button.optionBox);
 }
 
-void drawOpenedMenu(void) {
-    Rectangle menuBox = {650, 200, 300, 400};
-    DrawRectangleRounded(menuBox, 0.1f, 10, (Color){ 30, 80, 255, 150 });
-    DrawRectangle(0, 0, LARGURA, ALTURAHUD, (Color){0, 20, 60, 10});
-    Vector2 textSize = MeasureTextEx(GetFontDefault(), "Menu", 18, 1);
-    DrawTextEx(GetFontDefault(), "Menu", (Vector2){menuBox.x + (menuBox.width - textSize.x) / 2, menuBox.y + (50 - textSize.y) / 2}, 18, 1, RAYWHITE);
-    optionButton buttons[] = {(optionButton){(Rectangle){700, 250, 200, 50}, BUTTONBASE, BUTTONHOVER}, (optionButton){(Rectangle){700, 340, 200, 50}, BUTTONBASE, BUTTONHOVER}, (optionButton){(Rectangle){700, 430, 200, 50}, BUTTONBASE, BUTTONHOVER}, (optionButton){(Rectangle){700, 520, 200, 50}, BUTTONBASE, BUTTONHOVER}};
+int drawOptionButtons(Rectangle menuBox){
+    Vector4 optionMeasures = {700, 250, 200, 50};
+    optionButton buttons[] = {
+        (optionButton){(Rectangle){optionMeasures.x, optionMeasures.y, optionMeasures.z, optionMeasures.w}, BUTTONBASE, BUTTONHOVER},
+        (optionButton){(Rectangle){optionMeasures.x, optionMeasures.y + 90, optionMeasures.z, optionMeasures.w}, BUTTONBASE, BUTTONHOVER}, 
+        (optionButton){(Rectangle){optionMeasures.x, optionMeasures.y + 180, optionMeasures.z, optionMeasures.w}, BUTTONBASE, BUTTONHOVER}, 
+        (optionButton){(Rectangle){optionMeasures.x, optionMeasures.y + 270, optionMeasures.z, optionMeasures.w}, BUTTONBASE, BUTTONHOVER}};
+    int clickedIndex = -1;
     for(int i = 0; i < 4; i++){
         bool hovered = isOptionButtonHovered(buttons[i]);
         Color optionColor = hovered ? buttons[i].colorHover : buttons[i].colorBase;
-        DrawRectangleRec(buttons[i].optionBox, optionColor);
+        DrawRectangleRounded(buttons[i].optionBox, 0.2f, 10, optionColor);
+        DrawRectangleRoundedLinesEx(buttons[i].optionBox, 0.2f, 10, 3, BUTTONBAR);
+        if(hovered && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+            clickedIndex = i;
+        }
     }
     int gap = 50;
     const char *menuOptions[] = {"Retornar (TAB)", "Salvar (S)", "Carregar (C)", "Sair (Q)"};
     for(int i = 0; i < 4; i++){
         Vector2 optionSize = MeasureTextEx(GetFontDefault(), menuOptions[i], 18, 1);
-        DrawTextEx(GetFontDefault(), menuOptions[i], (Vector2){menuBox.x + (menuBox.width - optionSize.x) / 2, menuBox.y + gap + (50 - optionSize.y) / 2}, 18, 1, RAYWHITE);
+        DrawTextEx(GetFontDefault(), menuOptions[i], (Vector2){menuBox.x + (menuBox.width - optionSize.x) / 2, menuBox.y + gap + (50 - optionSize.y) / 2}, 18, 1, BUTTONBAR);
         gap += 90;
     }
+    if(IsKeyPressed(KEY_Q))
+        clickedIndex = 3;
+    return clickedIndex;
+}
+
+int drawOpenedMenu(void) {
+    Rectangle menuBox = {650, 200, 300, 400};
+    DrawRectangleRounded(menuBox, 0.1f, 10, (Color){ 30, 80, 255, 150 });
+    DrawRectangle(0, 0, LARGURA, ALTURAHUD, (Color){0, 20, 60, 10});
+    Vector2 textSize = MeasureTextEx(GetFontDefault(), "Menu", 18, 1);
+    DrawTextEx(GetFontDefault(), "Menu", (Vector2){menuBox.x + (menuBox.width - textSize.x) / 2, menuBox.y + (50 - textSize.y) / 2}, 18, 1, RAYWHITE);
+    return drawOptionButtons(menuBox);
 }
 
 void drawMenu(menuButton button, bool* menuOpen){
     if(isMenuButtonClicked(button) || IsKeyPressed(KEY_TAB))
         *menuOpen = !(*menuOpen);
     
-    if(*menuOpen)
-        drawOpenedMenu();
+    if(*menuOpen){
+        int clicked = drawOpenedMenu();
+        
+        switch(clicked){
+            case 0:
+                *menuOpen = false;
+                break;
+            case 1:
+
+            case 2:
+
+            case 3:
+                CloseWindow();
+                break;
+        }
+    }
+
 }
+
