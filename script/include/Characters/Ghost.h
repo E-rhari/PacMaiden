@@ -6,36 +6,30 @@
 
 #pragma once
 
-/**
- * @brief Inimigos do jogador
- */
+
+
+/** @brief Inimigos do jogador */
 typedef struct {
     Character chara;
     bool canChooseDestination;
 } Ghost;
 
 
-
-/**
- * @brief Cria a instância do fantasma
+/** @brief Cria a instância do fantasma
  * 
  * @param position Vector de posição.
  * @param speed (px/s) Velocidade, em pixels por segundo, que o personagem se move.
  * @param radius (px) Raio do círculo de colisão do personagem.
- * @param color Cor do personagem a partir das definições da Raylib.
- */
+ * @param color Cor do personagem a partir das definições da Raylib. */
 Ghost initGhost(Vector2 position, int radius, float speed, Color color){
     Circle characterRec = {(Vector2){position.x+radius, position.y+radius}, radius};
     Character chara = (Character){characterRec, speed, color};
     return (Ghost){chara,true};
 }
 
-/**
- * @brief Altera a propriedade moveDirection do fantasma aleatóriamente, mas 
- *        considerando os seus arredores. O movimento só é retrocedido se estritamente 
- *        necessário, enquanto escolhe aleatoriamente uma posição entre as possíveis.
- * @return Se a direção foi alterada.
- */
+/** @brief Altera a propriedade moveDirection do fantasma aleatóriamente, mas considerando os seus arredores. O movimento 
+ *        só é retrocedido se estritamente necessário, enquanto escolhe aleatoriamente uma posição entre as possíveis.
+ * @return Se a direção foi alterada. */
 bool choseDestinationAware(Ghost* ghost, Map map){
 
     if (!isInGridCenter(ghost->chara)){
@@ -78,24 +72,18 @@ bool choseDestinationAware(Ghost* ghost, Map map){
 }
 
 
-/**
- * @brief Movimenta o fantasma aleatóriamente, mas considerando os seus arredores. 
- *        Ele só vai pra trás se estritamente necessário, enquanto escolhe aleatoriamente 
- *        uma posição entre as possíveis.
- * @return Se o personagem foi movimentado ou não.
- */
+/** @brief Movimenta o fantasma aleatóriamente, mas considerando os seus arredores. Ele só vai pra trás se estritamente necessário,
+ *        enquanto escolhe aleatoriamente uma posição entre as possíveis.
+ * @return Se o personagem foi movimentado ou não. */
 bool moveAware(Ghost* ghost, Map map){
     choseDestinationAware(ghost, map);
     return move(&ghost->chara, map);
 }
 
 
-/** 
- * @brief Escolhe uma direção aleatória para a movimentação do fantasma. Esse função não
- *        vê nenhum problema em bater de cara na parede, em retroceder o movimento derrepente
- *        ou em andar em círculos.
- * @return Se a direção foi alterada.
- */
+/**  @brief Escolhe uma direção aleatória para a movimentação do fantasma. Esse função não vê nenhum problema em bater de cara na 
+ *        parede, em retroceder o movimento derrepente ou em andar em círculos.
+ * @return Se a direção foi alterada. */
 bool choseDestinationUnaware(Ghost* ghost){
     if (isInGridCenter(ghost->chara) && isCharacterInsideScreen(ghost->chara, (Vector2){0,0})){
         int random = (rand()%4) + 1;
@@ -113,11 +101,9 @@ bool choseDestinationUnaware(Ghost* ghost){
 }
 
 
-/** 
- * @brief Move o fantasma aleatóriamente. Esse função não vê nenhum problema em bater de cara 
- *        na parede, em retroceder o movimento derrepente ou em andar em círculos.
- * @return Se o personagem foi movimentado ou não.
- */
+/**  @brief Move o fantasma aleatóriamente. Esse função não vê nenhum problema em bater de cara na parede, em 
+ *        retroceder o movimento derrepente ou em andar em círculos.
+ * @return Se o personagem foi movimentado ou não. */
 bool moveUnaware(Ghost* ghost, Map map){
     choseDestinationUnaware(ghost);
     return move(&ghost->chara, map);

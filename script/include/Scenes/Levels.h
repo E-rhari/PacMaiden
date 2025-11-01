@@ -1,3 +1,6 @@
+/** @brief Estado de jogo em que ocorre a gameplay propriamente dita. */
+
+
 #include "../Characters/Character.h"
 #include "../Characters/PacMaiden.h"
 #include "../Characters/Ghost.h"
@@ -8,7 +11,8 @@
 #pragma once
 
 
-Ghost* inicializeGhost(Map map){
+
+Ghost* instanciateGhostsInLevel(Map map){
     Ghost *laidies = malloc(sizeof(Ghost)*4); 
     Vector2* positions = searchInMap(map, 'f');
 
@@ -20,6 +24,8 @@ Ghost* inicializeGhost(Map map){
     return laidies;
 }
 
+
+/** @brief Trata de toda a clisão da pacmaiden com os fantasmas, levando em cosideração o seu estado e posição */
 void checkPacmaidenGhostCollision(PacMaiden* pacmaiden, Ghost* ghost, Map map){
     if(pacmaiden->state!=IMMORTAL){
         if(checkCharacterCollision(pacmaiden->chara, ghost->chara))
@@ -33,6 +39,7 @@ void checkPacmaidenGhostCollision(PacMaiden* pacmaiden, Ghost* ghost, Map map){
 }
 
 
+/** @brief DEsenha todas as coisas do jogo. */
 void draw(Map map,PacMaiden* pacmaiden, Ghost* ghosts){
     BeginDrawing();
 
@@ -53,6 +60,7 @@ void draw(Map map,PacMaiden* pacmaiden, Ghost* ghosts){
 }
 
 
+/** @brief Realiza todas as funções de movimento dos personagens */
 void moveCharacters(PacMaiden* pacmaiden, Ghost* ghosts, Map map){
     if(pacmaiden->state != DYING){
         getBufferedInput(&pacmaiden->chara.moveDirection, isInGridCenter(pacmaiden->chara)
@@ -76,9 +84,11 @@ void moveCharacters(PacMaiden* pacmaiden, Ghost* ghosts, Map map){
 }
 
 
+/** @brief Roda todo frame. */
 void update(PacMaiden* pacmaiden,Ghost* ghosts, Map map){
     while(!WindowShouldClose()){
-        userClose();
+        if(DEBUG_MODE)
+            userClose();
 
         moveCharacters(pacmaiden, ghosts, map);
 
@@ -86,12 +96,14 @@ void update(PacMaiden* pacmaiden,Ghost* ghosts, Map map){
     }
 }
 
-int level(){
+
+/** @brief Roda a fase desejada */
+int level(int levelNumber){
     Map map=setUpMap();
-    readMap(1,map);
+    readMap(levelNumber,map);
 
     PacMaiden pacmaiden = initPacMaiden(searchInMap(map, 'P')[0], RADIUS, SPEED, YELLOW, 3, 0);
-    Ghost* ghosts = inicializeGhost(map);
+    Ghost* ghosts = instanciateGhostsInLevel(map);
 
     update(&pacmaiden,ghosts,map);
 

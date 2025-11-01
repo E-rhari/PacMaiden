@@ -16,7 +16,7 @@ enum Screen{
 };
 
 int main(){
-    inicializeWindown();
+    inicializeWindow();
 
     enum Screen myScreen = LEVEL;
 
@@ -27,7 +27,7 @@ int main(){
                 //
             break;
             case LEVEL:
-                level();
+                level(1);
             break;
             case DEATH:
                 //
