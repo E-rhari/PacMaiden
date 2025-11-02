@@ -64,7 +64,7 @@ void draw(Map map,PacMaiden* pacmaiden, Ghost* ghosts){
 void moveCharacters(PacMaiden* pacmaiden, Ghost* ghosts, Map map){
     if(pacmaiden->state != DYING){
         getBufferedInput(&pacmaiden->chara.moveDirection, isInGridCenter(pacmaiden->chara)
-                                                    && isCharacterInsideScreen(pacmaiden->chara, (Vector2){0,0}));
+                                                       && isCharacterInsideScreen(pacmaiden->chara, (Vector2){0,0}));
 
         move(&pacmaiden->chara, map);
         portalBorders(&pacmaiden->chara);

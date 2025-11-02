@@ -97,6 +97,8 @@ bool setPosition(Character* chara, Vector2 position){
  * 
  * @returns Se o personagem foi movimentado ou não. */
 bool move(Character* character, Map map){
+    bool moved = true;
+
     // determina posição que a pacmaiden quer ir
     Vector2 destination = (Vector2){character->circle.center.x + character->moveDirection.x * character->speed*GetFrameTime(),
                                     character->circle.center.y + character->moveDirection.y * character->speed*GetFrameTime()};
@@ -108,6 +110,7 @@ bool move(Character* character, Map map){
         DrawCircleV(movingBound, 5, RED);
     }
 
+    // Encosta o personagem na parede quando ele tentaria atravessá-la. Caso não implementado, o personagem nunca chega na parede
     if (readPositionInMap(movingBound, map, (Vector2){0,0}) == '#') {
         // arredonda vetor
         destination = Vector2Scale(character->circle.center, PIX2GRID);
@@ -115,19 +118,23 @@ bool move(Character* character, Map map){
         destination.y = (int)destination.y;
         destination = Vector2Scale(destination, GRID2PIX);
 
-        // executa correção de posição apenas no eixo do movimento
-        if(character->moveDirection.x != 0)
-            character->circle.center.x = destination.x + character->circle.radius;
-        if(character->moveDirection.y!= 0)
-            character->circle.center.y = destination.y + character->circle.radius;
+        destination.x = destination.x + character->circle.radius;
+        destination.y = destination.y + character->circle.radius;
 
-        return false;
+        moved = false;
     }
+
+    // Alinhada ao centro de um grid no eixo que não é o do movimento
+    if(character->moveDirection.x != 0)
+        destination.y = (int)(destination.y/40)*40 + character->circle.radius;
+    else if(character->moveDirection.y != 0)
+        destination.x = (int)(destination.x/40)*40 + character->circle.radius;
 
     character->circle.center.x = destination.x;
     character->circle.center.y = destination.y;
 
-    return true;
+
+    return moved;
 }
 
 
