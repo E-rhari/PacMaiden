@@ -94,11 +94,11 @@ void readMap (int level, Map map)
  * @param displacement (matrix cell) Deslocamento da posição que será lida na matriz. */
 char readPositionInMap(Vector2 position, Map map, Vector2 displacement){
     // Muda a medida de pixels para células do grid
-    Vector2 gridBound = Vector2Scale(position, PIX2GRID);
+    Vector2 gridPosition = Vector2Scale(position, PIX2GRID);
 
-    if((int)gridBound.y+(int)displacement.y>=0 && (int)gridBound.y+(int)displacement.y<ALTURA/40
-    && (int)gridBound.x+(int)displacement.x>=0 && (int)gridBound.x+(int)displacement.x<LARGURA/40)
-        return map[(int)gridBound.y+(int)displacement.y][(int)gridBound.x + (int)displacement.x];
+    if((int)gridPosition.y+(int)displacement.y>=0 && (int)gridPosition.y+(int)displacement.y<ALTURA/40
+    && (int)gridPosition.x+(int)displacement.x>=0 && (int)gridPosition.x+(int)displacement.x<LARGURA/40)
+        return map[(int)gridPosition.y+(int)displacement.y][(int)gridPosition.x + (int)displacement.x];
     return ' ';
 }
 
@@ -117,6 +117,13 @@ Vector2* searchInMap(Map map, char object){
             }
     return occurrences;
 }
+
+
+/** @brief Confere se o personagem está no centro de uma célula do grid do jogo. */
+bool isPositionInGridCenter(Vector2 position){
+    return (int)(position.x+20)%40 < 3   &&  (int)(position.y+20)%40 < 3;
+}
+
 
 /** @brief Aloca espaço na memória para o mapa. */
 Map setUpMap(){

@@ -52,7 +52,11 @@ PacMaiden initPacMaiden(Vector2 position, int radius, float speed, Color color, 
 char charCollided(PacMaiden pacMaiden, Map map){
     Vector2 colliderBound = (Vector2){pacMaiden.chara.circle.center.x + pacMaiden.chara.circle.radius*pacMaiden.chara.moveDirection.x,
                                       pacMaiden.chara.circle.center.y + pacMaiden.chara.circle.radius*pacMaiden.chara.moveDirection.y};
-    return readPositionInMap(colliderBound, map, (Vector2){0,0});
+
+    if(isPositionInGridCenter(colliderBound))
+        return readPositionInMap(colliderBound, map, (Vector2){0,0});
+
+    return ' ';
 }
 
 /** @brief Adiciona a quantidade adequada de pontos à pontuação da pacmaiden
@@ -60,7 +64,9 @@ char charCollided(PacMaiden pacMaiden, Map map){
  * @param map Mapa de onde será contado o ponto.
  * @param object Caractere que indica o tipo de objeto. */
 void countPoints(PacMaiden* pacMaiden, Map map, char object){
-    Vector2 convertedPos = Vector2Scale(pacMaiden->chara.circle.center, PIX2GRID);
+    Vector2 colliderBound = (Vector2){pacMaiden->chara.circle.center.x + pacMaiden->chara.circle.radius*pacMaiden->chara.moveDirection.x,
+                                      pacMaiden->chara.circle.center.y + pacMaiden->chara.circle.radius*pacMaiden->chara.moveDirection.y};
+    Vector2 convertedPos = Vector2Scale(colliderBound, PIX2GRID);
     switch(object)
     {
         case '.':

@@ -63,7 +63,7 @@ void draw(Map map,PacMaiden* pacmaiden, Ghost* ghosts){
 /** @brief Realiza todas as funções de movimento dos personagens */
 void moveCharacters(PacMaiden* pacmaiden, Ghost* ghosts, Map map){
     if(pacmaiden->state != DYING){
-        getBufferedInput(&pacmaiden->chara.moveDirection, isInGridCenter(pacmaiden->chara)
+        getBufferedInput(&pacmaiden->chara.moveDirection, isCharacterInGridCenter(pacmaiden->chara)
                                                        && isCharacterInsideScreen(pacmaiden->chara, (Vector2){0,0}));
 
         move(&pacmaiden->chara, map);

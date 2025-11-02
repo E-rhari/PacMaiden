@@ -32,7 +32,7 @@ Ghost initGhost(Vector2 position, int radius, float speed, Color color){
  * @return Se a direção foi alterada. */
 bool choseDestinationAware(Ghost* ghost, Map map){
 
-    if (!isInGridCenter(ghost->chara)){
+    if (!isCharacterInGridCenter(ghost->chara)){
         ghost->canChooseDestination=true;
         return false;
     }
@@ -85,7 +85,7 @@ bool moveAware(Ghost* ghost, Map map){
  *        parede, em retroceder o movimento derrepente ou em andar em círculos.
  * @return Se a direção foi alterada. */
 bool choseDestinationUnaware(Ghost* ghost){
-    if (isInGridCenter(ghost->chara) && isCharacterInsideScreen(ghost->chara, (Vector2){0,0})){
+    if (isCharacterInGridCenter(ghost->chara) && isCharacterInsideScreen(ghost->chara, (Vector2){0,0})){
         int random = (rand()%4) + 1;
         if(random == 1)
             ghost->chara.moveDirection = (Vector2){0,-1};

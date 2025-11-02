@@ -66,11 +66,9 @@ Character initCharacter(Vector2 position, int speed, float radius, Color color){
 
 
 /** @brief Confere se o personagem está no centro de uma célula do grid do jogo. */
-bool isInGridCenter(Character character){
-    return (int)(character.circle.center.x+character.circle.radius)%40 < 3 
-        && (int)(character.circle.center.y+character.circle.radius)%40 < 3;
+bool isCharacterInGridCenter(Character character){
+    return isPositionInGridCenter(character.circle.center);
 }
-
 
 /** @brief Verifica se o personagem está dentro da tela do jogo */
 bool isCharacterInsideScreen(Character character,Vector2 displacement){
