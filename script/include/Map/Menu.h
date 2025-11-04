@@ -1,10 +1,28 @@
 #include "raylib.h"
 #include <stdbool.h>
 
+#pragma once
+
 #define BUTTONBASE (Color){10, 40, 80, 255}
 #define BUTTONHOVER (Color){20, 70, 140, 255}
 #define BUTTONBAR (Color){100, 180, 255, 255}
-#pragma once
+
+enum opitionPress{// temp
+    RESUME,
+    SAVE,
+    LOAD,
+    RETURN
+}; 
+
+
+/**
+ * @brief Estrutura do icone de menu
+ * @param center centro do circulo
+ * @param radius raio do circulo 
+ * @param colorBase cor base
+ * @param colorHover cor quando mause passe por cima
+ * @param barColor cor das tres barras
+ */
 
 typedef struct MenuButton {
     Vector2 center;
@@ -14,21 +32,46 @@ typedef struct MenuButton {
     Color barColor;
 } menuButton;
 
+
+/**
+ * @brief Estrutura das opções do menu
+ * @param optionBox retangulo de de cada opcção
+ * @param colorBase cor base
+ * @param colorHover cor quando mause passe por cima
+ */
 typedef struct{
     Rectangle optionBox;
     Color colorBase;
     Color colorHover;
+    enum opitionPress id;
 } optionButton;
 
+/**
+ * @return retorna se o mouse está sobre um botão
+ */
 bool isMenuButtonHovered(menuButton button) {
     Vector2 mousePos = GetMousePosition();
     return CheckCollisionPointCircle(mousePos, button.center, button.radius);
 }
 
+bool isOptionButtonHovered(optionButton button) {
+    Vector2 mousePos = GetMousePosition();
+    return CheckCollisionPointRec(mousePos, button.optionBox);
+}
+
+/**
+ * @return retorna se o mouse está sobre um botão
+ */
 bool isMenuButtonClicked(menuButton button) {
     return isMenuButtonHovered(button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
 }
 
+int isOptionButtonClicked(optionButton buttons[]){
+    for(int i=0;i<4;i++)
+        if(isOptionButtonHovered(buttons[i]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+            return buttons[i].id;
+    return -1;
+}
 void drawMenuButton(menuButton button) {
     bool hovered = isMenuButtonHovered(button);
     Color circleColor = hovered ? button.colorHover : button.colorBase;
@@ -51,69 +94,52 @@ void drawMenuButton(menuButton button) {
     }
 }
 
-bool isOptionButtonHovered(optionButton button) {
-    Vector2 mousePos = GetMousePosition();
-    return CheckCollisionPointRec(mousePos, button.optionBox);
-}
-
 int drawOptionButtons(Rectangle menuBox){
     Vector4 optionMeasures = {700, 250, 200, 50};
-    optionButton buttons[] = {
-        (optionButton){(Rectangle){optionMeasures.x, optionMeasures.y, optionMeasures.z, optionMeasures.w}, BUTTONBASE, BUTTONHOVER},
-        (optionButton){(Rectangle){optionMeasures.x, optionMeasures.y + 90, optionMeasures.z, optionMeasures.w}, BUTTONBASE, BUTTONHOVER}, 
-        (optionButton){(Rectangle){optionMeasures.x, optionMeasures.y + 180, optionMeasures.z, optionMeasures.w}, BUTTONBASE, BUTTONHOVER}, 
-        (optionButton){(Rectangle){optionMeasures.x, optionMeasures.y + 270, optionMeasures.z, optionMeasures.w}, BUTTONBASE, BUTTONHOVER}};
-    int clickedIndex = -1;
-    for(int i = 0; i < 4; i++){
-        bool hovered = isOptionButtonHovered(buttons[i]);
-        Color optionColor = hovered ? buttons[i].colorHover : buttons[i].colorBase;
+    
+    optionButton buttons[4];
+    int paddingYButton=90, gapText=50, paddingYText=90;
+
+    const char *menuOptions[] = {"Retornar (TAB)", "Salvar (S)", "Carregar (C)", "Sair (Q)"};
+
+    for(int i=0;i<4;i++){
+        buttons[i]=(optionButton){(Rectangle){optionMeasures.x, optionMeasures.y+paddingYButton*i, optionMeasures.z, optionMeasures.w}, BUTTONBASE, BUTTONHOVER,i};
+
+        Color optionColor = isOptionButtonHovered(buttons[i]) ? buttons[i].colorHover : buttons[i].colorBase;
+
         DrawRectangleRounded(buttons[i].optionBox, 0.2f, 10, optionColor);
         DrawRectangleRoundedLinesEx(buttons[i].optionBox, 0.2f, 10, 3, BUTTONBAR);
-        if(hovered && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-            clickedIndex = i;
-        }
-    }
-    int gap = 50;
-    const char *menuOptions[] = {"Retornar (TAB)", "Salvar (S)", "Carregar (C)", "Sair (Q)"};
-    for(int i = 0; i < 4; i++){
+
         Vector2 optionSize = MeasureTextEx(GetFontDefault(), menuOptions[i], 18, 1);
-        DrawTextEx(GetFontDefault(), menuOptions[i], (Vector2){menuBox.x + (menuBox.width - optionSize.x) / 2, menuBox.y + gap + (50 - optionSize.y) / 2}, 18, 1, BUTTONBAR);
-        gap += 90;
+        DrawTextEx(GetFontDefault(), menuOptions[i], (Vector2){menuBox.x + (menuBox.width - optionSize.x) / 2, menuBox.y + gapText + (50 - optionSize.y) / 2}, 18, 1, BUTTONBAR);
+        gapText+=paddingYText;
     }
-    if(IsKeyPressed(KEY_Q))
-        clickedIndex = 3;
-    return clickedIndex;
+    return isOptionButtonClicked(buttons);
 }
 
-int drawOpenedMenu(void) {
+int drawOpenedMenu() {
+
     Rectangle menuBox = {650, 200, 300, 400};
+
     DrawRectangleRounded(menuBox, 0.1f, 10, (Color){ 30, 80, 255, 150 });
     DrawRectangle(0, 0, LARGURA, ALTURAHUD, (Color){0, 20, 60, 10});
     Vector2 textSize = MeasureTextEx(GetFontDefault(), "Menu", 18, 1);
     DrawTextEx(GetFontDefault(), "Menu", (Vector2){menuBox.x + (menuBox.width - textSize.x) / 2, menuBox.y + (50 - textSize.y) / 2}, 18, 1, RAYWHITE);
+
     return drawOptionButtons(menuBox);
+ 
 }
 
+
+
 void drawMenu(menuButton button, bool* menuOpen){
+    optionButton *buttons= malloc(sizeof(buttons)*4);
     if(isMenuButtonClicked(button) || IsKeyPressed(KEY_TAB))
         *menuOpen = !(*menuOpen);
+    if(*menuOpen)
+        drawOpenedMenu();
     
-    if(*menuOpen){
-        int clicked = drawOpenedMenu();
-        
-        switch(clicked){
-            case 0:
-                *menuOpen = false;
-                break;
-            case 1:
 
-            case 2:
-
-            case 3:
-                CloseWindow();
-                break;
-        }
-    }
 
 }
 
