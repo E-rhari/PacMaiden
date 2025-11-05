@@ -12,6 +12,7 @@
 #include "../include/System/Input.h"
 #include "../include/Map/Map.h"
 #include "../include/Map/Menu.h"
+#include "../include/System/SaveSystem.h"
 
 
 int main(){
@@ -65,7 +66,8 @@ int main(){
                 DrawCircleV(ghosts[i].chara.circle.center, ghosts[i].chara.circle.radius, ghosts[i].chara.color);
         }
         drawMenuButton(button);
-        drawMenu(button, &menuOpen);
+        if(drawMenu(button, &menuOpen)==1)
+            save(map,pacMaiden,ghosts,0);
         
         EndDrawing();
     }

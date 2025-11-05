@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include <stdbool.h>
+#include "../System/SaveSystem.h"
 
 #pragma once
 
@@ -132,10 +133,13 @@ int drawOpenedMenu() {
 
 
 
-void drawMenu(menuButton button, bool* menuOpen){
+int drawMenu(menuButton button, bool* menuOpen){
     optionButton *buttons= malloc(sizeof(buttons)*4);
-    if(isMenuButtonClicked(button) || IsKeyPressed(KEY_TAB))
+    if(isMenuButtonClicked(button) || IsKeyPressed(KEY_TAB)){
         *menuOpen = !(*menuOpen);
+        return 1;
+    }
+
     if(*menuOpen)
         drawOpenedMenu();
     
