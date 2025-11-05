@@ -7,12 +7,14 @@
 #include "../Characters/PacMaiden.h"
 
 #pragma once
-
-// preciso salvar o mapa, as posições dos fantasmas/pacmaiden e o status dos mesmos
-void save(Map map, PacMaiden pacMaiden, Ghost* ghost, int saveFile){
-    
-    char temp='\n';
-    char path[50];
+/**
+ * @brief gera o caminho do save 
+ * 
+ * @param saveFile o numero do arquivo.
+ * @return o caminho do arquivo a ser acessado
+ */
+char* selecSaveFile(int saveFile){
+    char *path=malloc(sizeof(char)*50);
     
     #ifdef _WIN32
         strcpy(path,"PacMaiden/sprites/saves/saveMap");
@@ -30,6 +32,22 @@ void save(Map map, PacMaiden pacMaiden, Ghost* ghost, int saveFile){
         printf(path);
     #endif
 
+    return path;
+}
+
+/**
+ * @brief salva todas as informações das structs: PacMaiden, Ghost e Map em um arquivo .bin
+ * 
+ * @param map o estado mapa atual
+ * @param pacMaiden as informações da pacmaiden
+ * @param ghost as informações dos fantasmas
+ * @param saveFile o numero do arquivo a ser salvo
+ */
+void save(Map map, PacMaiden pacMaiden, Ghost* ghost, int saveFile){
+    
+    char*path=selecSaveFile(saveFile);
+
+    char temp='\n';
     FILE* arq = fopen(path, "wb");
 
     for(int i=0;i<20;i++){
@@ -42,28 +60,33 @@ void save(Map map, PacMaiden pacMaiden, Ghost* ghost, int saveFile){
     fwrite(ghost,sizeof(Ghost),4,arq);
 
     fclose(arq);
-    arq=fopen(path,"rb");
+    free(path);
 
-    Map testeMap=setUpMap();
-    PacMaiden testePacmain;
-    Ghost testeFan[4];
+}
+/**
+ * @brief carrega de um arquivo binário todas as informações salvas em um .bin
+ * 
+ * @param map o estado mapa do arquivo
+ * @param pacMaiden as informações da pacmaiden do arquivo
+ * @param ghost as informações dos fantasmas do arquivo
+ * @param saveFile o numero do arquivo a ser lido
+ */
+void load(Map map, PacMaiden* pacMaiden, Ghost* ghost, int saveFile){
+
+    char* path=selecSaveFile(saveFile);
+    FILE* arq=fopen(path,"rb");
+    char temp;
 
 
     for(int i = 0; i < 20; i++){
         for(int j = 0; j < 40; j++){
             fread(&temp,sizeof(char),1,arq);
             if(temp !='\n')
-                testeMap[i][j] = temp;
+                map[i][j] = temp;
         }
         fread(&temp,sizeof(char),1,arq);
     }
-    fread(&testePacmain,sizeof(PacMaiden),1,arq);
-    fread(testeFan,sizeof(Ghost),4,arq);
-
-    for(int i=0;i<20;i++){
-        for(int j=0;j<40;j++)
-            printf("%c",testeMap[i][j]);
-    }
-
-
+    fread(pacMaiden,sizeof(PacMaiden),1,arq);
+    fread(ghost,sizeof(Ghost),4,arq);
+    free(path);
 }

@@ -22,10 +22,10 @@ int main(){
 
     PacMaiden pacMaiden = initPacMaiden((Vector2){40*15, 40*10}, 20, 160, YELLOW, 3, 0);
 
-    Ghost homura = initGhost((Vector2){40*10,40*10}, 20, 160, RED);
-    Ghost sora   = initGhost((Vector2){40*5, 40*5}, 20, 160, BLUE);
-    Ghost hikari = initGhost((Vector2){40*35,40*15}, 20, 160, GOLD);
-    Ghost hana   = initGhost((Vector2){40*25,40*5 }, 20, 160, PINK);
+    Ghost homura = initGhost((Vector2){40*10,40*10}, 20, 161, RED);
+    Ghost sora   = initGhost((Vector2){40*5, 40*5}, 20, 162, BLUE);
+    Ghost hikari = initGhost((Vector2){40*35,40*15}, 20, 163, GOLD);
+    Ghost hana   = initGhost((Vector2){40*25,40*5 }, 20, 164, PINK);
     Ghost ghosts[4] = {homura, sora, hikari, hana};
     menuButton button = {(Vector2){800, 820}, 25, BUTTONBASE, BUTTONHOVER, BUTTONBAR};
     bool menuOpen = false;
