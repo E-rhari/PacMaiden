@@ -25,20 +25,6 @@ Ghost* instanciateGhostsInLevel(Map map){
 }
 
 
-/** @brief Trata de toda a clisão da pacmaiden com os fantasmas, levando em cosideração o seu estado e posição */
-void checkPacmaidenGhostCollision(PacMaiden* pacmaiden, Ghost* ghost, Map map){
-    if(pacmaiden->state!=IMMORTAL){
-        if(checkCharacterCollision(pacmaiden->chara, ghost->chara))
-            hurt(pacmaiden, map);
-    }
-    else{
-        blinkAnimation(&pacmaiden->chara.color, YELLOW, WHITE, &pacmaiden->chara.procAnimation, HURT_COOLDOWN, 2);
-        if(!pacmaiden->chara.procAnimation.running)
-            changeState(pacmaiden, NORMAL);
-    }
-}
-
-
 /** @brief DEsenha todas as coisas do jogo. */
 void draw(Map map,PacMaiden* pacmaiden, Ghost* ghosts){
     BeginDrawing();
@@ -66,15 +52,11 @@ void moveCharacters(PacMaiden* pacmaiden, Ghost* ghosts, Map map){
         getBufferedInput(&pacmaiden->chara.moveDirection, isCharacterInGridCenter(pacmaiden->chara)
                                                        && isCharacterInsideScreen(pacmaiden->chara, (Vector2){0,0}));
 
-        move(&pacmaiden->chara, map);
-        portalBorders(&pacmaiden->chara);
-        countPoints(pacmaiden, map, charCollided(*pacmaiden, map));
+        pacmaidenBehaviour(pacmaiden, map);
 
-        for(int i=0; i<4; i++){
-            moveAware(&ghosts[i], map);
-            portalBorders(&ghosts[i].chara);
-            checkPacmaidenGhostCollision(pacmaiden, &ghosts[i], map);
-        }
+        for(int i=0; i<4; i++)
+            ghostBehaviour(&ghosts[i], map, pacmaiden);
+        
     }
     else{
         fadeOut(&pacmaiden->chara.color, &pacmaiden->chara.procAnimation, 3);

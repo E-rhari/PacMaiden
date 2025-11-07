@@ -11,6 +11,7 @@
 /** @brief Inimigos do jogador */
 typedef struct {
     Character chara;
+    Character initialValues;
     bool canChooseDestination;
 } Ghost;
 
@@ -24,7 +25,7 @@ typedef struct {
 Ghost initGhost(Vector2 position, int radius, float speed, Color color){
     Circle characterRec = {(Vector2){position.x+radius, position.y+radius}, radius};
     Character chara = (Character){characterRec, speed, color};
-    return (Ghost){chara,true};
+    return (Ghost){chara, chara, true};
 }
 
 /** @brief Altera a propriedade moveDirection do fantasma aleatóriamente, mas considerando os seus arredores. O movimento 
@@ -107,4 +108,34 @@ bool choseDestinationUnaware(Ghost* ghost){
 bool moveUnaware(Ghost* ghost, Map map){
     choseDestinationUnaware(ghost);
     return move(&ghost->chara, map);
+}
+
+void killGhost(Ghost* ghost){
+    ghost->chara.color = WHITE;
+}
+
+/** @brief Trata de toda a clisão da pacmaiden com os fantasmas, levando em cosideração o seu estado e posição */
+void ghostAttackPacmaiden(PacMaiden* pacmaiden, Ghost* ghost, Map map){
+    if(pacmaiden->state!=IMMORTAL){
+        if(checkCharacterCollision(pacmaiden->chara, ghost->chara)){
+                hurt(pacmaiden, map);
+        }
+    }
+    else{
+        blinkAnimation(&pacmaiden->chara.color, YELLOW, WHITE, &pacmaiden->chara.procAnimation, HURT_COOLDOWN, 2);
+        if(!pacmaiden->chara.procAnimation.running)
+            changeState(pacmaiden, NORMAL);
+    }
+}
+
+
+void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden){
+    moveAware(ghost, map);
+    portalBorders(&ghost->chara);
+    if(pacmaiden->state == POWERED){
+        if(checkCharacterCollision(pacmaiden->chara, ghost->chara))
+            killGhost(ghost);
+    }
+    else
+        ghostAttackPacmaiden(pacmaiden, ghost, map);
 }
