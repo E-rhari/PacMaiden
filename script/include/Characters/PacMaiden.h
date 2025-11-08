@@ -87,6 +87,7 @@ void countPoints(PacMaiden* pacMaiden, Map map, char object){
 /** @brief Rotina a ser realizada quando a Pacmaiden chega a 0 pontos de vida. */
 void die(PacMaiden* pacmaiden){
     printf("Damn morri omg");
+
 }
 
 /** @brief Além de determinar o valor da propriedade state da pacmaiden, também realiza as operações devidas

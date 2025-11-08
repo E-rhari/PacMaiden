@@ -21,6 +21,14 @@
 #pragma once
 
 
+enum screenBehavior{
+    NEWGAME,
+    LOAD,
+    PVP,
+    CREDITS,
+    TITLE
+}; 
+
 /** @brief Permite que o usuário feche a tela usando ctrl + c */
 void userClose(){
     if(IsKeyDown(KEY_LEFT_CONTROL) && IsKeyDown(KEY_C))
