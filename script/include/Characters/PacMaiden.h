@@ -8,13 +8,12 @@
 /** @brief Tempo de invulnerabilidade da pacmaiden, em segundos. */
 #define HURT_COOLDOWN 3
 
-/** @brief Possibilidades de estados da pacmaiden. Devem ser alterados usando changeState() */
+/** @brief Possibilidades de estados da pacmaiden. Devem ser alterados usando changePacmaidenState() */
 typedef enum {
     NORMAL,
     DYING,
-    POWERED,
     IMMORTAL
-} State;
+} PacState;
 
 
 /** @brief Personagem do jogador e protagonista do jogo :-)
@@ -30,7 +29,7 @@ typedef struct {
     int lifes;
     int points;
     int timePivot;
-    State state;
+    PacState state;
 
 } PacMaiden;
 
@@ -47,6 +46,30 @@ PacMaiden initPacMaiden(Vector2 position, int radius, float speed, Color color, 
     return (PacMaiden){chara, chara, lifes, points, 0, IMMORTAL};
 }
 
+/** @brief Além de determinar o valor da propriedade state da pacmaiden, também realiza as operações devidas
+ *        na transição entre os estados. Sempre use no lugar de determinar o valor de state manualmente. */
+void changePacmaidenState(PacMaiden* pacmaiden, PacState state){
+    pacmaiden->state = state;
+
+    switch (state){
+        case NORMAL:
+            break;
+
+        case DYING:
+            pacmaiden->chara.procAnimation.initTime = GetTime();
+            break;
+
+        case IMMORTAL:
+            pacmaiden->chara.moveDirection = (Vector2){0,0};
+            pacmaiden->chara.procAnimation.initTime = GetTime();
+            pacmaiden->chara.circle.center = pacmaiden->initialValues.circle.center;
+            break;
+
+        default:
+            break;
+    }
+}
+
 /** @brief Retorna o caractere no do mapa na posição de colisão do personagem
  * @return O caractere lido ou ' ' se a entrada for inválida. */
 char charCollided(PacMaiden pacMaiden, Map map){
@@ -60,32 +83,10 @@ char charCollided(PacMaiden pacMaiden, Map map){
 }
 
 
-/** @brief Além de determinar o valor da propriedade state da pacmaiden, também realiza as operações devidas
- *        na transição entre os estados. Sempre use no lugar de determinar o valor de state manualmente. */
-void changeState(PacMaiden* pacmaiden, State state){
-    pacmaiden->state = state;
-
-    switch (state){
-        case NORMAL:
-            break;
-
-        case DYING:
-            pacmaiden->chara.procAnimation.initTime = GetTime();
-            break;
-
-        case POWERED:
-            pacmaiden->timePivot = GetTime();
-            break;
-
-        case IMMORTAL:
-            pacmaiden->chara.moveDirection = (Vector2){0,0};
-            pacmaiden->chara.procAnimation.initTime = GetTime();
-            pacmaiden->chara.circle.center = pacmaiden->initialValues.circle.center;
-            break;
-
-        default:
-            break;
-    }
+bool checkPowerPellet(PacMaiden* pacmaiden, Map map){
+    if(charCollided(*pacmaiden, map) == 'o')
+        return true;
+    return false;
 }
 
 /** @brief Adiciona a quantidade adequada de pontos à pontuação da pacmaiden
@@ -103,8 +104,6 @@ void countPoints(PacMaiden* pacMaiden, Map map, char object){
             break;
         case 'o':
             pacMaiden->points += 50;
-            pacMaiden->timePivot = GetTime();
-            changeState(pacMaiden, POWERED);
             break;
         case 'B':
             pacMaiden->points += 300;
@@ -115,6 +114,7 @@ void countPoints(PacMaiden* pacMaiden, Map map, char object){
     map[(int)convertedPos.y][(int)convertedPos.x] = ' ';
 }
 
+
 /** @brief Rotina a ser realizada quando a Pacmaiden chega a 0 pontos de vida. */
 void die(PacMaiden* pacmaiden){
     printf("Damn morri omg");
@@ -123,11 +123,11 @@ void die(PacMaiden* pacmaiden){
 
 /** @brief Dá dano a pacmaiden caso o cooldown seja obedecido.
  * @return Se a pacmaiden levou dano ou não */
-bool hurt(PacMaiden* pacmaiden, Map map){
+bool hurtPacmaiden(PacMaiden* pacmaiden, Map map){
     pacmaiden->lifes--;
     pacmaiden->timePivot = GetTime();
     
-    changeState(pacmaiden, DYING);
+    changePacmaidenState(pacmaiden, DYING);
     
     if(pacmaiden->lifes <= 0)
         die(pacmaiden);
@@ -139,10 +139,10 @@ bool hurt(PacMaiden* pacmaiden, Map map){
 void pacmaidenBehaviour(PacMaiden* pacmaiden, Map map){
     move(&pacmaiden->chara, map);
     portalBorders(&pacmaiden->chara);
-    countPoints(pacmaiden, map, charCollided(*pacmaiden, map));
 
-    if(pacmaiden->state == POWERED){
-        if(GetTime() - pacmaiden->timePivot > 5)
-            changeState(pacmaiden, NORMAL);
+    if(pacmaiden->state == IMMORTAL){
+        blinkAnimation(&pacmaiden->chara.color, YELLOW, WHITE, &pacmaiden->chara.procAnimation, HURT_COOLDOWN, 2);
+        if(!pacmaiden->chara.procAnimation.running)
+            changePacmaidenState(pacmaiden, NORMAL);
     }
 }

@@ -2,10 +2,17 @@
 #include<stdbool.h>
 
 #include "./Character.h"
+#include "./PacMaiden.h"
 #include "../Map/Map.h"
 
 #pragma once
 
+
+typedef enum 
+{
+    SPOOKY,
+    VULNARABLE
+} GhostState;
 
 
 /** @brief Inimigos do jogador */
@@ -13,6 +20,7 @@ typedef struct {
     Character chara;
     Character initialValues;
     bool canChooseDestination;
+    GhostState state;
 } Ghost;
 
 
@@ -25,8 +33,23 @@ typedef struct {
 Ghost initGhost(Vector2 position, int radius, float speed, Color color){
     Circle characterRec = {(Vector2){position.x+radius, position.y+radius}, radius};
     Character chara = (Character){characterRec, speed, color};
-    return (Ghost){chara, chara, true};
+    return (Ghost){chara, chara, true, SPOOKY};
 }
+
+
+void changeGhostState(Ghost* ghost, GhostState state){
+    ghost->state = state;
+
+    switch(state){
+        case SPOOKY:
+                    ghost->chara.color = ghost->initialValues.color;
+                    break;
+        case VULNARABLE:
+                    ghost->chara.procAnimation.initTime = GetTime();
+                    break;
+    }
+}
+
 
 /** @brief Altera a propriedade moveDirection do fantasma aleatóriamente, mas considerando os seus arredores. O movimento 
  *        só é retrocedido se estritamente necessário, enquanto escolhe aleatoriamente uma posição entre as possíveis.
@@ -110,32 +133,35 @@ bool moveUnaware(Ghost* ghost, Map map){
     return move(&ghost->chara, map);
 }
 
-void killGhost(Ghost* ghost){
-    ghost->chara.color = WHITE;
+void hurtGhost(Ghost* ghost){
+    ghost->chara.circle.center = ghost->initialValues.circle.center;
+    changeGhostState(ghost, SPOOKY);
 }
 
 /** @brief Trata de toda a clisão da pacmaiden com os fantasmas, levando em cosideração o seu estado e posição */
 void ghostAttackPacmaiden(PacMaiden* pacmaiden, Ghost* ghost, Map map){
-    if(pacmaiden->state!=IMMORTAL){
-        if(checkCharacterCollision(pacmaiden->chara, ghost->chara)){
-                hurt(pacmaiden, map);
-        }
-    }
-    else{
-        blinkAnimation(&pacmaiden->chara.color, YELLOW, WHITE, &pacmaiden->chara.procAnimation, HURT_COOLDOWN, 2);
-        if(!pacmaiden->chara.procAnimation.running)
-            changeState(pacmaiden, NORMAL);
-    }
+    if(pacmaiden->state != IMMORTAL)
+        if(checkCharacterCollision(pacmaiden->chara, ghost->chara))
+            hurtPacmaiden(pacmaiden, map);
 }
 
 
 void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden){
     moveAware(ghost, map);
     portalBorders(&ghost->chara);
-    if(pacmaiden->state == POWERED){
+
+    if(checkPowerPellet(pacmaiden, map))
+        changeGhostState(ghost, VULNARABLE);
+
+    if(ghost->state == VULNARABLE){
+        blinkAnimation(&ghost->chara.color, DARKBLUE, DARKGRAY, &ghost->chara.procAnimation, 5, 2.5);
+        if(!ghost->chara.procAnimation.running)
+            changeGhostState(ghost, SPOOKY);
+        
         if(checkCharacterCollision(pacmaiden->chara, ghost->chara))
-            killGhost(ghost);
+            hurtGhost(ghost);
     }
     else
         ghostAttackPacmaiden(pacmaiden, ghost, map);
+    
 }

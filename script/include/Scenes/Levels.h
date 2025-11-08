@@ -17,8 +17,8 @@ Ghost* instanciateGhostsInLevel(Map map){
     Vector2* positions = searchInMap(map, 'f');
 
     laidies[0] = initGhost(positions[0], RADIUS, SPEED, RED); //homura
-    laidies[1] = initGhost(positions[1], RADIUS, SPEED, BLUE);//sora
-    laidies[2] = initGhost(positions[2], RADIUS, SPEED, GOLD);//hikari
+    laidies[1] = initGhost(positions[1], RADIUS, SPEED, SKYBLUE);//sora
+    laidies[2] = initGhost(positions[2], RADIUS, SPEED, ORANGE);//hikari
     laidies[3] = initGhost(positions[3], RADIUS, SPEED, PINK);//hana
 
     return laidies;
@@ -47,21 +47,21 @@ void draw(Map map,PacMaiden* pacmaiden, Ghost* ghosts){
 
 
 /** @brief Realiza todas as funções de movimento dos personagens */
-void moveCharacters(PacMaiden* pacmaiden, Ghost* ghosts, Map map){
+void charactersBehaviours(PacMaiden* pacmaiden, Ghost* ghosts, Map map){
     if(pacmaiden->state != DYING){
         getBufferedInput(&pacmaiden->chara.moveDirection, isCharacterInGridCenter(pacmaiden->chara)
                                                        && isCharacterInsideScreen(pacmaiden->chara, (Vector2){0,0}));
-
         pacmaidenBehaviour(pacmaiden, map);
-
+        
         for(int i=0; i<4; i++)
             ghostBehaviour(&ghosts[i], map, pacmaiden);
-        
+
+        countPoints(pacmaiden, map, charCollided(*pacmaiden, map));
     }
     else{
         fadeOut(&pacmaiden->chara.color, &pacmaiden->chara.procAnimation, 3);
         if(!pacmaiden->chara.procAnimation.running)
-            changeState(pacmaiden, IMMORTAL);
+            changePacmaidenState(pacmaiden, IMMORTAL);
     }
 }
 
@@ -72,7 +72,7 @@ void update(PacMaiden* pacmaiden,Ghost* ghosts, Map map){
         if(DEBUG_MODE)
             userClose();
 
-        moveCharacters(pacmaiden, ghosts, map);
+        charactersBehaviours(pacmaiden, ghosts, map);
 
         draw(map,pacmaiden,ghosts);
     }
