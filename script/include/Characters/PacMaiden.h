@@ -70,6 +70,13 @@ void changePacmaidenState(PacMaiden* pacmaiden, PacState state){
     }
 }
 
+void addPoints(PacMaiden* pacmaiden, int pointsToAdd){
+    pacmaiden->points += pointsToAdd;
+    if(pacmaiden->points < 0)
+        pacmaiden->points = 0;
+}
+
+
 /** @brief Retorna o caractere no do mapa na posição de colisão do personagem
  * @return O caractere lido ou ' ' se a entrada for inválida. */
 char charCollided(PacMaiden pacMaiden, Map map){
@@ -100,13 +107,13 @@ void countPoints(PacMaiden* pacMaiden, Map map, char object){
     switch(object)
     {
         case '.':
-            pacMaiden->points += 10;
+            addPoints(pacMaiden, 10);
             break;
         case 'o':
-            pacMaiden->points += 50;
+            addPoints(pacMaiden, 50);
             break;
         case 'B':
-            pacMaiden->points += 300;
+            addPoints(pacMaiden, 300);
             break;
         default:
             return;
@@ -126,6 +133,7 @@ void die(PacMaiden* pacmaiden){
 bool hurtPacmaiden(PacMaiden* pacmaiden, Map map){
     pacmaiden->lifes--;
     pacmaiden->timePivot = GetTime();
+    addPoints(pacmaiden, -200);
     
     changePacmaidenState(pacmaiden, DYING);
     

@@ -48,21 +48,20 @@ void draw(Map map,PacMaiden* pacmaiden, Ghost* ghosts){
 
 /** @brief Realiza todas as funções de movimento dos personagens */
 void charactersBehaviours(PacMaiden* pacmaiden, Ghost* ghosts, Map map){
-    if(pacmaiden->state != DYING){
-        getBufferedInput(&pacmaiden->chara.moveDirection, isCharacterInGridCenter(pacmaiden->chara)
-                                                       && isCharacterInsideScreen(pacmaiden->chara, (Vector2){0,0}));
-        pacmaidenBehaviour(pacmaiden, map);
-        
-        for(int i=0; i<4; i++)
-            ghostBehaviour(&ghosts[i], map, pacmaiden);
-
-        countPoints(pacmaiden, map, charCollided(*pacmaiden, map));
-    }
-    else{
+    if(pacmaiden->state == DYING){
         fadeOut(&pacmaiden->chara.color, &pacmaiden->chara.procAnimation, 3);
         if(!pacmaiden->chara.procAnimation.running)
             changePacmaidenState(pacmaiden, IMMORTAL);
+        return;
     }
+
+    getBufferedInput(&pacmaiden->chara.moveDirection, isCharacterInGridCenter(pacmaiden->chara)
+                                                   && isCharacterInsideScreen(pacmaiden->chara, (Vector2){0,0}));
+    pacmaidenBehaviour(pacmaiden, map);
+    for(int i=0; i<4; i++)
+        ghostBehaviour(&ghosts[i], map, pacmaiden);
+
+    countPoints(pacmaiden, map, charCollided(*pacmaiden, map));
 }
 
 

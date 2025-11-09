@@ -43,9 +43,11 @@ void changeGhostState(Ghost* ghost, GhostState state){
     switch(state){
         case SPOOKY:
                     ghost->chara.color = ghost->initialValues.color;
+                    ghost->chara.speed = ghost->initialValues.speed;
                     break;
         case VULNARABLE:
                     ghost->chara.procAnimation.initTime = GetTime();
+                    ghost->chara.speed = ghost->initialValues.speed/2;
                     break;
     }
 }
@@ -87,7 +89,7 @@ bool choseDestinationAware(Ghost* ghost, Map map){
         ghost->chara.moveDirection = possibleDirections[random];
     }
     else
-    // Determina a direção como retrograda
+        // Determina a direção como retrograda
         ghost->chara.moveDirection = Vector2Scale(ghost->chara.moveDirection,-1);
 
     ghost->canChooseDestination=false;
@@ -154,14 +156,15 @@ void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden){
         changeGhostState(ghost, VULNARABLE);
 
     if(ghost->state == VULNARABLE){
-        blinkAnimation(&ghost->chara.color, DARKBLUE, DARKGRAY, &ghost->chara.procAnimation, 5, 2.5);
+        blinkAnimation(&ghost->chara.color, DARKBLUE, GRAY, &ghost->chara.procAnimation, 5, 2.5);
         if(!ghost->chara.procAnimation.running)
             changeGhostState(ghost, SPOOKY);
         
-        if(checkCharacterCollision(pacmaiden->chara, ghost->chara))
+        if(checkCharacterCollision(pacmaiden->chara, ghost->chara)){
             hurtGhost(ghost);
+            addPoints(pacmaiden, 100);
+        }
     }
     else
         ghostAttackPacmaiden(pacmaiden, ghost, map);
-    
 }
