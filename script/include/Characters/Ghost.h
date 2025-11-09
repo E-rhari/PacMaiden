@@ -11,7 +11,8 @@
 typedef enum 
 {
     SPOOKY,
-    VULNARABLE
+    VULNARABLE,
+    SPAWNING
 } GhostState;
 
 
@@ -48,6 +49,9 @@ void changeGhostState(Ghost* ghost, GhostState state){
         case VULNARABLE:
                     ghost->chara.procAnimation.initTime = GetTime();
                     ghost->chara.speed = ghost->initialValues.speed/2;
+                    break;
+        case SPAWNING:
+                    ghost->chara.procAnimation.initTime = GetTime();
                     break;
     }
 }
@@ -137,7 +141,7 @@ bool moveUnaware(Ghost* ghost, Map map){
 
 void hurtGhost(Ghost* ghost){
     ghost->chara.circle.center = ghost->initialValues.circle.center;
-    changeGhostState(ghost, SPOOKY);
+    changeGhostState(ghost, SPAWNING);
 }
 
 /** @brief Trata de toda a clisão da pacmaiden com os fantasmas, levando em cosideração o seu estado e posição */
@@ -149,6 +153,13 @@ void ghostAttackPacmaiden(PacMaiden* pacmaiden, Ghost* ghost, Map map){
 
 
 void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden){
+    if(ghost->state == SPAWNING){
+        blinkAnimation(&ghost->chara.color, ghost->initialValues.color, WHITE, &ghost->chara.procAnimation, 3, 1);
+        if(!ghost->chara.procAnimation.running)
+            changeGhostState(ghost, SPOOKY);
+        return;
+    }
+
     moveAware(ghost, map);
     portalBorders(&ghost->chara);
 
