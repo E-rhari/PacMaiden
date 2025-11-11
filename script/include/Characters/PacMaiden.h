@@ -46,6 +46,7 @@ PacMaiden initPacMaiden(Vector2 position, int radius, float speed, Color color, 
     return (PacMaiden){chara, chara, lifes, points, 0, IMMORTAL};
 }
 
+
 /** @brief Além de determinar o valor da propriedade state da pacmaiden, também realiza as operações devidas
  *        na transição entre os estados. Sempre use no lugar de determinar o valor de state manualmente. */
 void changePacmaidenState(PacMaiden* pacmaiden, PacState state){
@@ -70,6 +71,8 @@ void changePacmaidenState(PacMaiden* pacmaiden, PacState state){
     }
 }
 
+
+/** @brief Adiciona pontos para a pontuação da pacmaiden, executando as correções necessárias. */
 void addPoints(PacMaiden* pacmaiden, int pointsToAdd){
     pacmaiden->points += pointsToAdd;
     if(pacmaiden->points < 0)
@@ -90,11 +93,13 @@ char charCollided(PacMaiden pacMaiden, Map map){
 }
 
 
+/** @brief Verifica se a pacmaiden está tocando a Pellet */
 bool checkPowerPellet(PacMaiden* pacmaiden, Map map){
     if(charCollided(*pacmaiden, map) == 'o')
         return true;
     return false;
 }
+
 
 /** @brief Adiciona a quantidade adequada de pontos à pontuação da pacmaiden
  * @param pacMaiden Personagem do jogador que receberá a pontuação.
@@ -144,6 +149,7 @@ bool hurtPacmaiden(PacMaiden* pacmaiden, Map map){
 }
 
 
+/** @brief Todas as ações de comportamento da PacMaiden que devem ser rodadas por frame */
 void pacmaidenBehaviour(PacMaiden* pacmaiden, Map map){
     move(&pacmaiden->chara, map);
     portalBorders(&pacmaiden->chara);

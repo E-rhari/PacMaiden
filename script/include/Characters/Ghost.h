@@ -61,7 +61,6 @@ void changeGhostState(Ghost* ghost, GhostState state){
  *        só é retrocedido se estritamente necessário, enquanto escolhe aleatoriamente uma posição entre as possíveis.
  * @return Se a direção foi alterada. */
 bool choseDestinationAware(Ghost* ghost, Map map){
-
     if (!isCharacterInGridCenter(ghost->chara)){
         ghost->canChooseDestination=true;
         return false;
@@ -69,7 +68,6 @@ bool choseDestinationAware(Ghost* ghost, Map map){
 
     if(!isCharacterInsideScreen(ghost->chara, (Vector2){0,0}))
         return false;
-
     if(!ghost->canChooseDestination)
         return false;
     
@@ -139,10 +137,13 @@ bool moveUnaware(Ghost* ghost, Map map){
     return move(&ghost->chara, map);
 }
 
+
+/** @brief Mata o fantasma, reinicializando-o */
 void hurtGhost(Ghost* ghost){
     ghost->chara.circle.center = ghost->initialValues.circle.center;
     changeGhostState(ghost, SPAWNING);
 }
+
 
 /** @brief Trata de toda a clisão da pacmaiden com os fantasmas, levando em cosideração o seu estado e posição */
 void ghostAttackPacmaiden(PacMaiden* pacmaiden, Ghost* ghost, Map map){
@@ -152,6 +153,7 @@ void ghostAttackPacmaiden(PacMaiden* pacmaiden, Ghost* ghost, Map map){
 }
 
 
+/** @brief Todas as ações de comportamento de um fantasma genérico que devem ser rodadas por frame */
 void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden){
     if(ghost->state == SPAWNING){
         blinkAnimation(&ghost->chara.color, ghost->initialValues.color, WHITE, &ghost->chara.procAnimation, 3, 1);
