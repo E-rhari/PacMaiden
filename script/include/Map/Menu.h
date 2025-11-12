@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include <stdbool.h>
+#include <time.h>
 #include "../System/SaveSystem.h"
 
 #pragma once
@@ -8,7 +9,7 @@
 #define BUTTONHOVER (Color){20, 70, 140, 255}
 #define BUTTONBAR (Color){100, 180, 255, 255}
 
-enum opitionPress{// temp
+enum optionPress{// temp
     RESUME,
     SAVE,
     LOAD,
@@ -44,7 +45,7 @@ typedef struct{
     Rectangle optionBox;
     Color colorBase;
     Color colorHover;
-    enum opitionPress id;
+    enum optionPress id;
 } optionButton;
 
 /**
@@ -121,9 +122,9 @@ int drawOptionButtons(Rectangle menuBox){
 int drawOpenedMenu() {
 
     Rectangle menuBox = {650, 200, 300, 400};
+    DrawRectangle(0, 0, LARGURA, ALTURAHUD, (Color){0, 20, 60, 150});
+    DrawRectangleRounded(menuBox, 0.1f, 10, (Color){ 30, 80, 255, 255 });
 
-    DrawRectangleRounded(menuBox, 0.1f, 10, (Color){ 30, 80, 255, 150 });
-    DrawRectangle(0, 0, LARGURA, ALTURAHUD, (Color){0, 20, 60, 10});
     Vector2 textSize = MeasureTextEx(GetFontDefault(), "Menu", 18, 1);
     DrawTextEx(GetFontDefault(), "Menu", (Vector2){menuBox.x + (menuBox.width - textSize.x) / 2, menuBox.y + (50 - textSize.y) / 2}, 18, 1, RAYWHITE);
 
@@ -131,19 +132,62 @@ int drawOpenedMenu() {
  
 }
 
+void drawSaveStates(){
+    Rectangle saveBox = {600, 175, 400, 450};
+    DrawRectangleRounded(saveBox, 0.1f, 10, (Color){ 30, 80, 255, 255 });
+    int padding = 75;
+    Rectangle savePic = {saveBox.x + padding, saveBox.y + padding, 50, 50};
+    int textOffsetX = savePic.width + 20;
+    int textOffsetY = 10;
+    for(int i = 0; i < 3; i++){
+        DrawRectangleRounded(savePic, 0.1f, 10, BLACK);
+        DrawRectangleRoundedLinesEx(savePic, 0.1f, 10, 3, BUTTONBAR);
+        time_t now = time(NULL);
+        struct tm *infoTime = localtime(&now);
+        char dateTime[32];
+        strftime(dateTime, sizeof(dateTime), "%d/%m/%Y %H:%M", infoTime);
+        char textoFinal[64];
+        snprintf(textoFinal, sizeof(textoFinal), "Save %d - %s", i + 1, dateTime);
+        DrawTextEx(GetFontDefault(), textoFinal,
+                   (Vector2){savePic.x + textOffsetX, savePic.y + textOffsetY},
+                   18, 1, RAYWHITE);
+        savePic.y = savePic.y + savePic.height + padding;
+    }
+}
 
 
-int drawMenu(menuButton button, bool* menuOpen){
-    optionButton *buttons= malloc(sizeof(buttons)*4);
+
+int drawMenu(menuButton button, bool* menuOpen, bool* saveMenuOpen){
+    optionButton *buttons= malloc(sizeof(optionButton)*4);
     if(isMenuButtonClicked(button) || IsKeyPressed(KEY_TAB)){
         *menuOpen = !(*menuOpen);
         return 1;
     }
+    if(IsKeyPressed(KEY_S))
+        *saveMenuOpen = !(*saveMenuOpen); 
+    if(*menuOpen){
+   
+        int optionButtonClicked = drawOpenedMenu();
+        if(*saveMenuOpen)
+            drawSaveStates();
+        else{
+            switch(optionButtonClicked){
+                case 0:
+                    *menuOpen = !(*menuOpen);
+                    break;
+                
+                case 1:
+                    *saveMenuOpen = !(*saveMenuOpen);
+                        break;
 
-    if(*menuOpen)
-        drawOpenedMenu();
-    
+                case 2:     
 
+                case 3:
+            }
+        }
+    }
+    if(!(*menuOpen))
+        *saveMenuOpen = false;
 
 }
 

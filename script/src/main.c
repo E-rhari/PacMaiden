@@ -29,6 +29,7 @@ int main(){
     Ghost ghosts[4] = {homura, sora, hikari, hana};
     menuButton button = {(Vector2){800, 820}, 25, BUTTONBASE, BUTTONHOVER, BUTTONBAR};
     bool menuOpen = false;
+    bool saveMenuOpen = false;
 
     Map map=setUpMap();
     readMap(1,map);
@@ -50,7 +51,7 @@ int main(){
                 if(checkCharacterCollision(pacMaiden.chara, ghosts[i].chara))
                     hurt(&pacMaiden);
             }
-
+        }
 
             BeginDrawing();
 
@@ -64,9 +65,9 @@ int main(){
     
             for(int i=0; i<sizeof(ghosts)/sizeof(Ghost); i++)
                 DrawCircleV(ghosts[i].chara.circle.center, ghosts[i].chara.circle.radius, ghosts[i].chara.color);
-        }
+        
         drawMenuButton(button);
-        if(drawMenu(button, &menuOpen)==1)
+        if(drawMenu(button, &menuOpen, &saveMenuOpen)==1)
             save(map,pacMaiden,ghosts,0);
         
         EndDrawing();
