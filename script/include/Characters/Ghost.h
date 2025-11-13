@@ -11,7 +11,7 @@
 typedef enum 
 {
     SPOOKY,
-    VULNARABLE,
+    VULNERABLE,
     SPAWNING
 } GhostState;
 
@@ -22,6 +22,7 @@ typedef struct {
     Character initialValues;
     bool canChooseDestination;
     GhostState state;
+    //function move;
 } Ghost;
 
 
@@ -46,7 +47,7 @@ void changeGhostState(Ghost* ghost, GhostState state){
                     ghost->chara.color = ghost->initialValues.color;
                     ghost->chara.speed = ghost->initialValues.speed;
                     break;
-        case VULNARABLE:
+        case VULNERABLE:
                     ghost->chara.procAnimation.initTime = GetTime();
                     ghost->chara.speed = ghost->initialValues.speed/2;
                     break;
@@ -145,7 +146,7 @@ void hurtGhost(Ghost* ghost){
 }
 
 
-/** @brief Trata de toda a clisão da pacmaiden com os fantasmas, levando em cosideração o seu estado e posição */
+/** @brief Trata de toda a colisão da pacmaiden com os fantasmas, levando em consideração o seu estado e posição */
 void ghostAttackPacmaiden(PacMaiden* pacmaiden, Ghost* ghost, Map map){
     if(pacmaiden->state != IMMORTAL)
         if(checkCharacterCollision(pacmaiden->chara, ghost->chara))
@@ -162,13 +163,12 @@ void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden){
         return;
     }
 
-    moveAware(ghost, map);
     portalBorders(&ghost->chara);
 
     if(checkPowerPellet(pacmaiden, map))
-        changeGhostState(ghost, VULNARABLE);
+        changeGhostState(ghost, VULNERABLE);
 
-    if(ghost->state == VULNARABLE){
+    if(ghost->state == VULNERABLE){
         blinkAnimation(&ghost->chara.color, DARKBLUE, GRAY, &ghost->chara.procAnimation, 5, 2.5);
         if(!ghost->chara.procAnimation.running)
             changeGhostState(ghost, SPOOKY);

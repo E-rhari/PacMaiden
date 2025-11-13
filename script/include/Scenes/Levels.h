@@ -12,16 +12,16 @@
 
 
 
-Ghost* instanciateGhostsInLevel(Map map){
-    Ghost *laidies = malloc(sizeof(Ghost)*4); 
+Ghost* instantiateGhostsInLevel(Map map){
+    Ghost *ladies = malloc(sizeof(Ghost)*4); 
     Vector2* positions = searchInMap(map, 'f');
 
-    laidies[0] = initGhost(positions[0], RADIUS, SPEED, RED); //homura
-    laidies[1] = initGhost(positions[1], RADIUS, SPEED, SKYBLUE);//sora
-    laidies[2] = initGhost(positions[2], RADIUS, SPEED, ORANGE);//hikari
-    laidies[3] = initGhost(positions[3], RADIUS, SPEED, PINK);//hana
+    ladies[0] = initGhost(positions[0], RADIUS, SPEED, RED); //homura
+    ladies[1] = initGhost(positions[1], RADIUS, SPEED, SKYBLUE);//sora
+    ladies[2] = initGhost(positions[2], RADIUS, SPEED, ORANGE);//hikari
+    ladies[3] = initGhost(positions[3], RADIUS, SPEED, PINK);//hana
 
-    return laidies;
+    return ladies;
 }
 
 
@@ -84,7 +84,7 @@ int level(int levelNumber){
     readMap(levelNumber,map);
 
     PacMaiden pacmaiden = initPacMaiden(searchInMap(map, 'P')[0], RADIUS, SPEED, YELLOW, 3, 0);
-    Ghost* ghosts = instanciateGhostsInLevel(map);
+    Ghost* ghosts = instantiateGhostsInLevel(map);
 
     update(&pacmaiden,ghosts,map);
 
