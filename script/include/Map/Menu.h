@@ -135,39 +135,45 @@ int drawOpenedMenu() {
 void drawSaveStates(){
     Rectangle saveBox = {600, 175, 400, 450};
     DrawRectangleRounded(saveBox, 0.1f, 10, (Color){ 30, 80, 255, 255 });
+
+    int savePicOffset = 50;
     int padding = 75;
-    Rectangle savePic = {saveBox.x + padding, saveBox.y + padding, 50, 50};
+    Rectangle savePic = {saveBox.x + savePicOffset, saveBox.y + padding, 75, 50};
+
     int textOffsetX = savePic.width + 20;
     int textOffsetY = 10;
+
     for(int i = 0; i < 3; i++){
         DrawRectangleRounded(savePic, 0.1f, 10, BLACK);
         DrawRectangleRoundedLinesEx(savePic, 0.1f, 10, 3, BUTTONBAR);
+
         time_t now = time(NULL);
         struct tm *infoTime = localtime(&now);
-        char dateTime[32];
-        strftime(dateTime, sizeof(dateTime), "%d/%m/%Y %H:%M", infoTime);
-        char textoFinal[64];
-        snprintf(textoFinal, sizeof(textoFinal), "Save %d - %s", i + 1, dateTime);
-        DrawTextEx(GetFontDefault(), textoFinal,
+        char saveMoment[32];
+        strftime(saveMoment, sizeof(saveMoment), "%d/%m/%Y %H:%M", infoTime);
+        char saveText[64];
+        snprintf(saveText, sizeof(saveText), "Save %d - %s", i + 1, saveMoment);
+        DrawTextEx(GetFontDefault(), saveText,
                    (Vector2){savePic.x + textOffsetX, savePic.y + textOffsetY},
                    18, 1, RAYWHITE);
+    
         savePic.y = savePic.y + savePic.height + padding;
     }
+    
 }
 
 
 
 int drawMenu(menuButton button, bool* menuOpen, bool* saveMenuOpen){
-    optionButton *buttons= malloc(sizeof(optionButton)*4);
+    int optionButtonClicked;
+
     if(isMenuButtonClicked(button) || IsKeyPressed(KEY_TAB)){
         *menuOpen = !(*menuOpen);
-        return 1;
     }
     if(IsKeyPressed(KEY_S))
         *saveMenuOpen = !(*saveMenuOpen); 
     if(*menuOpen){
-   
-        int optionButtonClicked = drawOpenedMenu();
+        optionButtonClicked = drawOpenedMenu();
         if(*saveMenuOpen)
             drawSaveStates();
         else{
@@ -178,16 +184,18 @@ int drawMenu(menuButton button, bool* menuOpen, bool* saveMenuOpen){
                 
                 case 1:
                     *saveMenuOpen = !(*saveMenuOpen);
-                        break;
+                    break;
 
                 case 2:     
-
+                    *saveMenuOpen = !(*saveMenuOpen);
+                    break;
+                    
                 case 3:
             }
         }
     }
     if(!(*menuOpen))
         *saveMenuOpen = false;
-
+    return optionButtonClicked;
 }
 
