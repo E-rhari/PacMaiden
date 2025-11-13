@@ -67,10 +67,10 @@ int main(){
                 DrawCircleV(ghosts[i].chara.circle.center, ghosts[i].chara.circle.radius, ghosts[i].chara.color);
         
         drawMenuButton(button);
-        int menuReturn = drawMenu(button, &menuOpen, &saveMenuOpen);
-        if(menuReturn==1)
+        Vector2 menuReturn = drawMenu(button, &menuOpen, &saveMenuOpen);
+        if(menuReturn.y != -1)
             save(map,pacMaiden,ghosts,0);
-        else if(menuReturn == 3)
+        else if(menuReturn.x == 3)
             CloseWindow();
         
         EndDrawing();

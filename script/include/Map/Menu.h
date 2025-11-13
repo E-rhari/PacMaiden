@@ -132,20 +132,22 @@ int drawOpenedMenu() {
  
 }
 
-void drawSaveStates(){
+int drawSaveStates(){
     Rectangle saveBox = {600, 175, 400, 450};
     DrawRectangleRounded(saveBox, 0.1f, 10, (Color){ 30, 80, 255, 255 });
-
+    int saveRecx = 75;
+    int saveRecy = 50;
     int savePicOffset = 50;
     int padding = 75;
-    Rectangle savePic = {saveBox.x + savePicOffset, saveBox.y + padding, 75, 50};
+    Rectangle savePic[3];
 
-    int textOffsetX = savePic.width + 20;
+    int textOffsetX = saveRecx + 20;
     int textOffsetY = 10;
-
+    int saveButtonClicked = -1;
     for(int i = 0; i < 3; i++){
-        DrawRectangleRounded(savePic, 0.1f, 10, BLACK);
-        DrawRectangleRoundedLinesEx(savePic, 0.1f, 10, 3, BUTTONBAR);
+        savePic[i] = (Rectangle){saveBox.x + savePicOffset, saveBox.y + padding*(i+1) + saveRecy*i, saveRecx, saveRecy};
+        DrawRectangleRounded(savePic[i], 0.1f, 10, BLACK);
+        DrawRectangleRoundedLinesEx(savePic[i], 0.1f, 10, 3, BUTTONBAR);
 
         time_t now = time(NULL);
         struct tm *infoTime = localtime(&now);
@@ -154,19 +156,21 @@ void drawSaveStates(){
         char saveText[64];
         snprintf(saveText, sizeof(saveText), "Save %d - %s", i + 1, saveMoment);
         DrawTextEx(GetFontDefault(), saveText,
-                   (Vector2){savePic.x + textOffsetX, savePic.y + textOffsetY},
+                   (Vector2){savePic[i].x + textOffsetX, savePic[i].y + textOffsetY},
                    18, 1, RAYWHITE);
-    
-        savePic.y = savePic.y + savePic.height + padding;
+
+        Vector2 mousePos = GetMousePosition();
+        if(CheckCollisionPointRec(mousePos, savePic[i]) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+            saveButtonClicked = i;
     }
-    
+    return saveButtonClicked;
 }
 
 
 
-int drawMenu(menuButton button, bool* menuOpen, bool* saveMenuOpen){
+Vector2 drawMenu(menuButton button, bool* menuOpen, bool* saveMenuOpen){
     int optionButtonClicked;
-
+    int saveButtonClicked;
     if(isMenuButtonClicked(button) || IsKeyPressed(KEY_TAB)){
         *menuOpen = !(*menuOpen);
     }
@@ -175,7 +179,7 @@ int drawMenu(menuButton button, bool* menuOpen, bool* saveMenuOpen){
     if(*menuOpen){
         optionButtonClicked = drawOpenedMenu();
         if(*saveMenuOpen)
-            drawSaveStates();
+            saveButtonClicked = drawSaveStates();
         else{
             switch(optionButtonClicked){
                 case 0:
@@ -196,6 +200,6 @@ int drawMenu(menuButton button, bool* menuOpen, bool* saveMenuOpen){
     }
     if(!(*menuOpen))
         *saveMenuOpen = false;
-    return optionButtonClicked;
+    return (Vector2){optionButtonClicked, saveButtonClicked};
 }
 
