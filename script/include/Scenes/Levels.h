@@ -8,6 +8,9 @@
 #include "../System/Input.h"
 #include "../Map/Map.h"
 
+#include "../Characters/CopyGhost.h"
+#include "../Characters/StupidGhost.h"
+
 #pragma once
 
 
@@ -16,16 +19,16 @@ Ghost* instantiateGhostsInLevel(Map map){
     Ghost *ladies = malloc(sizeof(Ghost)*4); 
     Vector2* positions = searchInMap(map, 'f');
 
-    ladies[0] = initGhost(positions[0], RADIUS, SPEED, RED); //homura
-    ladies[1] = initGhost(positions[1], RADIUS, SPEED, SKYBLUE);//sora
-    ladies[2] = initGhost(positions[2], RADIUS, SPEED, ORANGE);//hikari
-    ladies[3] = initGhost(positions[3], RADIUS, SPEED, PINK);//hana
+    ladies[0] = initGhost(positions[0], RADIUS, SPEED, RED, COPY); //homura
+    ladies[1] = initGhost(positions[1], RADIUS, SPEED, SKYBLUE, STUPID);//sora
+    ladies[2] = initGhost(positions[2], RADIUS, SPEED, ORANGE, AWARE);//hikari
+    ladies[3] = initGhost(positions[3], RADIUS, SPEED, PINK, AWARE);//hana
 
     return ladies;
 }
 
 
-/** @brief DEsenha todas as coisas do jogo. */
+/** @brief Desenha todas as coisas do jogo. */
 void draw(Map map,PacMaiden* pacmaiden, Ghost* ghosts){
     BeginDrawing();
 

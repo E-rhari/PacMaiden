@@ -1,5 +1,7 @@
 #include "raylib.h"
 #include<stdbool.h>
+#include<stdlib.h>
+#include<stdio.h>
 
 #include "./Character.h"
 #include "./PacMaiden.h"
@@ -8,21 +10,27 @@
 #pragma once
 
 
-typedef enum 
-{
+typedef enum {
     SPOOKY,
     VULNERABLE,
     SPAWNING
 } GhostState;
 
 
+typedef enum {
+    AWARE,
+    COPY,   // Temporário
+    STUPID  // Temporário
+} GhostType;
+
+
 /** @brief Inimigos do jogador */
-typedef struct {
+typedef struct TGhost{
     Character chara;
     Character initialValues;
     bool canChooseDestination;
     GhostState state;
-    //function move;
+    GhostType type;
 } Ghost;
 
 
@@ -32,11 +40,15 @@ typedef struct {
  * @param speed (px/s) Velocidade, em pixels por segundo, que o personagem se move.
  * @param radius (px) Raio do círculo de colisão do personagem.
  * @param color Cor do personagem a partir das definições da Raylib. */
-Ghost initGhost(Vector2 position, int radius, float speed, Color color){
+Ghost initGhost(Vector2 position, int radius, float speed, Color color, GhostType type){
     Circle characterRec = {(Vector2){position.x+radius, position.y+radius}, radius};
     Character chara = (Character){characterRec, speed, color};
-    return (Ghost){chara, chara, true, SPOOKY};
+    return (Ghost){chara, chara, true, SPOOKY, type};
 }
+
+
+void copyPacmaidenMovement(Ghost* ghost, Map map, PacMaiden* pacmaiden);
+void stupidMove(Ghost* ghost, Map map, ProceduralAnimation* animation);
 
 
 void changeGhostState(Ghost* ghost, GhostState state){
@@ -161,6 +173,12 @@ void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden){
         if(!ghost->chara.procAnimation.running)
             changeGhostState(ghost, SPOOKY);
         return;
+    }
+
+    switch (ghost->type){
+        case AWARE: moveAware(ghost, map); break;
+        case COPY:  copyPacmaidenMovement(ghost, map, pacmaiden); break;
+        case STUPID:stupidMove(ghost, map, &ghost->chara.procAnimation); break;
     }
 
     portalBorders(&ghost->chara);
