@@ -42,6 +42,7 @@ void drawMap(Map map) {
     }
 }
 
+
 /** @brief Transforma o arquivo map#.txt em uma matriz do tipo char.
  * @param level Número do mapa a ser lido. Substitui o # em map#.txt.
  * @param map Referência da variável na qual será salvo o mapa. */

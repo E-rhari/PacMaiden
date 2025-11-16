@@ -8,38 +8,27 @@
 #include "../System/Input.h"
 #include "../Map/Map.h"
 
+#include "../Characters/CopyGhost.h"
+#include "../Characters/StupidGhost.h"
+
 #pragma once
 
 
 
-Ghost* instanciateGhostsInLevel(Map map){
-    Ghost *laidies = malloc(sizeof(Ghost)*4); 
+Ghost* instantiateGhostsInLevel(Map map){
+    Ghost *ladies = malloc(sizeof(Ghost)*4); 
     Vector2* positions = searchInMap(map, 'f');
 
-    laidies[0] = initGhost(positions[0], RADIUS, SPEED, RED); //homura
-    laidies[1] = initGhost(positions[1], RADIUS, SPEED, BLUE);//sora
-    laidies[2] = initGhost(positions[2], RADIUS, SPEED, GOLD);//hikari
-    laidies[3] = initGhost(positions[3], RADIUS, SPEED, PINK);//hana
+    ladies[0] = initGhost(positions[0], RADIUS, SPEED, RED, COPY); //homura
+    ladies[1] = initGhost(positions[1], RADIUS, SPEED, SKYBLUE, STUPID);//sora
+    ladies[2] = initGhost(positions[2], RADIUS, SPEED, ORANGE, AWARE);//hikari
+    ladies[3] = initGhost(positions[3], RADIUS, SPEED, PINK, AWARE);//hana
 
-    return laidies;
+    return ladies;
 }
 
 
-/** @brief Trata de toda a clisão da pacmaiden com os fantasmas, levando em cosideração o seu estado e posição */
-void checkPacmaidenGhostCollision(PacMaiden* pacmaiden, Ghost* ghost, Map map){
-    if(pacmaiden->state!=IMMORTAL){
-        if(checkCharacterCollision(pacmaiden->chara, ghost->chara))
-            hurt(pacmaiden, map);
-    }
-    else{
-        blinkAnimation(&pacmaiden->chara.color, YELLOW, WHITE, &pacmaiden->chara.procAnimation, HURT_COOLDOWN, 2);
-        if(!pacmaiden->chara.procAnimation.running)
-            changeState(pacmaiden, NORMAL);
-    }
-}
-
-
-/** @brief DEsenha todas as coisas do jogo. */
+/** @brief Desenha todas as coisas do jogo. */
 void draw(Map map,PacMaiden* pacmaiden, Ghost* ghosts){
     BeginDrawing();
 
@@ -61,26 +50,21 @@ void draw(Map map,PacMaiden* pacmaiden, Ghost* ghosts){
 
 
 /** @brief Realiza todas as funções de movimento dos personagens */
-void moveCharacters(PacMaiden* pacmaiden, Ghost* ghosts, Map map){
-    if(pacmaiden->state != DYING){
-        getBufferedInput(&pacmaiden->chara.moveDirection, isCharacterInGridCenter(pacmaiden->chara)
-                                                       && isCharacterInsideScreen(pacmaiden->chara, (Vector2){0,0}));
-
-        move(&pacmaiden->chara, map);
-        portalBorders(&pacmaiden->chara);
-        countPoints(pacmaiden, map, charCollided(*pacmaiden, map));
-
-        for(int i=0; i<4; i++){
-            moveAware(&ghosts[i], map);
-            portalBorders(&ghosts[i].chara);
-            checkPacmaidenGhostCollision(pacmaiden, &ghosts[i], map);
-        }
-    }
-    else{
+void charactersBehaviours(PacMaiden* pacmaiden, Ghost* ghosts, Map map){
+    if(pacmaiden->state == DYING){
         fadeOut(&pacmaiden->chara.color, &pacmaiden->chara.procAnimation, 3);
         if(!pacmaiden->chara.procAnimation.running)
-            changeState(pacmaiden, IMMORTAL);
+            changePacmaidenState(pacmaiden, IMMORTAL);
+        return;
     }
+
+    getBufferedInput(&pacmaiden->chara.moveDirection, isCharacterInGridCenter(pacmaiden->chara)
+                                                   && isCharacterInsideScreen(pacmaiden->chara, (Vector2){0,0}));
+    pacmaidenBehaviour(pacmaiden, map);
+    for(int i=0; i<4; i++)
+        ghostBehaviour(&ghosts[i], map, pacmaiden);
+
+    countPoints(pacmaiden, map, charCollided(*pacmaiden, map));
 }
 
 bool isPacMaidenDead(PacMaiden* PacMaiden){
@@ -95,7 +79,7 @@ int update(PacMaiden* pacmaiden,Ghost* ghosts, Map map){
         if(DEBUG_MODE)
             userClose();
 
-        moveCharacters(pacmaiden, ghosts, map);
+        charactersBehaviours(pacmaiden, ghosts, map);
 
         draw(map,pacmaiden,ghosts);
         if(isPacMaidenDead(pacmaiden))
@@ -111,7 +95,7 @@ int level(int levelNumber){
     readMap(levelNumber,map);
 
     PacMaiden pacmaiden = initPacMaiden(searchInMap(map, 'P')[0], RADIUS, SPEED, YELLOW, 3, 0);
-    Ghost* ghosts = instanciateGhostsInLevel(map);
+    Ghost* ghosts = instantiateGhostsInLevel(map);
 
     screen=update(&pacmaiden,ghosts,map);
 
