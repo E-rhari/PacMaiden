@@ -67,9 +67,14 @@ void charactersBehaviours(PacMaiden* pacmaiden, Ghost* ghosts, Map map){
     countPoints(pacmaiden, map, charCollided(*pacmaiden, map));
 }
 
+bool isPacMaidenDead(PacMaiden* PacMaiden){
+    if(PacMaiden->lifes<=0)
+        return true;
+    return false;
+}
 
 /** @brief Roda todo frame. */
-void update(PacMaiden* pacmaiden,Ghost* ghosts, Map map){
+int update(PacMaiden* pacmaiden,Ghost* ghosts, Map map){
     while(!WindowShouldClose()){
         if(DEBUG_MODE)
             userClose();
@@ -77,23 +82,26 @@ void update(PacMaiden* pacmaiden,Ghost* ghosts, Map map){
         charactersBehaviours(pacmaiden, ghosts, map);
 
         draw(map,pacmaiden,ghosts);
+        if(isPacMaidenDead(pacmaiden))
+            return TITLE;
     }
 }
 
 
 /** @brief Roda a fase desejada */
 int level(int levelNumber){
+    int screen;
     Map map=setUpMap();
     readMap(levelNumber,map);
 
     PacMaiden pacmaiden = initPacMaiden(searchInMap(map, 'P')[0], RADIUS, SPEED, YELLOW, 3, 0);
     Ghost* ghosts = instantiateGhostsInLevel(map);
 
-    update(&pacmaiden,ghosts,map);
+    screen=update(&pacmaiden,ghosts,map);
 
     free(map);
     for(int i=0;i<20;i++)
         free(*(map+i));
 
-    return 0;
+    return screen;
 }

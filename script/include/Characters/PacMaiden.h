@@ -101,7 +101,7 @@ bool checkPowerPellet(PacMaiden* pacmaiden, Map map){
 }
 
 
-/** @brief Adiciona a quantidade adequada de pontos à pontuação da pacmaiden
+/** @brief Adiciona a quantidade adequada de pontos à pontuação da pacmaiden.
  * @param pacMaiden Personagem do jogador que receberá a pontuação.
  * @param map Mapa de onde será contado o ponto.
  * @param object Caractere que indica o tipo de objeto. */
@@ -130,6 +130,7 @@ void countPoints(PacMaiden* pacMaiden, Map map, char object){
 /** @brief Rotina a ser realizada quando a Pacmaiden chega a 0 pontos de vida. */
 void die(PacMaiden* pacmaiden){
     printf("Damn morri omg");
+
 }
 
 

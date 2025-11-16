@@ -7,30 +7,21 @@
 
 #include "../include/System/WindowControl.h"
 #include "../include/Scenes/Levels.h"
-
-enum Screen{
-    TITLE,
-    LEVEL,
-    DEATH,
-    MENU //temporário
-};
+#include "../include/Scenes/TitleScreen.h"
 
 int main(){
     inicializeWindow();
 
-    enum Screen myScreen = LEVEL;
+    enum screenBehavior myScreen = TITLE;
 
     while(!WindowShouldClose()){
         switch (myScreen)
         {
             case TITLE:
-                //
+                myScreen=drawTitleScreen();
             break;
-            case LEVEL:
-                level(1);
-            break;
-            case DEATH:
-                //
+            case NEWGAME:
+                myScreen=level(1);
             break;
         }
     }
