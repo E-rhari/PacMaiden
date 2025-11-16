@@ -5,16 +5,12 @@
 #pragma once
 
 
-/**
- * @brief Salva o próximo input válido recebido em um buffer e altera o valor de lastInput se a condição refreshCondition 
+/** @brief Salva o próximo input válido recebido em um buffer e altera o valor de lastInput se a condição refreshCondition 
  *        for satisfeita. Outra condição para a modificação do valor é se o input recebido for do meios eixo (x ou y) do
  *        lastInput.
- * 
  * @param lastInput Referência ao último input enviado para o personagem
  * @param refreshCondition Condição para alterar o vetor de input
- *
- * @returns Se o input foi alterado ou não.
- */
+ * @returns Se o input foi alterado ou não. */
 bool getBufferedInput(Vector2* lastInput, bool refreshCondition){
     static Vector2 bufferedInput = {0,0};
     Vector2 recievedInput = {0,0};

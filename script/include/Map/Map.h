@@ -7,10 +7,12 @@
 #pragma once
 
 
+/** @brief Apelido semântico para char** */
 typedef char** Map;
 
-void drawMap(Map map)
-{
+
+
+void drawMap(Map map) {
     int cell = 40;
     for(int i = 0; i < 20; i++){
         for(int j = 0; j < 40; j++)
@@ -40,6 +42,10 @@ void drawMap(Map map)
     }
 }
 
+
+/** @brief Transforma o arquivo map#.txt em uma matriz do tipo char.
+ * @param level Número do mapa a ser lido. Substitui o # em map#.txt.
+ * @param map Referência da variável na qual será salvo o mapa. */
 void readMap (int level, Map map)
 {
     char temp;
@@ -49,7 +55,7 @@ void readMap (int level, Map map)
         strcpy(path,"PacMaiden/sprites/maps/map");
         char nivelString[3];
 
-      itoa(level,nivelString,10);
+        itoa(level,nivelString,10);
         strcat(path,nivelString);
         strcat(path,".txt");
     #elif __linux__
@@ -75,12 +81,52 @@ void readMap (int level, Map map)
             if(temp !='\n')
                 map[i][j] = temp;
         }
-        temp = getc(arq);
+        getc(arq);
     }
     fclose(arq);
     return;
 }
 
+
+/** @brief Lê o valor da matriz na posição enviada. A posição est
+ * @param position (px) Vetor da posição a ser lida no mapa. Ela deve estar em pixels e na
+ *                 escala da tela do jogo. A conversão de pixel para célula da matriz é intera na função.
+ * @param map Mapa do qual será lido o valor.
+ * @param displacement (matrix cell) Deslocamento da posição que será lida na matriz. */
+char readPositionInMap(Vector2 position, Map map, Vector2 displacement){
+    // Muda a medida de pixels para células do grid
+    Vector2 gridPosition = Vector2Scale(position, PIX2GRID);
+
+    if((int)gridPosition.y+(int)displacement.y>=0 && (int)gridPosition.y+(int)displacement.y<ALTURA/40
+    && (int)gridPosition.x+(int)displacement.x>=0 && (int)gridPosition.x+(int)displacement.x<LARGURA/40)
+        return map[(int)gridPosition.y+(int)displacement.y][(int)gridPosition.x + (int)displacement.x];
+    return ' ';
+}
+
+
+/** @brief Percorre a matriz do mapa buscando correspondências do caractere descrito em object */
+Vector2* searchInMap(Map map, char object){
+    Vector2 *occurrences = (Vector2*)malloc(1);
+    int length = 0;
+    
+    for(int i=0; i<20; i++)
+        for(int j=0; j<40; j++)
+            if(map[i][j] == object){
+                occurrences = (Vector2*)realloc(occurrences, (length+1)*sizeof(Vector2));
+                occurrences[length] = (Vector2){j*40, i*40};
+                length++;
+            }
+    return occurrences;
+}
+
+
+/** @brief Confere se o personagem está no centro de uma célula do grid do jogo. */
+bool isPositionInGridCenter(Vector2 position){
+    return (int)(position.x+20)%40 < 3   &&  (int)(position.y+20)%40 < 3;
+}
+
+
+/** @brief Aloca espaço na memória para o mapa. */
 Map setUpMap(){
     Map map = (char**)malloc(sizeof(char*)*20);
 
@@ -89,6 +135,7 @@ Map setUpMap(){
     return map;
 }
 
+/** @brief Desaloca espaço na memória para o mapa. */
 void freeMap(Map map){
     for(int i=0; i<20;i++)
         free(*(map+i));
