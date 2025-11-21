@@ -2,6 +2,9 @@
 
 #include "raylib.h"
 #include<stdbool.h>
+#include<time.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #define LARGURA 1600
 #define ALTURA 800

@@ -20,7 +20,6 @@ typedef enum {
 typedef enum {
     AWARE,
     COPY,   // Temporário
-    STUPID  // Temporário
 } GhostType;
 
 
@@ -178,7 +177,6 @@ void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden){
     switch (ghost->type){
         case AWARE: moveAware(ghost, map); break;
         case COPY:  copyPacmaidenMovement(ghost, map, pacmaiden); break;
-        case STUPID:stupidMove(ghost, map, &ghost->chara.procAnimation); break;
     }
 
     portalBorders(&ghost->chara);
