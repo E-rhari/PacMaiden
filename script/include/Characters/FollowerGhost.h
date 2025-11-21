@@ -152,9 +152,16 @@ void printNodeList(NodeList list){
 }
 
 
-// NodeList findPath(GridVector start, GridVector end, Map map){
-//     // NodeList openList;   innitNodeList(&openList);
-//     // NodeList closedList; innitNodeList(&closedList);
+// MUITO ineficiente. Vamos mudar pra uma Heap!!!!
+Node* getBestNode(NodeList* list){
+    Node* currentBestNode = getFromNodeList(list, 0);
+    for(int i=0; i<list->size; i++){
+        Node* testingNode = getFromNodeList(list, i);
+        if(testingNode->fCost <= currentBestNode->fCost || testingNode->hCost < currentBestNode->hCost)
+            currentBestNode = testingNode;
+    }
+    return currentBestNode;
+}
 
 //     // while(openList.size != 0){
 //     //     GridStep step = *openList.start;
