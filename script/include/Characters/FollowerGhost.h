@@ -18,17 +18,16 @@ typedef struct {
 
 typedef struct TNode {
     GridVector position;
-    int distanceFromStart;
-    int aproximateDistanceFromEnd;
-    int heuristicGuess;
-
+    int gCost;  // distancia de manhathan a partir do inicio
+    int hCost;  // um chute da distância de manhatan até o fim
+    int fCost;  // uma heuristica pra prioziar os caminhos. gCost + fCost
     struct TNode* parent; // !!!!!! O caminho é construido através da hierarquia dos parents !!!!! 
 } Node;
 
 
-typedef struct TGridStep {
+typedef struct TNodeElement {
     Node node;
-    struct TGridStep* next;
+    struct TNodeElement* next;
 } NodeListElement;
 
 
@@ -38,14 +37,18 @@ typedef struct {
 } NodeList;
 
 
-int innitGridStep(NodeListElement* element, GridVector elementPosition, GridVector start, GridVector end){
+void innitNode(Node* node,  GridVector nodePosition, GridVector start, GridVector end){
+    node->position = nodePosition;
+
+    node->gCost = abs(start.x - end.x) + abs(start.y - end.y); // Distância de Manhatan
+    node->hCost = abs(nodePosition.x - end.x) + abs(nodePosition.y - end.y);
+    node->fCost = node->hCost + node->gCost;
+}
+
+
+void innitNodeListElement(NodeListElement* element, GridVector nodePosition, GridVector start, GridVector end){
     element->next = NULL;
-
-    element->node.position = elementPosition;
-
-    element->node.distanceFromStart = abs(start.x - end.x) + abs(start.y - end.y); // Distância de Manhatan
-    element->node.aproximateDistanceFromEnd = abs(elementPosition.x - end.x) + abs(elementPosition.y - end.y);
-    element->node.heuristicGuess = element->node.aproximateDistanceFromEnd + element->node.distanceFromStart;
+    innitNode(&element->node, nodePosition, start, end);
     element->node.parent = NULL;
 }
 
@@ -56,13 +59,13 @@ void innitNodeList(NodeList* list){
 }
 
 
-bool insertIntoNodeList(NodeList* list, NodeListElement* step, int index){
+bool insertIntoNodeList(NodeList* list, NodeListElement* element, int index){
     if(index<0 || index > list->size)
         return false;
     
     NodeListElement* newElement = (NodeListElement*) malloc(sizeof(NodeListElement));
         
-    newElement = step;
+    newElement = element;
 
     if(index == 0){
         newElement->next = list->start;
@@ -81,31 +84,71 @@ bool insertIntoNodeList(NodeList* list, NodeListElement* step, int index){
 }
 
 
-bool insertIntoEndOfNodeList(NodeList* list, NodeListElement* step){
-    return insertIntoNodeList(list, step, 0);
+bool insertIntoEndOfNodeList(NodeList* list, NodeListElement* element){
+    return insertIntoNodeList(list, element, 0);
 }
 
 
-bool innitInsideList(NodeList* list, int index, GridVector elementPosition, GridVector start, GridVector end){
-    NodeListElement* step = (NodeListElement*) malloc(sizeof(NodeListElement));
-    innitGridStep(step, elementPosition, start, end);
-    insertIntoNodeList(list, step, index);
+bool innitInsideNodeList(NodeList* list, int index, GridVector nodePosition, GridVector start, GridVector end){
+    NodeListElement* element = (NodeListElement*) malloc(sizeof(NodeListElement));
+    innitNodeListElement(element, nodePosition, start, end);
+    insertIntoNodeList(list, element, index);
+}
+
+
+Node* getFromNodeList(NodeList* list, int index){
+    if(index<0 || index > list->size)
+        return NULL;
+    
+    NodeListElement* current = list->start;
+    for(int i=0; i<index; i++)
+        current = current->next;
+    return &current->node;
+}
+
+bool removeIndexFromNodeList(NodeList* list, int index){
+    if(index<0 || index > list->size)
+        return false;
+    
+    NodeListElement* elToRemove;
+    if(index == 0){
+        elToRemove = list->start;
+        list->start = list->start->next;
+    }
+    else{
+        NodeListElement* current = list->start;
+        for(int i=0; i<index-1; i++)
+            current = current->next;
+        elToRemove = current->next;
+        current->next = elToRemove->next;
+    }
+    free(elToRemove);
+    list->size--;
+    return true;
+}
+
+
+bool removeNodeFromNodeList(NodeList* list, Node* node){
+    for(int i=0; i<list->size; i++)
+        if(getFromNodeList(list, i) == node)
+            return removeIndexFromNodeList(list, i);
+    return false;
 }
 
 
 void printNodeList(NodeList list){
-    NodeListElement* currentStep = list.start;
-    printf("NodeList: [");
+    NodeListElement* currentElement = list.start;
+    printf("NodeList:[");
 
     printf("\n\t\tPosition\tgCost\thCost\tHeuristc");
-    while(currentStep != NULL){
-        printf("\n\t\t(%d, %d)", currentStep->node.position.x, currentStep->node.position.y);
-        printf("\t\t%d", currentStep->node.distanceFromStart);
-        printf("\t%d", currentStep->node.aproximateDistanceFromEnd);
-        printf("\t%d", currentStep->node.heuristicGuess);
-        currentStep = currentStep->next;
+    while(currentElement != NULL){
+        printf("\n\t\t(%d, %d)", currentElement->node.position.x, currentElement->node.position.y);
+        printf("\t\t%d", currentElement->node.gCost);
+        printf("\t%d", currentElement->node.hCost);
+        printf("\t%d", currentElement->node.fCost);
+        currentElement = currentElement->next;
     }
-    printf("\n]");
+    printf("\n\t ]");
 }
 
 
@@ -128,10 +171,16 @@ int main(){
     NodeList list;
     innitNodeList(&list);
 
-    innitInsideList(&list, 0, (GridVector){1,1}, pathStart, pathEnd);
-    innitInsideList(&list, 0, (GridVector){3,1}, pathStart, pathEnd);
-    innitInsideList(&list, 0, (GridVector){4,2}, pathStart, pathEnd);
+    printf("Start: (%d, %d)\n", pathStart.x, pathStart.y);
+    printf("Start: (%d, %d)\n", pathEnd.x, pathEnd.y);
+    printf("\n");
+
+    innitInsideNodeList(&list, 0, (GridVector){1,1}, pathStart, pathEnd);
+    innitInsideNodeList(&list, 0, (GridVector){3,1}, pathStart, pathEnd);
+    innitInsideNodeList(&list, 0, (GridVector){1,2}, pathStart, pathEnd);
 
     printNodeList(list);
-    printf("\n");
+    printf("\n\n");
+
+    printf("Best Node: (%d, %d)\n", getBestNode(&list)->position.x, getBestNode(&list)->position.y);
 }
