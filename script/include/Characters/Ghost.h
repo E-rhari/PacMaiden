@@ -19,6 +19,7 @@ typedef enum {
 
 typedef enum {
     AWARE,
+    STALKER,
     COPY,   // Temporário
 } GhostType;
 
@@ -47,7 +48,7 @@ Ghost initGhost(Vector2 position, int radius, float speed, Color color, GhostTyp
 
 
 void copyPacmaidenMovement(Ghost* ghost, Map map, PacMaiden* pacmaiden);
-void stupidMove(Ghost* ghost, Map map, ProceduralAnimation* animation);
+void stalkPacmaiden(Ghost* ghost, Map map, PacMaiden* pacmaiden);
 
 
 void changeGhostState(Ghost* ghost, GhostState state){
@@ -175,8 +176,9 @@ void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden){
     }
 
     switch (ghost->type){
-        case AWARE: moveAware(ghost, map); break;
-        case COPY:  copyPacmaidenMovement(ghost, map, pacmaiden); break;
+        case AWARE:     moveAware(ghost, map); break;
+        case STALKER:   stalkPacmaiden(ghost, map, pacmaiden); break;
+        case COPY:      copyPacmaidenMovement(ghost, map, pacmaiden); break;
     }
 
     portalBorders(&ghost->chara);

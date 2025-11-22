@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "raylib.h"
+#include "raylib.h"
 #include "../System/WindowControl.h"
 
 #pragma once

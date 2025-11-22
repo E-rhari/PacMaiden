@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include "raymath.h"
 #include<stdbool.h>
 #include<stdlib.h>
 #include<stdio.h>
@@ -6,9 +7,10 @@
 #include "math.h"
 
 
-// #include "./Character.h"
-// #include "./PacMaiden.h"
-// #include "../Map/Map.h"
+#include "./Character.h"
+#include "./Ghost.h"
+#include "./PacMaiden.h"
+#include "../Map/Map.h"
 
 // #pragma once
 
@@ -157,8 +159,6 @@ bool removeNodeFromNodeList(NodeList* list, Node* node){
 }
 
 
-
-
 void printNodeList(NodeList list){
     NodeListElement* currentElement = list.start;
     printf("NodeList:[");
@@ -179,14 +179,13 @@ void printNodeList(NodeList list){
 
 
 bool isInsideMap(GridVector gridPosition, Map map, GridVector displacement){
-    return (int)gridPosition.y+(int)displacement.y>=0 && (int)gridPosition.y+(int)displacement.y<1600/40
-        && (int)gridPosition.x+(int)displacement.x>=0 && (int)gridPosition.x+(int)displacement.x<800/40;
+    return (int)gridPosition.y+(int)displacement.y>=0 && (int)gridPosition.y+(int)displacement.y<LARGURA/40
+        && (int)gridPosition.x+(int)displacement.x>=0 && (int)gridPosition.x+(int)displacement.x<ALTURA/40;
 }
 
 
 char readCoordinatesInMap(GridVector gridPosition, Map map, GridVector displacement){
-    if((int)gridPosition.y+(int)displacement.y>=0 && (int)gridPosition.y+(int)displacement.y<1600/40
-    && (int)gridPosition.x+(int)displacement.x>=0 && (int)gridPosition.x+(int)displacement.x<800/40)
+    if(isInsideMap(gridPosition, map, displacement))
         return map[(int)gridPosition.y+(int)displacement.y][(int)gridPosition.x + (int)displacement.x];
 }
 
@@ -211,48 +210,6 @@ void printPath(Node finalNode){
     }
 }
 
-void readMap (int level, Map map)
-{
-    char temp;
-    char path[50];
-    
-    #ifdef _WIN32
-        strcpy(path,"PacMaiden/sprites/maps/map");
-        char nivelString[3];
-
-        itoa(level,nivelString,10);
-        strcat(path,nivelString);
-        strcat(path,".txt");
-    #elif __linux__
-        sprintf(path, "../../sprites/maps/map%d.txt", level);
-        printf(path);
-    #else
-        printf("Sistema operacional não detectado. Proseguindo com configuração do linux");
-        sprintf(path, "../../sprites/maps/map%d.txt", level);
-        printf(path);
-    #endif
-
-    FILE* arq = fopen(path, "r");
-
-    if(arq == NULL)
-    {
-        printf("Erro de abertura de arquivo\n");
-        return;
-    }
-    
-    for(int i = 0; i < 20; i++){
-        for(int j = 0; j < 40; j++){
-            temp = getc(arq);
-            if(temp !='\n')
-                map[i][j] = temp;
-        }
-        getc(arq);
-    }
-    fclose(arq);
-    return;
-}
-
-
 
 void findPath(GridVector start, GridVector end, Map map){
     NodeList openList;
@@ -265,7 +222,10 @@ void findPath(GridVector start, GridVector end, Map map){
             innitNode(&nodeMap[i][j], (GridVector){9999, 9999}, (GridVector){0,0}, (GridVector){0,0});
     }
 
-    innitInsideNodeList(&openList, 0, start, start, end);
+    Node startNode;
+    innitNode(&startNode, start, start, end);
+    insertIntoEndOfNodeList(&openList, startNode);
+    // innitInsideNodeList(&openList, 0, start, start, end);
 
     while(openList.size != 0){
         printf("%d\n", openList.size);
@@ -283,6 +243,7 @@ void findPath(GridVector start, GridVector end, Map map){
         GridVector directions[4] = {{-1,0}, {1,0}, {0,-1}, {0,1}};
         for(int i=0; i<4; i++){
             if(!isInsideMap(currentNode->position, map, directions[i]) || readCoordinatesInMap(currentNode->position, map, directions[i]) == '#'){
+                // printf("{%d, %d}\n", currentNode->position.x, currentNode->position.y);
                 printf("\n->%c<-", !isInsideMap(currentNode->position, map, directions[i]));
                 continue;
             }
@@ -304,9 +265,19 @@ void findPath(GridVector start, GridVector end, Map map){
                     insertIntoEndOfNodeList(&openList, neighbor);
             }
         }
+        printNodeList(openList);
     }
 }
 
+
+GridVector vector2ToGridVector(Vector2 vector){
+    return (GridVector){(int)(vector.x/40), (int)(vector.y/40)};
+}
+
+void stalkPacmaiden(Ghost* ghost, Map map, PacMaiden* pacmaiden){
+    findPath(vector2ToGridVector(ghost->chara.circle.center), vector2ToGridVector(pacmaiden->chara.circle.center), map);
+    printf("\n ---- CHIRASHIZUSHI ---- \n");
+}
 
 // int main(){
 //     GridVector pathStart = {14,1};
