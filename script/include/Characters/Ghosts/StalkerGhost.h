@@ -6,28 +6,15 @@
 #include <sys/time.h>
 #include "math.h"
 
-
-#include "./Character.h"
+#include "../Character.h"
 #include "./Ghost.h"
-#include "./PacMaiden.h"
-#include "../Map/Map.h"
+#include "../PacMaiden.h"
+#include "../../Map/Map.h"
 
-// #pragma once
-
-typedef char** Map;
-
-typedef struct {
-    int x;
-    int y;
-} GridVector;
+#pragma once
 
 
-bool compareGridPositions(GridVector position1, GridVector position2){
-    return position1.x == position2.x && position1.y == position2.y;
-}
-
-
-/** DATA STRUCTURES */
+/***** DATA STRUCTURES ******/
 
 typedef struct TNode {
     GridVector position;
@@ -51,14 +38,21 @@ typedef struct {
 } NodeList;
 
 
+void calculateNodeCosts(Node* node, GridVector start, GridVector end){
+    if(node->parent != NULL)
+        node->gCost = node->parent->gCost + 1;
+    else
+        node->gCost = __INT_MAX__;
+    node->hCost = abs(node->position.x - end.x) + abs(node->position.y - end.y);
+    node->fCost = node->gCost + node->hCost;
+}
+
+
 void innitNode(Node* node,  GridVector nodePosition, GridVector start, GridVector end){
     node->position = nodePosition;
-
-    node->gCost = abs(start.x - nodePosition.x) + abs(start.y - nodePosition.y); // Distância de Manhatan
-    node->hCost = abs(nodePosition.x - end.x) + abs(nodePosition.y - end.y);
-    node->fCost = node->hCost + node->gCost;
-    node->hasBeenVisited = false;
     node->parent = NULL;
+    calculateNodeCosts(node, start, end);
+    node->hasBeenVisited = false;
 }
 
 
@@ -105,7 +99,7 @@ bool insertIntoEndOfNodeList(NodeList* list, Node node){
 }
 
 
-bool innitInsideNodeList(NodeList* list, int index, GridVector nodePosition, GridVector start, GridVector end){
+bool innitNodeInsideNodeList(NodeList* list, int index, GridVector nodePosition, GridVector start, GridVector end){
     Node* node = (Node*) malloc(sizeof(Node));
     innitNode(node, nodePosition, start, end);
     return insertIntoNodeList(list, *node, index);
@@ -121,6 +115,15 @@ Node* getFromNodeList(NodeList* list, int index){
         current = current->next;
     return &current->node;
 }
+
+
+bool isNodeOnList(NodeList* list, Node* node){
+    for(int i=0; i<list->size; i++)
+        if(getFromNodeList(list, i) == node)
+            return true;
+    return false;
+}
+
 
 bool removeIndexFromNodeList(NodeList* list, int index){
     if(index<0 || index > list->size)
@@ -141,14 +144,6 @@ bool removeIndexFromNodeList(NodeList* list, int index){
     free(elToRemove);
     list->size--;
     return true;
-}
-
-
-bool isNodeOnList(NodeList* list, Node* node){
-    for(int i=0; i<list->size; i++)
-        if(getFromNodeList(list, i) == node)
-            return true;
-    return false;
 }
 
 
@@ -178,19 +173,6 @@ void printNodeList(NodeList list){
 
 /** A* (A STAR) ALGORITHM */
 
-
-bool isInsideMap(GridVector gridPosition, Map map, GridVector displacement){
-    return (int)gridPosition.y+(int)displacement.y>=0 && (int)gridPosition.y+(int)displacement.y<ALTURA/40
-        && (int)gridPosition.x+(int)displacement.x>=0 && (int)gridPosition.x+(int)displacement.x<LARGURA/40;
-}
-
-
-char readCoordinatesInMap(GridVector gridPosition, Map map, GridVector displacement){
-    if(isInsideMap(gridPosition, map, displacement))
-        return map[(int)gridPosition.y+(int)displacement.y][(int)gridPosition.x + (int)displacement.x];
-}
-
-
 // MUITO ineficiente. Vamos mudar pra uma Heap!!!!
 Node* getBestNode(NodeList* list){
     Node* currentBestNode = getFromNodeList(list, 0);
@@ -204,15 +186,16 @@ Node* getBestNode(NodeList* list){
 
 
 void printPath(Node finalNode){
-    printf("---------- FINAL PATH ------------\n");
+    printf("-------------------- FINAL PATH ----------------------\n");
     Node currentNode = finalNode;
     while(currentNode.parent != NULL){
         printf("(%d, %d) -> ", currentNode.position.x, currentNode.position.y);
         currentNode = *currentNode.parent;
     }
     printf("Start\n");
-    printf("----------------------------------");
+    printf("-----------------------------------------------------\n");
 }
+
 
 NodeList getPathFromNodePile(Node finalNode){
     Node currentNode = finalNode;
@@ -229,58 +212,55 @@ NodeList getPathFromNodePile(Node finalNode){
 }
 
 
-NodeList findPath(GridVector start, GridVector end, Map map){
-    NodeList openList;
-    innitNodeList(&openList);
-
+Node** setUpNodeMap(GridVector start, GridVector end){
     Node** nodeMap = (Node**)malloc((LARGURA/40)*sizeof(Node*));
     for(int i=0; i<LARGURA/40; i++){
         nodeMap[i] = (Node*)malloc((ALTURA/40)*sizeof(Node));
         for(int j=0; j<ALTURA/40; j++)
             innitNode(&nodeMap[i][j], (GridVector){i, j}, start, end);
     }
+    return nodeMap;
+}
 
-    innitInsideNodeList(&openList, 0, start, start, end);
+
+NodeList findPath(GridVector start, GridVector end, Map map){
+    NodeList possibleNodes;                                         // Lista de todos os nodes tiveram seus custos g, h e f avaliados
+    innitNodeList(&possibleNodes);
+
+    Node** nodeMap = setUpNodeMap(start, end);
+
+    innitNodeInsideNodeList(&possibleNodes, 0, start, start, end);  // Cria o node do início
     nodeMap[start.x][start.y].hasBeenVisited = true;
 
-    while(openList.size != 0){
-        Node* currentNode = getBestNode(&openList);
+    while(possibleNodes.size != 0){
+        Node* currentNode = getBestNode(&possibleNodes);
         currentNode->hasBeenVisited = true;
 
-        if(compareGridPositions(currentNode->position, end))
+        if(gridVectorEquals(currentNode->position, end))
             return getPathFromNodePile(*currentNode);
         
-        GridVector directions[4] = {{-1,0}, {1,0}, {0,-1}, {0,1}};
+        GridVector directions[4] = {{-1,0}, {1,0}, {0,-1}, {0,1}};  // Todas as direções em que um vizinho pode estar
         for(int i=0; i<4; i++){
             if(!isInsideMap(currentNode->position, map, directions[i]) || readCoordinatesInMap(currentNode->position, map, directions[i]) == '#')
                 continue;
 
             Node* neighbor = &nodeMap[currentNode->position.x+directions[i].x][currentNode->position.y+directions[i].y];
-
             if(neighbor->hasBeenVisited)
                 continue;
             neighbor->hasBeenVisited = true;
 
-
-            int gCostToNeighbor = currentNode->gCost + 1;
-            if(neighbor->parent == NULL || gCostToNeighbor < neighbor->gCost){
-                neighbor->gCost = gCostToNeighbor;
-                neighbor->hCost = abs(neighbor->position.x - end.x) + abs(neighbor->position.y - end.y);
-                neighbor->fCost = neighbor->gCost + neighbor->hCost;
+            if(neighbor->parent == NULL || currentNode->gCost + 1 < neighbor->gCost){
                 neighbor->parent = &nodeMap[currentNode->position.x][currentNode->position.y];
+                calculateNodeCosts(neighbor, start, end);
 
-                if(!isNodeOnList(&openList, neighbor))
-                    insertIntoEndOfNodeList(&openList, *neighbor);
+                if(!isNodeOnList(&possibleNodes, neighbor))
+                    insertIntoEndOfNodeList(&possibleNodes, *neighbor);
             }
         }
-        removeNodeFromNodeList(&openList, currentNode);
+        removeNodeFromNodeList(&possibleNodes, currentNode);
     }
 }
 
-
-GridVector vector2ToGridVector(Vector2 vector){
-    return (GridVector){(int)(vector.x/40), (int)(vector.y/40)};
-}
 
 void stalkPacmaiden(Ghost* ghost, Map map, PacMaiden* pacmaiden){
     NodeList path;
@@ -288,50 +268,8 @@ void stalkPacmaiden(Ghost* ghost, Map map, PacMaiden* pacmaiden){
     if(path.start == NULL)
         return;
 
-    Node startNode = *getFromNodeList(&path, 1);
+    Node nextStep = *getFromNodeList(&path, 1);
 
-    ghost->chara.moveDirection = (Vector2){startNode.position.x - (int)(ghost->chara.circle.center.x/40), 
-                                           startNode.position.y - (int)(ghost->chara.circle.center.y/40)};
-    printNodeList(path);
-    printf("Start Node: (%d, %d)\n", startNode.position.x, startNode.position.y);
-    printf("Ghost Node: (%d, %d)\n", (int)(ghost->chara.circle.center.x/40), (int)(ghost->chara.circle.center.y/40));
-    printf("Move direction: {%f, %f}\n", ghost->chara.moveDirection.x, ghost->chara.moveDirection.y);
-    
-    move(&ghost->chara, map);
+    ghost->chara.moveDirection = (Vector2){nextStep.position.x - (int)(ghost->chara.circle.center.x*PIX2GRID), 
+                                           nextStep.position.y - (int)(ghost->chara.circle.center.y*PIX2GRID)};
 }
-
-// int main(){
-//     GridVector pathStart = {14,1};
-//     GridVector pathEnd = {22,1};
-
-//     NodeList list;
-//     innitNodeList(&list);
-
-//     printf("Start: (%d, %d)\n", pathStart.x, pathStart.y);
-//     printf("Start: (%d, %d)\n", pathEnd.x, pathEnd.y);
-//     printf("\n");
-
-//     innitInsideNodeList(&list, 0, (GridVector){1,1}, pathStart, pathEnd);
-//     innitInsideNodeList(&list, 0, (GridVector){3,1}, pathStart, pathEnd);
-//     innitInsideNodeList(&list, 0, (GridVector){1,2}, pathStart, pathEnd);
-
-//     printNodeList(list);
-//     printf("\n\n");
-
-//     printf("Best Node: (%d, %d)\n", getBestNode(&list)->position.x, getBestNode(&list)->position.y);
-
-//     Map map = (char**)malloc(sizeof(char*)*20);
-//     for(int i=0;i<20;i++)
-//         *(map+i) = (char*)malloc(sizeof(char)*40);
-//     readMap(1, map);
-
-
-//     struct timeval t0, t1;
-//     gettimeofday(&t0, NULL);
-
-//     // for(int i=0; i<600; i++)
-//         findPath(pathStart, pathEnd, map);
-
-//     gettimeofday(&t1, NULL);
-//     printf("\nDuration: %.2gs\n", t1.tv_sec - t0.tv_sec + 1E-6 * (t1.tv_usec - t0.tv_usec));
-// }

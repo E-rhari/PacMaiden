@@ -3,13 +3,14 @@
 
 #include "../Characters/Character.h"
 #include "../Characters/PacMaiden.h"
-#include "../Characters/Ghost.h"
+#include "../Characters/Ghosts/Ghost.h"
 #include "../System/WindowControl.h"
 #include "../System/Input.h"
 #include "../Map/Map.h"
 
-#include "../Characters/CopyGhost.h"
-#include "../Characters/StalkerGhost.h"
+#include "../Characters/Ghosts/StalkerGhost.h"
+#include "../Characters/Ghosts/AwareGhost.h"
+#include "../Characters/Ghosts/UnawareGhost.h"
 
 #pragma once
 
