@@ -172,7 +172,7 @@ void printNodeList(NodeList list){
         printf("\t%d", currentElement->node.fCost);
         currentElement = currentElement->next;
     }
-    printf("\n\t ]");
+    printf("\n\t ]\n");
 }
 
 
@@ -214,8 +214,22 @@ void printPath(Node finalNode){
     printf("----------------------------------");
 }
 
+NodeList getPathFromNodePile(Node finalNode){
+    Node currentNode = finalNode;
 
-void findPath(GridVector start, GridVector end, Map map){
+    NodeList path;
+    innitNodeList(&path);
+    
+    while(currentNode.parent != NULL){
+        insertIntoNodeList(&path, currentNode, 0);
+        currentNode = *currentNode.parent;
+    }
+    insertIntoNodeList(&path, currentNode, 0);
+    return path;
+}
+
+
+NodeList findPath(GridVector start, GridVector end, Map map){
     NodeList openList;
     innitNodeList(&openList);
 
@@ -228,31 +242,20 @@ void findPath(GridVector start, GridVector end, Map map){
 
     innitInsideNodeList(&openList, 0, start, start, end);
     nodeMap[start.x][start.y].hasBeenVisited = true;
-    int i = 0;
 
     while(openList.size != 0){
-        printf("\n---- Loop #%d ----\n", i);
         Node* currentNode = getBestNode(&openList);
-        printf("Best Node: (%d, %d)\n", currentNode->position.x, currentNode->position.y);
-        if(!compareGridPositions(currentNode->position, start))
-            printf("Best Node's parent: (%d, %d)\n", currentNode->parent->position.x, currentNode->parent->position.x);
-    
         currentNode->hasBeenVisited = true;
 
-        if(compareGridPositions(currentNode->position, end)){
-            printPath(*currentNode);
-            return;
-        }
+        if(compareGridPositions(currentNode->position, end))
+            return getPathFromNodePile(*currentNode);
         
         GridVector directions[4] = {{-1,0}, {1,0}, {0,-1}, {0,1}};
         for(int i=0; i<4; i++){
-            printf("Neighbor: (%d, %d)  -  ", currentNode->position.x+directions[i].x, currentNode->position.y+directions[i].y);
-            printf("Object type: %c\n", readCoordinatesInMap(currentNode->position, map, directions[i]));
             if(!isInsideMap(currentNode->position, map, directions[i]) || readCoordinatesInMap(currentNode->position, map, directions[i]) == '#')
                 continue;
 
             Node* neighbor = &nodeMap[currentNode->position.x+directions[i].x][currentNode->position.y+directions[i].y];
-            // printf("Neighbor: (%d, %d)\n", neighbor->position.x, neighbor->position.y);
 
             if(neighbor->hasBeenVisited)
                 continue;
@@ -271,11 +274,6 @@ void findPath(GridVector start, GridVector end, Map map){
             }
         }
         removeNodeFromNodeList(&openList, currentNode);
-        printf("Size: %d\n", openList.size);
-        printNodeList(openList);
-        i++;
-
-        WaitTime(1);
     }
 }
 
@@ -285,9 +283,21 @@ GridVector vector2ToGridVector(Vector2 vector){
 }
 
 void stalkPacmaiden(Ghost* ghost, Map map, PacMaiden* pacmaiden){
-    printf("\nStart: (%d, %d)\n End: (%d, %d)\n\n", vector2ToGridVector(ghost->chara.circle.center).x,     vector2ToGridVector(ghost->chara.circle.center).y,
-                                                  vector2ToGridVector(pacmaiden->chara.circle.center).x, vector2ToGridVector(pacmaiden->chara.circle.center).y);
-    findPath(vector2ToGridVector(ghost->chara.circle.center), vector2ToGridVector(pacmaiden->chara.circle.center), map);
+    NodeList path;
+    path = findPath(vector2ToGridVector(ghost->chara.circle.center), vector2ToGridVector(pacmaiden->chara.circle.center), map);
+    if(path.start == NULL)
+        return;
+
+    Node startNode = *getFromNodeList(&path, 1);
+
+    ghost->chara.moveDirection = (Vector2){startNode.position.x - (int)(ghost->chara.circle.center.x/40), 
+                                           startNode.position.y - (int)(ghost->chara.circle.center.y/40)};
+    printNodeList(path);
+    printf("Start Node: (%d, %d)\n", startNode.position.x, startNode.position.y);
+    printf("Ghost Node: (%d, %d)\n", (int)(ghost->chara.circle.center.x/40), (int)(ghost->chara.circle.center.y/40));
+    printf("Move direction: {%f, %f}\n", ghost->chara.moveDirection.x, ghost->chara.moveDirection.y);
+    
+    move(&ghost->chara, map);
 }
 
 // int main(){

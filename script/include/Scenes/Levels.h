@@ -21,8 +21,8 @@ Ghost* instantiateGhostsInLevel(Map map){
 
     ladies[0] = initGhost(positions[0], RADIUS, SPEED, RED, STALKER); //homura
     ladies[1] = initGhost(positions[1], RADIUS, SPEED, SKYBLUE, AWARE);//sora
-    ladies[2] = initGhost(positions[2], RADIUS, SPEED, ORANGE, AWARE);//hikari
-    ladies[3] = initGhost(positions[3], RADIUS, SPEED, PINK, AWARE);//hana
+    ladies[2] = initGhost(positions[2], RADIUS, SPEED, ORANGE, STALKER);//hikari
+    ladies[3] = initGhost(positions[3], RADIUS, SPEED, PINK, STALKER);//hana
 
     return ladies;
 }
