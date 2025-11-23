@@ -54,10 +54,11 @@ typedef struct {
 void innitNode(Node* node,  GridVector nodePosition, GridVector start, GridVector end){
     node->position = nodePosition;
 
-    node->gCost = abs(start.x - end.x) + abs(start.y - end.y); // Distância de Manhatan
+    node->gCost = abs(start.x - nodePosition.x) + abs(start.y - nodePosition.y); // Distância de Manhatan
     node->hCost = abs(nodePosition.x - end.x) + abs(nodePosition.y - end.y);
     node->fCost = node->hCost + node->gCost;
     node->hasBeenVisited = false;
+    node->parent = NULL;
 }
 
 
@@ -165,8 +166,8 @@ void printNodeList(NodeList list){
 
     printf("\n\t\tPosition\tgCost\thCost\tHeuristc");
     while(currentElement != NULL){
-        printf("\n\t\t(%d, %d)", currentElement->node.position.x, currentElement->node.position.y);
-        printf("\t\t%d", currentElement->node.gCost);
+        printf("\n\t\t(%d, %d)  ", currentElement->node.position.x, currentElement->node.position.y);
+        printf("\t%d", currentElement->node.gCost);
         printf("\t%d", currentElement->node.hCost);
         printf("\t%d", currentElement->node.fCost);
         currentElement = currentElement->next;
@@ -179,8 +180,8 @@ void printNodeList(NodeList list){
 
 
 bool isInsideMap(GridVector gridPosition, Map map, GridVector displacement){
-    return (int)gridPosition.y+(int)displacement.y>=0 && (int)gridPosition.y+(int)displacement.y<LARGURA/40
-        && (int)gridPosition.x+(int)displacement.x>=0 && (int)gridPosition.x+(int)displacement.x<ALTURA/40;
+    return (int)gridPosition.y+(int)displacement.y>=0 && (int)gridPosition.y+(int)displacement.y<ALTURA/40
+        && (int)gridPosition.x+(int)displacement.x>=0 && (int)gridPosition.x+(int)displacement.x<LARGURA/40;
 }
 
 
@@ -203,11 +204,14 @@ Node* getBestNode(NodeList* list){
 
 
 void printPath(Node finalNode){
+    printf("---------- FINAL PATH ------------\n");
     Node currentNode = finalNode;
     while(currentNode.parent != NULL){
         printf("(%d, %d) -> ", currentNode.position.x, currentNode.position.y);
         currentNode = *currentNode.parent;
     }
+    printf("Start\n");
+    printf("----------------------------------");
 }
 
 
@@ -215,26 +219,26 @@ void findPath(GridVector start, GridVector end, Map map){
     NodeList openList;
     innitNodeList(&openList);
 
-    Node** nodeMap = (Node**)malloc((1600/40)*sizeof(Node*));
-    for(int i=0; i<1600/40; i++){
-        nodeMap[i] = (Node*)malloc((800/40)*sizeof(Node));
-        for(int j=0; j<800/40; j++)
-            innitNode(&nodeMap[i][j], (GridVector){9999, 9999}, (GridVector){0,0}, (GridVector){0,0});
+    Node** nodeMap = (Node**)malloc((LARGURA/40)*sizeof(Node*));
+    for(int i=0; i<LARGURA/40; i++){
+        nodeMap[i] = (Node*)malloc((ALTURA/40)*sizeof(Node));
+        for(int j=0; j<ALTURA/40; j++)
+            innitNode(&nodeMap[i][j], (GridVector){i, j}, start, end);
     }
 
-    Node startNode;
-    innitNode(&startNode, start, start, end);
-    insertIntoEndOfNodeList(&openList, startNode);
-    // innitInsideNodeList(&openList, 0, start, start, end);
+    innitInsideNodeList(&openList, 0, start, start, end);
+    nodeMap[start.x][start.y].hasBeenVisited = true;
+    int i = 0;
 
     while(openList.size != 0){
-        printf("%d\n", openList.size);
+        printf("\n---- Loop #%d ----\n", i);
         Node* currentNode = getBestNode(&openList);
+        printf("Best Node: (%d, %d)\n", currentNode->position.x, currentNode->position.y);
+        if(!compareGridPositions(currentNode->position, start))
+            printf("Best Node's parent: (%d, %d)\n", currentNode->parent->position.x, currentNode->parent->position.x);
     
-        removeNodeFromNodeList(&openList, currentNode);
         currentNode->hasBeenVisited = true;
 
-        // Chegamos no fim! :-)
         if(compareGridPositions(currentNode->position, end)){
             printPath(*currentNode);
             return;
@@ -242,30 +246,36 @@ void findPath(GridVector start, GridVector end, Map map){
         
         GridVector directions[4] = {{-1,0}, {1,0}, {0,-1}, {0,1}};
         for(int i=0; i<4; i++){
-            if(!isInsideMap(currentNode->position, map, directions[i]) || readCoordinatesInMap(currentNode->position, map, directions[i]) == '#'){
-                // printf("{%d, %d}\n", currentNode->position.x, currentNode->position.y);
-                printf("\n->%c<-", !isInsideMap(currentNode->position, map, directions[i]));
+            printf("Neighbor: (%d, %d)  -  ", currentNode->position.x+directions[i].x, currentNode->position.y+directions[i].y);
+            printf("Object type: %c\n", readCoordinatesInMap(currentNode->position, map, directions[i]));
+            if(!isInsideMap(currentNode->position, map, directions[i]) || readCoordinatesInMap(currentNode->position, map, directions[i]) == '#')
                 continue;
-            }
 
-            printf("directions[%d]    ", i);
+            Node* neighbor = &nodeMap[currentNode->position.x+directions[i].x][currentNode->position.y+directions[i].y];
+            // printf("Neighbor: (%d, %d)\n", neighbor->position.x, neighbor->position.y);
 
-            Node neighbor  = nodeMap[currentNode->position.x+directions[i].x][currentNode->position.y+directions[i].y];
-
-            if(neighbor.hasBeenVisited)
+            if(neighbor->hasBeenVisited)
                 continue;
+            neighbor->hasBeenVisited = true;
+
 
             int gCostToNeighbor = currentNode->gCost + 1;
-            if(neighbor.parent == NULL || gCostToNeighbor < neighbor.gCost){
-                neighbor.gCost = gCostToNeighbor;
-                neighbor.hCost = abs(neighbor.position.x - end.x) + abs(neighbor.position.y - end.y);
-                neighbor.parent = currentNode;
+            if(neighbor->parent == NULL || gCostToNeighbor < neighbor->gCost){
+                neighbor->gCost = gCostToNeighbor;
+                neighbor->hCost = abs(neighbor->position.x - end.x) + abs(neighbor->position.y - end.y);
+                neighbor->fCost = neighbor->gCost + neighbor->hCost;
+                neighbor->parent = &nodeMap[currentNode->position.x][currentNode->position.y];
 
-                if(!isNodeOnList(&openList, &neighbor))
-                    insertIntoEndOfNodeList(&openList, neighbor);
+                if(!isNodeOnList(&openList, neighbor))
+                    insertIntoEndOfNodeList(&openList, *neighbor);
             }
         }
+        removeNodeFromNodeList(&openList, currentNode);
+        printf("Size: %d\n", openList.size);
         printNodeList(openList);
+        i++;
+
+        WaitTime(1);
     }
 }
 
@@ -275,8 +285,9 @@ GridVector vector2ToGridVector(Vector2 vector){
 }
 
 void stalkPacmaiden(Ghost* ghost, Map map, PacMaiden* pacmaiden){
+    printf("\nStart: (%d, %d)\n End: (%d, %d)\n\n", vector2ToGridVector(ghost->chara.circle.center).x,     vector2ToGridVector(ghost->chara.circle.center).y,
+                                                  vector2ToGridVector(pacmaiden->chara.circle.center).x, vector2ToGridVector(pacmaiden->chara.circle.center).y);
     findPath(vector2ToGridVector(ghost->chara.circle.center), vector2ToGridVector(pacmaiden->chara.circle.center), map);
-    printf("\n ---- CHIRASHIZUSHI ---- \n");
 }
 
 // int main(){
