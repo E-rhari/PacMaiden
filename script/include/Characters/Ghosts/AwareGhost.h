@@ -17,9 +17,7 @@ bool chooseDestinationAware(Ghost* ghost, Map map){
     if(!isCharacterInsideScreen(ghost->chara, (Vector2){0,0}))
         return false;
     
-    
     Vector2 directions[4] = {{-1,0}, {1,0}, {0,-1}, {0,1}};
-    
     Vector2 *possibleDirections= (Vector2*)malloc(1);
     int length=0;
 

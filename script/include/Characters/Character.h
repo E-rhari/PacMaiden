@@ -131,7 +131,6 @@ bool move(Character* character, Map map){
     character->circle.center.x = destination.x;
     character->circle.center.y = destination.y;
 
-
     return moved;
 }
 

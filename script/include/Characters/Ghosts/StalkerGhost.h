@@ -172,6 +172,14 @@ void printNodeList(NodeList list){
 
 /** A* (A STAR) ALGORITHM */
 
+
+int modulate(int number, int module){
+    while(number < 0)
+        number += module;
+    return number%module;
+}
+
+
 // MUITO ineficiente. Vamos mudar pra uma Heap!!!!
 Node* getBestNode(NodeList* list){
     Node* currentBestNode = getFromNodeList(list, 0);
@@ -212,10 +220,10 @@ NodeList getPathFromNodePile(Node finalNode){
 
 
 Node** setUpNodeMap(GridVector start, GridVector end){
-    Node** nodeMap = (Node**)malloc((LARGURA/40)*sizeof(Node*));
-    for(int i=0; i<LARGURA/40; i++){
-        nodeMap[i] = (Node*)malloc((ALTURA/40)*sizeof(Node));
-        for(int j=0; j<ALTURA/40; j++)
+    Node** nodeMap = (Node**)malloc((LARGURA*PIX2GRID)*sizeof(Node*));
+    for(int i=0; i<LARGURA*PIX2GRID; i++){
+        nodeMap[i] = (Node*)malloc((ALTURA*PIX2GRID)*sizeof(Node));
+        for(int j=0; j<ALTURA*PIX2GRID; j++)
             innitNode(&nodeMap[i][j], (GridVector){i, j}, start, end);
     }
     return nodeMap;
@@ -240,10 +248,12 @@ NodeList findPath(GridVector start, GridVector end, Map map){
         
         GridVector directions[4] = {{-1,0}, {1,0}, {0,-1}, {0,1}};  // Todas as direções em que um vizinho pode estar
         for(int i=0; i<4; i++){
-            if(!isInsideMap(currentNode->position, map, directions[i]) || readCoordinatesInMap(currentNode->position, map, directions[i]) == '#')
+            GridVector portalPosition = (GridVector){modulate(currentNode->position.x+directions[i].x, LARGURA*PIX2GRID), 
+                                                     modulate(currentNode->position.y+directions[i].y, ALTURA*PIX2GRID)};
+            if(readCoordinatesInMap(portalPosition, map, (GridVector){0,0}) == '#')
                 continue;
 
-            Node* neighbor = &nodeMap[currentNode->position.x+directions[i].x][currentNode->position.y+directions[i].y];
+            Node* neighbor = &nodeMap[portalPosition.x][portalPosition.y];
             if(neighbor->hasBeenVisited)
                 continue;
             neighbor->hasBeenVisited = true;
@@ -261,7 +271,27 @@ NodeList findPath(GridVector start, GridVector end, Map map){
 }
 
 
+Vector2 getStalkingDirection(Ghost* ghost, Node nextStep){
+    Vector2 stalkingDirection = {nextStep.position.x - (int)(ghost->chara.circle.center.x*PIX2GRID), 
+                                 nextStep.position.y - (int)(ghost->chara.circle.center.y*PIX2GRID)};
+    // portals
+    if(stalkingDirection.x > 1)
+        stalkingDirection.x = -1;
+    else if(stalkingDirection.x < -1)
+        stalkingDirection.x = 1;
+    if(stalkingDirection.y > 1)
+        stalkingDirection.y = -1;
+    else if(stalkingDirection.y < -1)
+        stalkingDirection.y = 1;
+    
+    return stalkingDirection;
+}
+
+
 void stalkPacmaiden(Ghost* ghost, Map map, PacMaiden* pacmaiden){
+    if(!isCharacterInsideScreen(ghost->chara, (Vector2){0,0}))
+            return;
+
     NodeList path;
     path = findPath(vector2ToGridVector(ghost->chara.circle.center), vector2ToGridVector(pacmaiden->chara.circle.center), map);
     if(path.start == NULL || pacmaiden->state == IMMORTAL){
@@ -271,6 +301,5 @@ void stalkPacmaiden(Ghost* ghost, Map map, PacMaiden* pacmaiden){
 
     Node nextStep = *getFromNodeList(&path, 1);
 
-    ghost->chara.moveDirection = (Vector2){nextStep.position.x - (int)(ghost->chara.circle.center.x*PIX2GRID), 
-                                           nextStep.position.y - (int)(ghost->chara.circle.center.y*PIX2GRID)};
+    ghost->chara.moveDirection = getStalkingDirection(ghost, nextStep);
 }
