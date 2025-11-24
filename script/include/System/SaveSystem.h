@@ -44,7 +44,7 @@ char* selecSaveFile(int saveFile){
  * @param saveFile o numero do arquivo a ser salvo
  */
 void save(Map map, PacMaiden pacMaiden, Ghost* ghost, int saveFile){
-    
+
     char*path=selecSaveFile(saveFile);
 
     char temp='\n';
@@ -71,12 +71,15 @@ void save(Map map, PacMaiden pacMaiden, Ghost* ghost, int saveFile){
  * @param ghost as informações dos fantasmas do arquivo
  * @param saveFile o numero do arquivo a ser lido
  */
-void load(Map map, PacMaiden* pacMaiden, Ghost* ghost, int saveFile){
+bool load(Map map, PacMaiden* pacMaiden, Ghost* ghost, int saveFile){
 
     char* path=selecSaveFile(saveFile);
     FILE* arq=fopen(path,"rb");
+    if(arq==NULL)
+        return false;
     char temp;
-
+    if(arq==NULL)
+        return false;
 
     for(int i = 0; i < 20; i++){
         for(int j = 0; j < 40; j++){
@@ -89,4 +92,5 @@ void load(Map map, PacMaiden* pacMaiden, Ghost* ghost, int saveFile){
     fread(pacMaiden,sizeof(PacMaiden),1,arq);
     fread(ghost,sizeof(Ghost),4,arq);
     free(path);
+    return true;
 }

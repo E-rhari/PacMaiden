@@ -9,14 +9,19 @@
 #define BUTTONHOVER (Color){20, 70, 140, 255}
 #define BUTTONBAR (Color){100, 180, 255, 255}
 
-enum optionPress{// temp
+enum optionPress{
     RESUME,
     SAVE,
-    LOAD,
+    LOADSAVE,
     RETURN
 }; 
 
-
+typedef enum KeyCode{
+    S=83,
+    C=67,
+    TAB=258,
+    Q=81
+}KeyCode;
 /**
  * @brief Estrutura do icone de menu
  * @param center centro do circulo
@@ -30,9 +35,15 @@ typedef struct MenuButton {
     Vector2 center;
     float radius;
     Color colorBase;
-    Color colorHover;
+    Color colorHover;   
     Color barColor;
 } menuButton;
+
+
+typedef struct{
+    int optionClicked;
+    int saveState;
+} menuResult;
 
 
 /**
@@ -41,12 +52,27 @@ typedef struct MenuButton {
  * @param colorBase cor base
  * @param colorHover cor quando mause passe por cima
  */
-typedef struct{
+typedef struct OptionButton{
     Rectangle optionBox;
     Color colorBase;
     Color colorHover;
     enum optionPress id;
-} optionButton;
+    void(*action)(void);
+} OptionButton;
+
+
+void gameStateRunning(){
+    gameState=RUNNING;
+}
+void gameStateSaving(){
+    gameState=SAVING;
+}
+void gameStateLoading(){
+    gameState=LOADING;
+}
+void gameStateExit(){
+    gameState=EXIT;
+}
 
 /**
  * @return retorna se o mouse está sobre um botão
@@ -56,9 +82,14 @@ bool isMenuButtonHovered(menuButton button) {
     return CheckCollisionPointCircle(mousePos, button.center, button.radius);
 }
 
-bool isOptionButtonHovered(optionButton button) {
+bool isOptionButtonHovered(OptionButton button) {
     Vector2 mousePos = GetMousePosition();
     return CheckCollisionPointRec(mousePos, button.optionBox);
+}
+
+bool isSaveFileHovered(Rectangle save){
+    Vector2 mousePos = GetMousePosition();
+    return CheckCollisionPointRec(mousePos, save);
 }
 
 /**
@@ -68,45 +99,62 @@ bool isMenuButtonClicked(menuButton button) {
     return isMenuButtonHovered(button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
 }
 
-int isOptionButtonClicked(optionButton buttons[]){
+void isOptionButtonClicked(OptionButton* buttons,int key){
+
+    switch (key)
+    {
+        case S:
+            gameState=SAVING;
+        break;
+        case Q:
+            gameState=EXIT;
+        break;
+        case C:
+            gameState=LOADING;
+        break;
+    }
+    
     for(int i=0;i<4;i++)
         if(isOptionButtonHovered(buttons[i]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-            return buttons[i].id;
+            buttons[i].action();
+}
+int isSaveFileClicked(Rectangle* save){
+
+  for(int i=0;i<3;i++)
+     if(isSaveFileHovered(save[i]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        return i;
     return -1;
 }
-void drawMenuButton(menuButton button) {
-    bool hovered = isMenuButtonHovered(button);
-    Color circleColor = hovered ? button.colorHover : button.colorBase;
 
-    DrawCircleV(button.center, button.radius + 2, BUTTONBAR);
-    DrawCircleV(button.center, button.radius, circleColor);
 
-    float rectWidth = 30.0f;
-    float rectHeight = 6.0f;
-    float spacing = 10.0f;
+void initOptionButton(OptionButton *buttons){
+    Vector4 optionMeasures = {700, 250, 200, 50};
+    int paddingYButton=90;
 
-    for (int i = -1; i <= 1; i++) {
-        float x = button.center.x - rectWidth / 2.0f;
-        float y = button.center.y + i * spacing - rectHeight / 2.0f;
-
-        DrawRectangleRounded(
-            (Rectangle){ x, y, rectWidth, rectHeight },
-            0.5f, 6, button.barColor
-        );
-    }
+    buttons[0]=(OptionButton){(Rectangle){optionMeasures.x, optionMeasures.y+paddingYButton*0, optionMeasures.z, optionMeasures.w}, BUTTONBASE, BUTTONHOVER,0,gameStateRunning};
+    buttons[1]=(OptionButton){(Rectangle){optionMeasures.x, optionMeasures.y+paddingYButton*1, optionMeasures.z, optionMeasures.w}, BUTTONBASE, BUTTONHOVER,1,gameStateSaving};
+    buttons[2]=(OptionButton){(Rectangle){optionMeasures.x, optionMeasures.y+paddingYButton*2, optionMeasures.z, optionMeasures.w}, BUTTONBASE, BUTTONHOVER,2,gameStateLoading};
+    buttons[3]=(OptionButton){(Rectangle){optionMeasures.x, optionMeasures.y+paddingYButton*3, optionMeasures.z, optionMeasures.w}, BUTTONBASE, BUTTONHOVER,3,gameStateExit};
 }
 
-int drawOptionButtons(Rectangle menuBox){
-    Vector4 optionMeasures = {700, 250, 200, 50};
+void initSaveButton(Rectangle *save){
+    Rectangle saveBox = {600, 175, 400, 450};
+    int saveRecx = 75;
+    int saveRecy = 50;
+    int savePicOffset = 50;
+    int padding = 75;
     
-    optionButton buttons[4];
-    int paddingYButton=90, gapText=50, paddingYText=90;
+    for(int i=0; i<3;i++)
+        save[i] = (Rectangle){saveBox.x + savePicOffset, saveBox.y + padding*(i+1) + saveRecy*i, saveRecx, saveRecy};
+}
+
+void drawOptionButtons(Rectangle menuBox, OptionButton *buttons){
+    int  gapText=50, paddingYText=90;
 
     const char *menuOptions[] = {"Retornar (TAB)", "Salvar (S)", "Carregar (C)", "Sair (Q)"};
 
     for(int i=0;i<4;i++){
-        buttons[i]=(optionButton){(Rectangle){optionMeasures.x, optionMeasures.y+paddingYButton*i, optionMeasures.z, optionMeasures.w}, BUTTONBASE, BUTTONHOVER,i};
-
+        
         Color optionColor = isOptionButtonHovered(buttons[i]) ? buttons[i].colorHover : buttons[i].colorBase;
 
         DrawRectangleRounded(buttons[i].optionBox, 0.2f, 10, optionColor);
@@ -116,36 +164,26 @@ int drawOptionButtons(Rectangle menuBox){
         DrawTextEx(GetFontDefault(), menuOptions[i], (Vector2){menuBox.x + (menuBox.width - optionSize.x) / 2, menuBox.y + gapText + (50 - optionSize.y) / 2}, 18, 1, BUTTONBAR);
         gapText+=paddingYText;
     }
-    return isOptionButtonClicked(buttons);
+
 }
 
-int drawOpenedMenu() {
-
+void drawOpenedMenu(OptionButton *buttons) {
     Rectangle menuBox = {650, 200, 300, 400};
     DrawRectangle(0, 0, LARGURA, ALTURAHUD, (Color){0, 20, 60, 150});
     DrawRectangleRounded(menuBox, 0.1f, 10, (Color){ 30, 80, 255, 255 });
-
     Vector2 textSize = MeasureTextEx(GetFontDefault(), "Menu", 18, 1);
     DrawTextEx(GetFontDefault(), "Menu", (Vector2){menuBox.x + (menuBox.width - textSize.x) / 2, menuBox.y + (50 - textSize.y) / 2}, 18, 1, RAYWHITE);
-
-    return drawOptionButtons(menuBox);
- 
+    drawOptionButtons(menuBox,buttons);
 }
 
-int drawSaveStates(){
+void drawSaveStates(Rectangle*savePic){
     Rectangle saveBox = {600, 175, 400, 450};
     DrawRectangleRounded(saveBox, 0.1f, 10, (Color){ 30, 80, 255, 255 });
-    int saveRecx = 75;
-    int saveRecy = 50;
-    int savePicOffset = 50;
-    int padding = 75;
-    Rectangle savePic[3];
 
-    int textOffsetX = saveRecx + 20;
+    int textOffsetX = 95;
     int textOffsetY = 10;
-    int saveButtonClicked = -1;
+
     for(int i = 0; i < 3; i++){
-        savePic[i] = (Rectangle){saveBox.x + savePicOffset, saveBox.y + padding*(i+1) + saveRecy*i, saveRecx, saveRecy};
         DrawRectangleRounded(savePic[i], 0.1f, 10, BLACK);
         DrawRectangleRoundedLinesEx(savePic[i], 0.1f, 10, 3, BUTTONBAR);
 
@@ -160,46 +198,6 @@ int drawSaveStates(){
                    18, 1, RAYWHITE);
 
         Vector2 mousePos = GetMousePosition();
-        if(CheckCollisionPointRec(mousePos, savePic[i]) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
-            saveButtonClicked = i;
     }
-    return saveButtonClicked;
-}
-
-
-
-Vector2 drawMenu(menuButton button, bool* menuOpen, bool* saveMenuOpen){
-    int optionButtonClicked;
-    int saveButtonClicked;
-    if(isMenuButtonClicked(button) || IsKeyPressed(KEY_TAB)){
-        *menuOpen = !(*menuOpen);
-    }
-    if(IsKeyPressed(KEY_S))
-        *saveMenuOpen = !(*saveMenuOpen); 
-    if(*menuOpen){
-        optionButtonClicked = drawOpenedMenu();
-        if(*saveMenuOpen)
-            saveButtonClicked = drawSaveStates();
-        else{
-            switch(optionButtonClicked){
-                case 0:
-                    *menuOpen = !(*menuOpen);
-                    break;
-                
-                case 1:
-                    *saveMenuOpen = !(*saveMenuOpen);
-                    break;
-
-                case 2:     
-                    *saveMenuOpen = !(*saveMenuOpen);
-                    break;
-                    
-                case 3:
-            }
-        }
-    }
-    if(!(*menuOpen))
-        *saveMenuOpen = false;
-    return (Vector2){optionButtonClicked, saveButtonClicked};
 }
 

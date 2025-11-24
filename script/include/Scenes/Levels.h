@@ -1,5 +1,14 @@
 /** @brief Estado de jogo em que ocorre a gameplay propriamente dita. */
+typedef enum GameState{
+    RUNNING,
+    PAUSED,
+    SAVING,
+    LOADING,
+    EXIT
+}GameState;
 
+
+GameState gameState;
 
 #include "../Characters/Character.h"
 #include "../Characters/PacMaiden.h"
@@ -7,11 +16,13 @@
 #include "../System/WindowControl.h"
 #include "../System/Input.h"
 #include "../Map/Map.h"
+#include "Menu.h"
 
 #include "../Characters/CopyGhost.h"
 #include "../Characters/StupidGhost.h"
 
 #pragma once
+
 
 
 
@@ -29,7 +40,7 @@ Ghost* instantiateGhostsInLevel(Map map){
 
 
 /** @brief Desenha todas as coisas do jogo. */
-void draw(Map map,PacMaiden* pacmaiden, Ghost* ghosts){
+void draw(Map map,PacMaiden* pacmaiden, Ghost* ghosts,OptionButton* buttons,Rectangle* saveOptions){
     BeginDrawing();
 
     ClearBackground(BLACK);
@@ -45,12 +56,17 @@ void draw(Map map,PacMaiden* pacmaiden, Ghost* ghosts){
     for(int i=0; i<4; i++)
         DrawCircleV(ghosts[i].chara.circle.center, ghosts[i].chara.circle.radius, ghosts[i].chara.color);
 
+    if(gameState==PAUSED)
+        drawOpenedMenu(buttons);
+    if(gameState==SAVING ||gameState==LOADING)
+        drawSaveStates(saveOptions);
+        
     EndDrawing();
 }
 
 
 /** @brief Realiza todas as funções de movimento dos personagens */
-void charactersBehaviours(PacMaiden* pacmaiden, Ghost* ghosts, Map map){
+void charactersBehaviours(PacMaiden* pacmaiden, Ghost* ghosts, Map map,int *pallets){
     if(pacmaiden->state == DYING){
         fadeOut(&pacmaiden->chara.color, &pacmaiden->chara.procAnimation, 3);
         if(!pacmaiden->chara.procAnimation.running)
@@ -64,7 +80,7 @@ void charactersBehaviours(PacMaiden* pacmaiden, Ghost* ghosts, Map map){
     for(int i=0; i<4; i++)
         ghostBehaviour(&ghosts[i], map, pacmaiden);
 
-    countPoints(pacmaiden, map, charCollided(*pacmaiden, map));
+    countPoints(pacmaiden, map, charCollided(*pacmaiden, map),pallets);
 }
 
 bool isPacMaidenDead(PacMaiden* PacMaiden){
@@ -74,34 +90,102 @@ bool isPacMaidenDead(PacMaiden* PacMaiden){
 }
 
 /** @brief Roda todo frame. */
-int update(PacMaiden* pacmaiden,Ghost* ghosts, Map map){
+int update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons,Rectangle *saveOptions){
+    int fileNumber;
+    int pallets = countPallets(map);
+
     while(!WindowShouldClose()){
+        fileNumber=-1;
         if(DEBUG_MODE)
             userClose();
-
-        charactersBehaviours(pacmaiden, ghosts, map);
-
-        draw(map,pacmaiden,ghosts);
+    
+        draw(map,pacmaiden,ghosts,buttons,saveOptions);
+        
+        
         if(isPacMaidenDead(pacmaiden))
             return TITLE;
+        if(pallets<=0)
+            return NEXT;
+        if(IsKeyPressed(KEY_TAB))
+            gameState=PAUSED;
+
+        switch (gameState)
+        {
+            case PAUSED:
+                isOptionButtonClicked(buttons,GetKeyPressed());
+            break;
+            case RUNNING:
+                charactersBehaviours(pacmaiden, ghosts, map, &pallets);
+            break;
+            case SAVING:
+                fileNumber=isSaveFileClicked(saveOptions);
+                if(fileNumber!=-1)
+                    save(map,*pacmaiden,ghosts,fileNumber);
+            break;
+            case LOADING:
+                fileNumber=isSaveFileClicked(saveOptions);
+                if(fileNumber!=-1)
+                    load(map,pacmaiden,ghosts,fileNumber);
+            break;
+            case EXIT:
+                return TITLE;
+            break;
+        }
     }
 }
 
 
 /** @brief Roda a fase desejada */
 int level(int levelNumber){
+
     int screen;
+    gameState=RUNNING;
+
     Map map=setUpMap();
     readMap(levelNumber,map);
 
     PacMaiden pacmaiden = initPacMaiden(searchInMap(map, 'P')[0], RADIUS, SPEED, YELLOW, 3, 0);
     Ghost* ghosts = instantiateGhostsInLevel(map);
+    
+    OptionButton *buttons = malloc(sizeof(OptionButton)*4);
+    initOptionButton(buttons);
+    Rectangle* saveOptions = malloc(sizeof(Rectangle)*3);
+    initSaveButton(saveOptions);
 
-    screen=update(&pacmaiden,ghosts,map);
+    screen=update(&pacmaiden,ghosts,map,buttons,saveOptions);
+
+    free(map);
+    for(int i=0;i<20;i++)
+        free(*(map+i));
+    free(ghosts);
+    free(saveOptions);
+    free(buttons);
+
+    return screen;
+}
+
+int loadLevel(int levelNumber){
+    int screen;
+    gameState=RUNNING;
+
+    Map map=setUpMap();
+    PacMaiden pacmaiden;
+    Ghost* ghosts = malloc(sizeof(ghosts)*4);
+
+    load(map,&pacmaiden,ghosts,levelNumber);
+    
+    OptionButton *buttons = malloc(sizeof(OptionButton)*4);
+    initOptionButton(buttons);
+    Rectangle* saveOptions = malloc(sizeof(Rectangle)*3);
+    initSaveButton(saveOptions);
+    screen=update(&pacmaiden,ghosts,map,buttons,saveOptions);
 
     free(map);
     for(int i=0;i<20;i++)
         free(*(map+i));
 
+    free(ghosts);
+    free(saveOptions);
+    free(buttons);
     return screen;
 }
