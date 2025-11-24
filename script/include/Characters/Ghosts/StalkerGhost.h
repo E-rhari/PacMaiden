@@ -15,14 +15,13 @@
 
 
 /***** DATA STRUCTURES ******/
-
 typedef struct TNode {
     GridVector position;
     int gCost;  // distancia de manhathan a partir do inicio
     int hCost;  // um chute da distância de manhatan até o fim
     int fCost;  // uma heuristica pra prioziar os caminhos. gCost + fCost
     bool hasBeenVisited;
-    struct TNode* parent; // !!!!!! O caminho é construido através da hierarquia dos parents !!!!! 
+    struct TNode* parent; // Referência para o nó anterior no caminho | !!!!!! O caminho é construido através da hierarquia dos parents !!!!! 
 } Node;
 
 
@@ -265,8 +264,10 @@ NodeList findPath(GridVector start, GridVector end, Map map){
 void stalkPacmaiden(Ghost* ghost, Map map, PacMaiden* pacmaiden){
     NodeList path;
     path = findPath(vector2ToGridVector(ghost->chara.circle.center), vector2ToGridVector(pacmaiden->chara.circle.center), map);
-    if(path.start == NULL)
+    if(path.start == NULL || pacmaiden->state == IMMORTAL){
+        chooseDestinationAware(ghost, map);
         return;
+    }
 
     Node nextStep = *getFromNodeList(&path, 1);
 

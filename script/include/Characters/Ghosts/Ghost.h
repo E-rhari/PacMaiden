@@ -67,6 +67,7 @@ void changeGhostState(Ghost* ghost, GhostState state){
                     ghost->chara.speed = ghost->initialValues.speed/2;
                     break;
         case SPAWNING:
+                    ghost->canChooseDestination = true;
                     ghost->chara.procAnimation.initTime = GetTime();
                     break;
     }
