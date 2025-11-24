@@ -80,8 +80,9 @@ bool isSaveTitleFileHovered(Rectangle save){
 int isSaveTitleFileClicked(Rectangle* save){
 
   for(int i=0;i<3;i++)
-     if(isSaveTitleFileHovered(save[i]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+     if(isSaveTitleFileHovered(save[i]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
         return i;
+     }
     return -1;
 }
 

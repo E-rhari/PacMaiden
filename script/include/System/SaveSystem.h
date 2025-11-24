@@ -78,9 +78,6 @@ bool load(Map map, PacMaiden* pacMaiden, Ghost* ghost, int saveFile){
     if(arq==NULL)
         return false;
     char temp;
-    if(arq==NULL)
-        return false;
-
     for(int i = 0; i < 20; i++){
         for(int j = 0; j < 40; j++){
             fread(&temp,sizeof(char),1,arq);
