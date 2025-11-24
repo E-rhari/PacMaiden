@@ -146,17 +146,18 @@ int level(int levelNumber){
 
     PacMaiden pacmaiden = initPacMaiden(searchInMap(map, 'P')[0], RADIUS, SPEED, YELLOW, 3, 0);
     Ghost* ghosts = instantiateGhostsInLevel(map);
-    
     OptionButton *buttons = malloc(sizeof(OptionButton)*4);
     initOptionButton(buttons);
     Rectangle* saveOptions = malloc(sizeof(Rectangle)*3);
     initSaveButton(saveOptions);
 
+    changePacmaidenState(&pacmaiden, IMMORTAL);
     screen=update(&pacmaiden,ghosts,map,buttons,saveOptions);
 
     free(map);
     for(int i=0;i<20;i++)
         free(*(map+i));
+
     free(ghosts);
     free(saveOptions);
     free(buttons);
@@ -168,9 +169,10 @@ int loadLevel(int levelNumber){
     int screen;
     gameState=RUNNING;
 
+
     Map map=setUpMap();
     PacMaiden pacmaiden;
-    Ghost* ghosts = malloc(sizeof(ghosts)*4);
+    Ghost* ghosts = malloc(sizeof(Ghost)*4);
 
     load(map,&pacmaiden,ghosts,levelNumber);
     
@@ -178,11 +180,12 @@ int loadLevel(int levelNumber){
     initOptionButton(buttons);
     Rectangle* saveOptions = malloc(sizeof(Rectangle)*3);
     initSaveButton(saveOptions);
+
     screen=update(&pacmaiden,ghosts,map,buttons,saveOptions);
 
     free(map);
     for(int i=0;i<20;i++)
-        free(*(map+i));
+         free(*(map+i));
 
     free(ghosts);
     free(saveOptions);
