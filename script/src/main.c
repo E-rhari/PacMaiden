@@ -11,8 +11,11 @@
 
 int main(){
     inicializeWindow();
-
+    int file;
     enum screenBehavior myScreen = TITLE;
+
+    Rectangle* saveOptions = malloc(sizeof(Rectangle)*3);
+    initSaveTitleButton(saveOptions);
 
     while(!WindowShouldClose()){
         switch (myScreen)
@@ -21,7 +24,18 @@ int main(){
                 myScreen=drawTitleScreen();
             break;
             case NEWGAME:
-                myScreen=level(1);
+                file=1;
+                myScreen=level(file);
+            break;
+            case NEXT:
+                file++;
+                myScreen=level(file);
+            break;
+            case LOAD:
+                drawTitleSaveStates(saveOptions);
+                file=isSaveTitleFileClicked(saveOptions);
+                if(file!=-1)
+                    myScreen=loadLevel(file);
             break;
         }
     }

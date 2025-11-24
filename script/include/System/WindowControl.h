@@ -26,7 +26,8 @@ enum screenBehavior{
     LOAD,
     PVP,
     CREDITS,
-    TITLE
+    TITLE,
+    NEXT
 }; 
 
 /** @brief Permite que o usuário feche a tela usando ctrl + c */
