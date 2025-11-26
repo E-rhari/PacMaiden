@@ -5,6 +5,7 @@
 
 #include "./GridVector.h"
 #include "../System/WindowControl.h"
+#include "../System/PacMath.h"
 
 #pragma once
 

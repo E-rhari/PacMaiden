@@ -136,7 +136,6 @@ bool move(Character* character, Map map){
 
 
 /** @brief Teletransporta o personagem para o outro lado da tela caso ultrapasse as bordas dela.
- * 
  * @param chara Personagem que irá ser teletransportado */
 void portalBorders(Character* chara){
     // Horizontal
@@ -153,6 +152,7 @@ void portalBorders(Character* chara){
 }
 
 
+/** @brief Calcula o vetor de direção de um ponto para a posição de um personagem */
 Vector2 getDirectionToCharacter(Vector2 point, Character chara){
     Vector2 distance = {chara.circle.center.x-point.x, chara.circle.center.y-point.y};
     
@@ -168,18 +168,21 @@ Vector2 getDirectionToCharacter(Vector2 point, Character chara){
 }
 
 
+/** @brief Direciona o escaper para a posição adjacente que vai o deixa mais longe possível do threat */
 void recklessEscape(Character* escaper, Character threat, Map map){
     Vector2 directions[4] = {{-1,0}, {1,0}, {0,-1}, {0,1}};
 
     Vector2 escapeDirection = escaper->moveDirection;
     float biggestGCost = 0;
 
-    Vector2 directionToThreat = getDirectionToCharacter(escaper->circle.center, threat);
+    GridVector escaperGridPosition = vector2ToGridVector(escaper->circle.center);
+    GridVector threatGridPosition = vector2ToGridVector(threat.circle.center);
+    
 
     for(int i=0; i<4; i++)
         if(readPositionInMap(escaper->circle.center, map, directions[i]) != '#'){
-            Vector2 nextPosition = {escaper->circle.center.x+directions[i].x, escaper->circle.center.y+directions[i].y};
-            float currentGCost = fabs(nextPosition.x - threat.circle.center.x) + fabs(nextPosition.y - threat.circle.center.y);
+            Vector2 nextPosition = {modulate(escaperGridPosition.x+directions[i].x, LARGURA*PIX2GRID), modulate(escaperGridPosition.y+directions[i].y, ALTURA*PIX2GRID)};
+            float currentGCost = fabs(nextPosition.x - threatGridPosition.x) + fabs(nextPosition.y - threatGridPosition.y);
 
             if(currentGCost > biggestGCost){
                 escapeDirection = directions[i];
@@ -187,6 +190,7 @@ void recklessEscape(Character* escaper, Character threat, Map map){
             }
         }
 
+    Vector2 directionToThreat = getDirectionToCharacter(escaper->circle.center, threat);
     if((escapeDirection.x!=0 && escapeDirection.x==directionToThreat.x) || (escapeDirection.y!=0 && escapeDirection.y==directionToThreat.y))
         return;
     escaper->moveDirection = escapeDirection;
