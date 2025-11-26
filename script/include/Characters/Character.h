@@ -151,3 +151,43 @@ void portalBorders(Character* chara){
     else if(chara->circle.center.y > ALTURA)
         chara->circle.center.y = 0 - chara->circle.radius*2;   
 }
+
+
+Vector2 getDirectionToCharacter(Vector2 point, Character chara){
+    Vector2 distance = {chara.circle.center.x-point.x, chara.circle.center.y-point.y};
+    
+    Vector2 direction = {0,0};
+    if(distance.x == 0)
+        direction = (Vector2){0, (distance.y)/fabs(distance.y)};
+    else if(distance.y == 0)
+        direction = (Vector2){(distance.x)/fabs(distance.x), 0};
+    else
+        direction = (Vector2){(distance.x)/fabs(distance.x), (distance.y)/fabs(distance.y)};
+    
+    return direction;
+}
+
+
+void recklessEscape(Character* escaper, Character threat, Map map){
+    Vector2 directions[4] = {{-1,0}, {1,0}, {0,-1}, {0,1}};
+
+    Vector2 escapeDirection = escaper->moveDirection;
+    float biggestGCost = 0;
+
+    Vector2 directionToThreat = getDirectionToCharacter(escaper->circle.center, threat);
+
+    for(int i=0; i<4; i++)
+        if(readPositionInMap(escaper->circle.center, map, directions[i]) != '#'){
+            Vector2 nextPosition = {escaper->circle.center.x+directions[i].x, escaper->circle.center.y+directions[i].y};
+            float currentGCost = fabs(nextPosition.x - threat.circle.center.x) + fabs(nextPosition.y - threat.circle.center.y);
+
+            if(currentGCost > biggestGCost){
+                escapeDirection = directions[i];
+                biggestGCost = currentGCost;
+            }
+        }
+
+    if((escapeDirection.x!=0 && escapeDirection.x==directionToThreat.x) || (escapeDirection.y!=0 && escapeDirection.y==directionToThreat.y))
+        return;
+    escaper->moveDirection = escapeDirection;
+}

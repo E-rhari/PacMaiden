@@ -91,6 +91,10 @@ void ghostAttackPacmaiden(PacMaiden* pacmaiden, Ghost* ghost, Map map){
 
 void chooseDestinationByType(Ghost* ghost, Map map, PacMaiden* pacmaiden){
     if(ghost->canChooseDestination && isCharacterInGridCenter(ghost->chara)){
+        if(ghost->state == VULNERABLE){
+            recklessEscape(&ghost->chara, pacmaiden->chara, map);
+            return;
+        }
         switch (ghost->type){
             case UNAWARE:   choseDestinationUnaware(ghost); break;
             case AWARE:     chooseDestinationAware(ghost, map); break;
