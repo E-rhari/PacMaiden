@@ -170,6 +170,27 @@ void printNodeList(NodeList list){
 }
 
 
+/** @brief Aloca uma matriz de Nodes na memória com um chute dos seus custos calculados */
+Node** setUpNodeMap(GridVector start, GridVector end){
+    Node** nodeMap = (Node**)malloc((LARGURA*PIX2GRID)*sizeof(Node*));
+    for(int i=0; i<LARGURA*PIX2GRID; i++){
+        nodeMap[i] = (Node*)malloc((ALTURA*PIX2GRID)*sizeof(Node));
+        for(int j=0; j<ALTURA*PIX2GRID; j++)
+            innitNode(&nodeMap[i][j], (GridVector){i, j}, start, end);
+    }
+    return nodeMap;
+}
+
+
+void freeNodeMap(Node** nodeMap){
+    for(int i=0; i<20; i++){
+        printf("Free #%d\n", i);
+        free(*(nodeMap+i));
+    }
+    free(nodeMap);
+    printf("Free Map\n");
+}
+
 /** A* (A STAR) ALGORITHM */
 
 // MUITO ineficiente. Vamos mudar pra uma Heap!!!!
@@ -185,7 +206,7 @@ Node* getBestNode(NodeList* list){
 
 
 /** @brief Transforma um caminho salvo através da hierarquia de nodes em uma NodeList */
-NodeList getPathFromNodePile(Node finalNode){
+NodeList getPathFromNodePile(Node finalNode, Node** nodeMap){
     NodeList path;
     innitNodeList(&path);
 
@@ -200,20 +221,10 @@ NodeList getPathFromNodePile(Node finalNode){
     }
     insertIntoNodeList(&path, currentNode, 0);
 
+    freeNodeMap(nodeMap);
     return path;
 }
 
-
-/** @brief Aloca uma matriz de Nodes na memória com um chute dos seus custos calculados */
-Node** setUpNodeMap(GridVector start, GridVector end){
-    Node** nodeMap = (Node**)malloc((LARGURA*PIX2GRID)*sizeof(Node*));
-    for(int i=0; i<LARGURA*PIX2GRID; i++){
-        nodeMap[i] = (Node*)malloc((ALTURA*PIX2GRID)*sizeof(Node));
-        for(int j=0; j<ALTURA*PIX2GRID; j++)
-            innitNode(&nodeMap[i][j], (GridVector){i, j}, start, end);
-    }
-    return nodeMap;
-}
 
 
 /** @brief Encontra o menor caminho de start a end no map através do algorítmo A* */
@@ -230,8 +241,9 @@ NodeList findPath(GridVector start, GridVector end, Map map){
         Node* currentNode = getBestNode(&possibleNodes);
         currentNode->hasBeenVisited = true;
 
-        if(gridVectorEquals(currentNode->position, end))
-            return getPathFromNodePile(*currentNode);
+        if(gridVectorEquals(currentNode->position, end)){
+            return getPathFromNodePile(*currentNode, nodeMap);
+        }
         
         GridVector directions[4] = {{-1,0}, {1,0}, {0,-1}, {0,1}};  // Todas as direções em que um vizinho pode estar
         for(int i=0; i<4; i++){
@@ -255,5 +267,6 @@ NodeList findPath(GridVector start, GridVector end, Map map){
         }
         removeNodeFromNodeList(&possibleNodes, currentNode);
     }
+    freeNodeMap(nodeMap);
     return (NodeList){NULL, 0};
 }
