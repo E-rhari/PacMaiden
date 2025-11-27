@@ -11,6 +11,7 @@
 #include "../Characters/Ghosts/StalkerGhost.h"
 #include "../Characters/Ghosts/AwareGhost.h"
 #include "../Characters/Ghosts/UnawareGhost.h"
+#include "../Characters/Ghosts/AmbusherGhost.h"
 
 #pragma once
 
@@ -21,9 +22,9 @@ Ghost* instantiateGhostsInLevel(Map map){
     Vector2* positions = searchInMap(map, 'f');
 
     ladies[0] = initGhost(positions[0], RADIUS, SPEED, RED, STALKER); //homura
-    ladies[1] = initGhost(positions[1], RADIUS, SPEED, SKYBLUE, STALKER);//sora
-    ladies[2] = initGhost(positions[2], RADIUS, SPEED, ORANGE, STALKER);//hikari
-    ladies[3] = initGhost(positions[3], RADIUS, SPEED, PINK, STALKER);//hana
+    ladies[1] = initGhost(positions[1], RADIUS, SPEED, SKYBLUE, AMBUSHER);//sora
+    ladies[2] = initGhost(positions[2], RADIUS, SPEED, ORANGE, AWARE);//hikari
+    ladies[3] = initGhost(positions[3], RADIUS, SPEED, PINK, AWARE);//hana
 
     return ladies;
 }

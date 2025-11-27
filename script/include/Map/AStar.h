@@ -8,6 +8,8 @@
 #include "./Map.h"
 #include "../System/PacMath.h"
 
+#pragma once
+
 
 /***** DATA STRUCTURES ******/
 
@@ -184,16 +186,20 @@ Node* getBestNode(NodeList* list){
 
 /** @brief Transforma um caminho salvo através da hierarquia de nodes em uma NodeList */
 NodeList getPathFromNodePile(Node finalNode){
-    Node currentNode = finalNode;
-
     NodeList path;
     innitNodeList(&path);
+
+    // if(finalNode == NULL)
+    //     return path;
+
+    Node currentNode = finalNode;
     
     while(currentNode.parent != NULL){
         insertIntoNodeList(&path, currentNode, 0);
         currentNode = *currentNode.parent;
     }
     insertIntoNodeList(&path, currentNode, 0);
+
     return path;
 }
 
@@ -249,4 +255,5 @@ NodeList findPath(GridVector start, GridVector end, Map map){
         }
         removeNodeFromNodeList(&possibleNodes, currentNode);
     }
+    return (NodeList){NULL, 0};
 }

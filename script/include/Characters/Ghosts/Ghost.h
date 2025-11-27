@@ -7,6 +7,7 @@
 #include "../Character.h"
 #include "../PacMaiden.h"
 #include "../../Map/Map.h"
+#include "../../Map/AStar.h"
 
 #pragma once
 
@@ -22,6 +23,7 @@ typedef enum {
     UNAWARE,
     AWARE,
     STALKER,
+    AMBUSHER
 } GhostType;
 
 
@@ -50,7 +52,8 @@ Ghost initGhost(Vector2 position, int radius, float speed, Color color, GhostTyp
 
 bool choseDestinationUnaware(Ghost* ghost);
 bool chooseDestinationAware(Ghost* ghost, Map map);
-void stalkPacmaiden(Ghost* ghost, Map map, PacMaiden* pacmaiden);
+NodeList stalkPacmaiden(Ghost* ghost, Map map, PacMaiden* pacmaiden);
+void ambushPacmaiden(Ghost* ghost, Map map, PacMaiden* pacmaiden, int blocksAhead);
 
 
 
@@ -99,6 +102,7 @@ void chooseDestinationByType(Ghost* ghost, Map map, PacMaiden* pacmaiden){
             case UNAWARE:   choseDestinationUnaware(ghost); break;
             case AWARE:     chooseDestinationAware(ghost, map); break;
             case STALKER:   stalkPacmaiden(ghost, map, pacmaiden); break;
+            case AMBUSHER:  ambushPacmaiden(ghost, map, pacmaiden, 4); break;
         }
         ghost->canChooseDestination = false;
     }

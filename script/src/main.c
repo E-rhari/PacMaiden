@@ -21,7 +21,7 @@ int main(){
                 myScreen=drawTitleScreen();
             break;
             case NEWGAME:
-                myScreen=level(1);
+                myScreen=level(2);
             break;
         }
     }

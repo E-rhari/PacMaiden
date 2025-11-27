@@ -34,19 +34,20 @@ Vector2 getStalkingDirection(Ghost* ghost, Node nextStep){
 
 
 /** @brief Persegue a PacMaiden através do algorítmo A* */
-void stalkPacmaiden(Ghost* ghost, Map map, PacMaiden* pacmaiden){
+NodeList stalkPacmaiden(Ghost* ghost, Map map, PacMaiden* pacmaiden){
     if(!isCharacterInsideScreen(ghost->chara, (Vector2){0,0}))
-            return;
+            return (NodeList){NULL, 0};
 
     NodeList path;
     path = findPath(vector2ToGridVector(ghost->chara.circle.center), vector2ToGridVector(pacmaiden->chara.circle.center), map);
 
     if(path.start == NULL || pacmaiden->state == IMMORTAL){
         chooseDestinationAware(ghost, map);
-        return;
+        return (NodeList){NULL, 0};
     }
 
-    Node nextStep = *getFromNodeList(&path, 1);
-
-    ghost->chara.moveDirection = getStalkingDirection(ghost, nextStep);
+    Node* nextStep = getFromNodeList(&path, 1);
+    if(nextStep != NULL)
+        ghost->chara.moveDirection = getStalkingDirection(ghost, *nextStep);
+    return path;
 }
