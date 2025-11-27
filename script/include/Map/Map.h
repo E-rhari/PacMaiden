@@ -129,9 +129,18 @@ Vector2* searchInMap(Map map, char object){
                 occurrences[length] = (Vector2){j*40, i*40};
                 length++;
             }
+
     return occurrences;
 }
 
+int countPallets(Map map){
+    int length=0;
+    for(int i=0;i<20;i++)
+        for(int j=0;j<40;j++)
+            if(map[i][j]=='.')
+                length++;
+    return length;
+}
 
 /** @brief Confere se o personagem está no centro de uma célula do grid do jogo. */
 bool isPositionInGridCenter(Vector2 position){

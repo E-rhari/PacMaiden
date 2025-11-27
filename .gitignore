@@ -57,3 +57,4 @@ dkms.conf
 
 # vscode
 .vscode/
+script/src/runGame.bat

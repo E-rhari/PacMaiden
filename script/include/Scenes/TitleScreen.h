@@ -5,34 +5,34 @@
 
 #pragma once
 
-#define BUTTONBASE (Color){10, 40, 80, 255}
-#define BUTTONHOVER (Color){20, 70, 140, 255}
-#define BUTTONBAR (Color){100, 180, 255, 255}
+#define BUTTONTITLEBASE (Color){10, 40, 80, 255}
+#define BUTTONTITLEHOVER (Color){20, 70, 140, 255}
+#define BUTTONTITLEBAR (Color){100, 180, 255, 255}
 
 
 
-typedef struct{
+typedef struct {
     Rectangle optionBox;
     Color colorBase;
     Color colorHover;
     enum screenBehavior id;
-} optionButton;
+} titleButton;
 
 
-bool isOptionButtonHovered(optionButton button){
+bool isTitleButtonHovered(titleButton button){
     Vector2 mousePosition = GetMousePosition();
     return CheckCollisionPointRec(mousePosition,button.optionBox);
 }
 
-int isOptionButtonClicked(optionButton *button){
+int isTitleButtonClicked(titleButton *button){
     for(int i=0;i<4;i++)
-        if(isOptionButtonHovered(button[i]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        if(isTitleButtonHovered(button[i]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
             return button[i].id;
-    return 4;
+    return TITLE;
 }
 
 int drawTitleScreen(){
-    optionButton buttons[4];
+    titleButton buttons[4];
     char *optionsText[]={"New Game","Load","PVP","Creditos"};
     int paddingYButton=110, paddingYTxt=110;
 
@@ -47,14 +47,67 @@ int drawTitleScreen(){
 
     for(int i=0;i<4;i++){
 
-        buttons[i] = (optionButton){(Rectangle){optionMeasures.x, optionMeasures.y+paddingYButton*i, optionMeasures.z, optionMeasures.w},BUTTONBASE, BUTTONHOVER,i};
-        Color optionColor = isOptionButtonHovered(buttons[i])? buttons[i].colorHover : buttons[i].colorBase;
+        buttons[i] = (titleButton){(Rectangle){optionMeasures.x, optionMeasures.y+paddingYButton*i, optionMeasures.z, optionMeasures.w},BUTTONTITLEBASE, BUTTONTITLEHOVER,i};
+        Color optionColor = isTitleButtonHovered(buttons[i])? buttons[i].colorHover : buttons[i].colorBase;
         DrawRectangleRounded(buttons[i].optionBox, 0.2f, 10, optionColor);
 
         Vector2 optionSize = MeasureTextEx(GetFontDefault(), optionsText[i], 18, 1);
-        DrawTextEx(GetFontDefault(), optionsText[i], (Vector2){background.x + (background.width - optionSize.x) / 2, background.y + paddingYTxt*i + 180}, 18, 1, BUTTONBAR);
+        DrawTextEx(GetFontDefault(), optionsText[i], (Vector2){background.x + (background.width - optionSize.x) / 2, background.y + paddingYTxt*i + 180}, 18, 1, BUTTONTITLEBAR);
     }
 
     EndDrawing();
-    return isOptionButtonClicked(buttons);
+    return isTitleButtonClicked(buttons);
+}
+
+
+
+void initSaveTitleButton(Rectangle *save){
+    Rectangle saveBox = {600, 175, 400, 450};
+    int saveRecx = 75;
+    int saveRecy = 50;
+    int savePicOffset = 50;
+    int padding = 75;
+    
+    for(int i=0; i<3;i++)
+        save[i] = (Rectangle){saveBox.x + savePicOffset, saveBox.y + padding*(i+1) + saveRecy*i, saveRecx, saveRecy};
+}
+
+bool isSaveTitleFileHovered(Rectangle save){
+    Vector2 mousePos = GetMousePosition();
+    return CheckCollisionPointRec(mousePos, save);
+}
+
+int isSaveTitleFileClicked(Rectangle* save){
+
+  for(int i=0;i<3;i++)
+     if(isSaveTitleFileHovered(save[i]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+        return i;
+     }
+    return -1;
+}
+
+void drawTitleSaveStates(Rectangle*savePic){
+    Rectangle saveBox = {600, 175, 400, 450};
+    DrawRectangleRounded(saveBox, 0.1f, 10, (Color){ 30, 80, 255, 255 });
+
+    int textOffsetX = 95;
+    int textOffsetY = 10;
+    BeginDrawing();
+    for(int i = 0; i < 3; i++){
+        DrawRectangleRounded(savePic[i], 0.1f, 10, BLACK);
+        DrawRectangleRoundedLinesEx(savePic[i], 0.1f, 10, 3, BUTTONBAR);
+
+        time_t now = time(NULL);
+        struct tm *infoTime = localtime(&now);
+        char saveMoment[32];
+        strftime(saveMoment, sizeof(saveMoment), "%d/%m/%Y %H:%M", infoTime);
+        char saveText[64];
+        snprintf(saveText, sizeof(saveText), "Save %d - %s", i + 1, saveMoment);
+        DrawTextEx(GetFontDefault(), saveText,
+                   (Vector2){savePic[i].x + textOffsetX, savePic[i].y + textOffsetY},
+                   18, 1, RAYWHITE);
+
+        Vector2 mousePos = GetMousePosition();
+    }
+    EndDrawing();
 }
