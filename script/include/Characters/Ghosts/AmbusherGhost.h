@@ -19,19 +19,8 @@
 /** @brief Tenta prever a posição que a PacMaiden quer estar calculando a posição válida a sua frente */
 Vector2 predictPacmaidenPosition(PacMaiden* pacmaiden, Map map, int blocksAhead){
     Vector2 currentPosition = pacmaiden->chara.circle.center;
-
-    Vector2 testingPosition = {modulate(currentPosition.x+(pacmaiden->chara.moveDirection.x*40), LARGURA),
-                               modulate(currentPosition.y+(pacmaiden->chara.moveDirection.y*40), ALTURA)};
     Vector2 directions[4] = {{-1,0}, {1,0}, {0,-1}, {0,1}};
     for(int i=0; i<blocksAhead; i++){
-        // Vector2 backDirection = {currentPosition.x-testingPosition.x, currentPosition.y-currentPosition.y};
-        // int amountOfFreeWays = 0;
-        // for(int i=0; i<4; i++)
-        //     if(!Vector2Equals(directions[i], backDirection) && readPositionInMap(currentPosition, map, directions[i]) != '#')
-        //         amountOfFreeWays++;
-        // if(amountOfFreeWays == 1)
-        //     currentPosition = (Vector2){currentPosition.x+(40*)}
-            
         Vector2 testingPosition = {modulate(currentPosition.x+(pacmaiden->chara.moveDirection.x*40), LARGURA),
                                    modulate(currentPosition.y+(pacmaiden->chara.moveDirection.y*40), ALTURA)};
         if(readPositionInMap(testingPosition, map, (Vector2){0,0}) == '#')

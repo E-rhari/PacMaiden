@@ -184,11 +184,9 @@ Node** setUpNodeMap(GridVector start, GridVector end){
 
 void freeNodeMap(Node** nodeMap){
     for(int i=0; i<20; i++){
-        printf("Free #%d\n", i);
         free(*(nodeMap+i));
     }
     free(nodeMap);
-    printf("Free Map\n");
 }
 
 /** A* (A STAR) ALGORITHM */

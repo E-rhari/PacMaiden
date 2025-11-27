@@ -102,7 +102,7 @@ void chooseDestinationByType(Ghost* ghost, Map map, PacMaiden* pacmaiden){
             case UNAWARE:   choseDestinationUnaware(ghost); break;
             case AWARE:     chooseDestinationAware(ghost, map); break;
             case STALKER:   stalkPacmaiden(ghost, map, pacmaiden); break;
-            case AMBUSHER:  ambushPacmaiden(ghost, map, pacmaiden, 4); break;
+            case AMBUSHER:  ambushPacmaiden(ghost, map, pacmaiden, 6); break;
         }
         ghost->canChooseDestination = false;
     }
