@@ -3,7 +3,7 @@
 
 #include "../Map/Map.h"
 #include "../Characters/Character.h"
-#include "../Characters/Ghost.h"
+#include "../Characters/Ghosts/Ghost.h"
 #include "../Characters/PacMaiden.h"
 
 #pragma once
@@ -14,7 +14,7 @@
  * @return o caminho do arquivo a ser acessado
  */
 char* selecSaveFile(int saveFile){
-    char *path=malloc(sizeof(char)*50);
+    char *path= (char*)malloc(sizeof(char)*50);
     
     #ifdef _WIN32
         strcpy(path,"PacMaiden/sprites/saves/saveMap");

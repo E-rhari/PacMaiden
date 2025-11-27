@@ -12,14 +12,16 @@ GameState gameState;
 
 #include "../Characters/Character.h"
 #include "../Characters/PacMaiden.h"
-#include "../Characters/Ghost.h"
+#include "../Characters/Ghosts/Ghost.h"
 #include "../System/WindowControl.h"
 #include "../System/Input.h"
 #include "../Map/Map.h"
 #include "Menu.h"
 
-#include "../Characters/CopyGhost.h"
-#include "../Characters/StupidGhost.h"
+#include "../Characters/Ghosts/StalkerGhost.h"
+#include "../Characters/Ghosts/AwareGhost.h"
+#include "../Characters/Ghosts/UnawareGhost.h"
+#include "../Characters/Ghosts/AmbusherGhost.h"
 
 #pragma once
 
@@ -30,10 +32,10 @@ Ghost* instantiateGhostsInLevel(Map map){
     Ghost *ladies = malloc(sizeof(Ghost)*4); 
     Vector2* positions = searchInMap(map, 'f');
 
-    ladies[0] = initGhost(positions[0], RADIUS, SPEED, RED, COPY); //homura
-    ladies[1] = initGhost(positions[1], RADIUS, SPEED, SKYBLUE, STUPID);//sora
-    ladies[2] = initGhost(positions[2], RADIUS, SPEED, ORANGE, AWARE);//hikari
-    ladies[3] = initGhost(positions[3], RADIUS, SPEED, PINK, AWARE);//hana
+    ladies[0] = initGhost(positions[0], RADIUS, SPEED, RED, AMBUSHER); //homura
+    // ladies[1] = initGhost(positions[1], RADIUS, SPEED, SKYBLUE, AMBUSHER);//sora
+    // ladies[2] = initGhost(positions[2], RADIUS, SPEED, ORANGE, AWARE);//hikari
+    // ladies[3] = initGhost(positions[3], RADIUS, SPEED, PINK, AWARE);//hana
 
     return ladies;
 }
