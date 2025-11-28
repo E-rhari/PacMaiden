@@ -92,7 +92,7 @@ bool isPacMaidenDead(PacMaiden* PacMaiden){
 }
 
 /** @brief Roda todo frame. */
-int update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons,Rectangle *saveOptions){
+int update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, Rectangle *saveOptions, Music music){
     int fileNumber;
     int pallets = countPallets(map);
 
@@ -100,6 +100,8 @@ int update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons,Re
         fileNumber=-1;
         if(DEBUG_MODE)
             userClose();
+
+        UpdateMusicStream(music);
     
         draw(map,pacmaiden,ghosts,buttons,saveOptions);
         
@@ -153,8 +155,11 @@ int level(int levelNumber){
     Rectangle* saveOptions = malloc(sizeof(Rectangle)*3);
     initSaveButton(saveOptions);
 
+    Music mainTheme = LoadMusicStream("../../audio/Music/MainTheme/MainTheme.mp3");
+    PlayMusicStream(mainTheme);
+
     changePacmaidenState(&pacmaiden, IMMORTAL);
-    screen=update(&pacmaiden,ghosts,map,buttons,saveOptions);
+    screen=update(&pacmaiden,ghosts,map,buttons,saveOptions, mainTheme);
 
     free(map);
     for(int i=0;i<20;i++)
@@ -183,7 +188,10 @@ int loadLevel(int levelNumber){
     Rectangle* saveOptions = malloc(sizeof(Rectangle)*3);
     initSaveButton(saveOptions);
 
-    screen=update(&pacmaiden,ghosts,map,buttons,saveOptions);
+    Music mainTheme = LoadMusicStream("../../audio/Music/MainTheme/MainTheme.mp3");
+    PlayMusicStream(mainTheme);
+
+    screen=update(&pacmaiden,ghosts,map,buttons,saveOptions, mainTheme);
 
     free(map);
     for(int i=0;i<20;i++)

@@ -11,6 +11,8 @@
 
 int main(){
     inicializeWindow();
+    InitAudioDevice();
+
     int file;
     enum screenBehavior myScreen = TITLE;
 
