@@ -24,7 +24,7 @@ int main(){
                 myScreen=drawTitleScreen();
             break;
             case NEWGAME:
-                file=1;
+                file=2;
                 myScreen=level(file);
             break;
             case NEXT:
