@@ -93,7 +93,7 @@ bool isPacMaidenDead(PacMaiden* PacMaiden){
 }
 
 /** @brief Roda todo frame. */
-int update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, Rectangle *saveOptions, Music music){
+int update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, Rectangle *saveOptions, Music* songs){
     int fileNumber;
     int pallets = countPallets(map);
 
@@ -108,13 +108,20 @@ int update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, R
             return TITLE;
         if(pallets<=0)
             return NEXT;
-        if(IsKeyPressed(KEY_TAB))
-            gameState=PAUSED;
+
+        if(IsKeyPressed(KEY_TAB)){
+            if(gameState==PAUSED)    
+               gameState=RUNNING;
+            else 
+                gameState=PAUSED;
+        }
+
+        handleMusic(songs, gameState!=RUNNING);
 
         switch (gameState)
         {
             case PAUSED:
-                isOptionButtonClicked(buttons,GetKeyPressed());
+                isOptionButtonClicked(buttons, GetKeyPressed());
             break;
             case RUNNING:
                 charactersBehaviours(pacmaiden, ghosts, map, &pallets);
@@ -153,15 +160,15 @@ int level(int levelNumber){
     Rectangle* saveOptions = malloc(sizeof(Rectangle)*3);
     initSaveButton(saveOptions);
 
-    Music mainTheme = LoadMusicStream("../../audio/Music/MainTheme/MainTheme.wav");
-    PlayMusicStream(mainTheme);
+    Music tracks[SONG_AMOUT];
+    initiateMusic(tracks); 
+    focusTrack(tracks, MAIN_THEME);
 
     changePacmaidenState(&pacmaiden, IMMORTAL);
-    screen=update(&pacmaiden,ghosts,map,buttons,saveOptions, mainTheme);
+    screen=update(&pacmaiden,ghosts,map,buttons,saveOptions, tracks);
 
+    stopMusic(tracks);
     free(map);
-
-    StopMusicStream(mainTheme);
     free(ghosts);
     free(saveOptions);
     free(buttons);
@@ -185,12 +192,14 @@ int loadLevel(int levelNumber){
     Rectangle* saveOptions = malloc(sizeof(Rectangle)*3);
     initSaveButton(saveOptions);
 
-    Music mainTheme = LoadMusicStream("../../audio/Music/MainTheme/MainTheme.wav");
-    PlayMusicStream(mainTheme);
 
-    screen=update(&pacmaiden,ghosts,map,buttons,saveOptions, mainTheme);
+    Music tracks[SONG_AMOUT];
+    initiateMusic(tracks); 
+    focusTrack(tracks, MAIN_THEME);
 
-    StopMusicStream(mainTheme);
+    screen=update(&pacmaiden,ghosts,map,buttons,saveOptions, tracks);
+
+    stopMusic(tracks);
     freeMap(map);
     free(ghosts);
     free(saveOptions);
