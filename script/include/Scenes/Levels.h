@@ -75,7 +75,7 @@ void charactersBehaviours(PacMaiden* pacmaiden, Ghost* ghosts, Map map,int *pall
     }
 
     getBufferedInput(&pacmaiden->chara.moveDirection, isCharacterInGridCenter(pacmaiden->chara)
-                                                   && isCharacterInsideScreen(pacmaiden->chara, (Vector2){0,0}));
+                                                   && isCharacterInsideScreen(pacmaiden->chara, (Vector2){0,0}),1,&pacmaiden->bufferedInput);
     pacmaidenBehaviour(pacmaiden, map);
     for(int i=0; i<4; i++)
         ghostBehaviour(&ghosts[i], map, pacmaiden);
@@ -139,10 +139,11 @@ int update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons,Re
 int level(int levelNumber){
 
     int screen;
+    bool isSinglePlayer = true;
     gameState=RUNNING;
 
     Map map=setUpMap();
-    readMap(levelNumber,map);
+    readMap(levelNumber,map,isSinglePlayer);
 
     PacMaiden pacmaiden = initPacMaiden(searchInMap(map, 'P')[0], RADIUS, SPEED, YELLOW, 3, 0);
     Ghost* ghosts = instantiateGhostsInLevel(map);

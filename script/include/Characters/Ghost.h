@@ -183,18 +183,25 @@ void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden){
 
     portalBorders(&ghost->chara);
 
-    if(checkPowerPellet(pacmaiden, map))
+    if(checkPowerPellet(pacmaiden, map)){
         changeGhostState(ghost, VULNERABLE);
+        changePacmaidenState(pacmaiden, KILLER);
+    }
+
 
     if(ghost->state == VULNERABLE){
         blinkAnimation(&ghost->chara.color, DARKBLUE, GRAY, &ghost->chara.procAnimation, 5, 2.5);
-        if(!ghost->chara.procAnimation.running)
+        if(!ghost->chara.procAnimation.running){
             changeGhostState(ghost, SPOOKY);
-        
-        if(checkCharacterCollision(pacmaiden->chara, ghost->chara)){
-            hurtGhost(ghost);
-            addPoints(pacmaiden, 100);
+            changePacmaidenState(pacmaiden, NORMAL);
         }
+
+        
+        if(pacmaiden->state==KILLER)
+            if(checkCharacterCollision(pacmaiden->chara, ghost->chara)){
+                hurtGhost(ghost);
+                addPoints(pacmaiden, 100);
+            }
     }
     else
         ghostAttackPacmaiden(pacmaiden, ghost, map);

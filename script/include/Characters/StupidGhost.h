@@ -8,7 +8,7 @@
 #include "../Map/Map.h"
 
 #include "Ghost.h"
-
+#pragma once
 void stupidMove(Ghost* ghost, Map map, ProceduralAnimation* animation){
     blinkAnimation(&ghost->chara.color, ghost->initialValues.color, WHITE, animation, 3, 1);
     if(!ghost->chara.procAnimation.running)
