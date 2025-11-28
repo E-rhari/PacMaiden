@@ -162,9 +162,9 @@ int level(int levelNumber){
     screen=update(&pacmaiden,ghosts,map,buttons,saveOptions, mainTheme);
 
     free(map);
-    for(int i=0;i<20;i++)
-        free(*(map+i));
 
+    StopMusicStream(mainTheme);
+    freeMap(map);
     free(ghosts);
     free(saveOptions);
     free(buttons);
@@ -193,10 +193,8 @@ int loadLevel(int levelNumber){
 
     screen=update(&pacmaiden,ghosts,map,buttons,saveOptions, mainTheme);
 
-    free(map);
-    for(int i=0;i<20;i++)
-         free(*(map+i));
-
+    StopMusicStream(mainTheme);
+    freeMap(map);
     free(ghosts);
     free(saveOptions);
     free(buttons);
