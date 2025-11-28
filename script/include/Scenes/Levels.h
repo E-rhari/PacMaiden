@@ -101,8 +101,12 @@ int update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, R
         if(DEBUG_MODE)
             userClose();
 
+        if(gameState==PAUSED)
+            PauseMusicStream(music);
+        else
+            ResumeMusicStream(music);
         UpdateMusicStream(music);
-    
+
         draw(map,pacmaiden,ghosts,buttons,saveOptions);
         
         
