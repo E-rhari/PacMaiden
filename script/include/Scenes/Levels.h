@@ -15,6 +15,7 @@ GameState gameState;
 #include "../Characters/Ghosts/Ghost.h"
 #include "../System/WindowControl.h"
 #include "../System/Input.h"
+#include "../System/Audio.h"
 #include "../Map/Map.h"
 #include "Menu.h"
 
@@ -32,9 +33,9 @@ Ghost* instantiateGhostsInLevel(Map map){
     Ghost *ladies = malloc(sizeof(Ghost)*4); 
     Vector2* positions = searchInMap(map, 'f');
 
-    ladies[0] = initGhost(positions[0], RADIUS, SPEED, RED, AMBUSHER); //homura
-    ladies[1] = initGhost(positions[1], RADIUS, SPEED, SKYBLUE, AMBUSHER);//sora
-    ladies[2] = initGhost(positions[2], RADIUS, SPEED, ORANGE, AWARE);//hikari
+    // ladies[0] = initGhost(positions[0], RADIUS, SPEED, RED, AMBUSHER); //homura
+    // ladies[1] = initGhost(positions[1], RADIUS, SPEED, SKYBLUE, AMBUSHER);//sora
+    // ladies[2] = initGhost(positions[2], RADIUS, SPEED, ORANGE, AWARE);//hikari
     ladies[3] = initGhost(positions[3], RADIUS, SPEED, PINK, AWARE);//hana
 
     return ladies;
@@ -101,14 +102,7 @@ int update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, R
         if(DEBUG_MODE)
             userClose();
 
-        if(gameState==PAUSED)
-            PauseMusicStream(music);
-        else
-            ResumeMusicStream(music);
-        UpdateMusicStream(music);
-
         draw(map,pacmaiden,ghosts,buttons,saveOptions);
-        
         
         if(isPacMaidenDead(pacmaiden))
             return TITLE;
@@ -159,7 +153,7 @@ int level(int levelNumber){
     Rectangle* saveOptions = malloc(sizeof(Rectangle)*3);
     initSaveButton(saveOptions);
 
-    Music mainTheme = LoadMusicStream("../../audio/Music/MainTheme/MainTheme.mp3");
+    Music mainTheme = LoadMusicStream("../../audio/Music/MainTheme/MainTheme.wav");
     PlayMusicStream(mainTheme);
 
     changePacmaidenState(&pacmaiden, IMMORTAL);
@@ -168,7 +162,6 @@ int level(int levelNumber){
     free(map);
 
     StopMusicStream(mainTheme);
-    freeMap(map);
     free(ghosts);
     free(saveOptions);
     free(buttons);
@@ -192,7 +185,7 @@ int loadLevel(int levelNumber){
     Rectangle* saveOptions = malloc(sizeof(Rectangle)*3);
     initSaveButton(saveOptions);
 
-    Music mainTheme = LoadMusicStream("../../audio/Music/MainTheme/MainTheme.mp3");
+    Music mainTheme = LoadMusicStream("../../audio/Music/MainTheme/MainTheme.wav");
     PlayMusicStream(mainTheme);
 
     screen=update(&pacmaiden,ghosts,map,buttons,saveOptions, mainTheme);
