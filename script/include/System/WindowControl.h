@@ -24,14 +24,32 @@
 #pragma once
 
 
-enum screenBehavior{
+typedef enum screenBehavior{
     NEWGAME,
     LOAD,
     PVP,
     CREDITS,
     TITLE,
     NEXT
-}; 
+} ScreenBehavior; 
+
+ScreenBehavior currentScreen;
+
+
+void changeScreenState(ScreenBehavior screen){
+    currentScreen = screen;
+
+    switch (screen)
+    {
+        case NEWGAME: break;
+        case LOAD: break;
+        case PVP: break;
+        case CREDITS: break;
+        case TITLE: break;
+        case NEXT: break;
+    }
+}
+
 
 /** @brief Permite que o usuário feche a tela usando ctrl + c */
 void userClose(){
