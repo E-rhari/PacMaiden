@@ -5,6 +5,7 @@ typedef enum GameState{
     PAUSED,
     SAVING,
     LOADING,
+    GAMEOVER,
     EXIT
 }GameState;
 
@@ -29,12 +30,11 @@ GameState gameState;
 
 
 
-
 Ghost* instantiateGhostsInLevel(Map map){
     Ghost *ladies = malloc(sizeof(Ghost)*4); 
     Vector2* positions = searchInMap(map, 'f');
 
-    ladies[0] = initGhost(positions[0], RADIUS, SPEED, RED, AMBUSHER); //homura
+    ladies[0] = initGhost(positions[0], RADIUS, SPEED, RED, STALKER); //homura
     ladies[1] = initGhost(positions[1], RADIUS, SPEED, SKYBLUE, AMBUSHER);//sora
     ladies[2] = initGhost(positions[2], RADIUS, SPEED, ORANGE, AWARE);//hikari
     ladies[3] = initGhost(positions[3], RADIUS, SPEED, PINK, AWARE);//hana
@@ -44,29 +44,34 @@ Ghost* instantiateGhostsInLevel(Map map){
 
 
 /** @brief Desenha todas as coisas do jogo. */
-void draw(Map map,PacMaiden* pacmaiden, Ghost* ghosts,OptionButton* buttons,Rectangle* saveOptions){
-    BeginDrawing();
-
+void drawLevel(Map map,PacMaiden* pacmaiden, Ghost* ghosts,OptionButton* buttons,Rectangle* saveOptions){
+    // Mapa
     ClearBackground(BLACK);
     drawMap(map);
     
+    // Personagens
     DrawCircleV(pacmaiden->chara.circle.center, pacmaiden->chara.circle.radius, pacmaiden->chara.color);
 
+    for(int i=0; i<4; i++)
+        DrawCircleV(ghosts[i].chara.circle.center, ghosts[i].chara.circle.radius, ghosts[i].chara.color);
+
+    // Hud
     DrawRectangle(0, 800, LARGURA, (int)GRID2PIX, BLACK);
     DrawText(TextFormat("Pontuação: %d", pacmaiden->points), SCOREPOSY, ALTURA, SCORESIZE, RAYWHITE);
     for(int i=0; i<pacmaiden->lifes; i++)
         DrawCircle(LARGURA-(i+1)*(20)-(i*20), ALTURA+20, 20, pacmaiden->initialValues.color);
 
-    for(int i=0; i<4; i++)
-        DrawCircleV(ghosts[i].chara.circle.center, ghosts[i].chara.circle.radius, ghosts[i].chara.color);
-
+    // Menu
     if(gameState==PAUSED)
         drawOpenedMenu(buttons);
     if(gameState==SAVING || gameState==LOADING)
         drawSaveStates(saveOptions);
-    if(gameState==STARTING)
-        DrawText("TAB para pular", LARGURA/2 - 80, ALTURA+15, 20, RAYWHITE);
-        
+}
+
+/** @brief Desenha todas as coisas do jogo e fecha a rotina de desenhar, impedindo modificações futuras na tela sem apagá-la por completo */
+void restricDrawLevel(Map map,PacMaiden* pacmaiden, Ghost* ghosts,OptionButton* buttons,Rectangle* saveOptions){
+    BeginDrawing();
+    drawLevel(map, pacmaiden, ghosts, buttons, saveOptions);
     EndDrawing();
 }
 
@@ -86,17 +91,12 @@ void charactersBehaviours(PacMaiden* pacmaiden, Ghost* ghosts, Map map,int *pall
     for(int i=0; i<4; i++)
         ghostBehaviour(&ghosts[i], map, pacmaiden);
 
-    countPoints(pacmaiden, map, charCollided(*pacmaiden, map),pallets);
-}
-
-bool isPacMaidenDead(PacMaiden* PacMaiden){
-    if(PacMaiden->lifes<=0)
-        return true;
-    return false;
+    countPoints(pacmaiden, map, charCollided(*pacmaiden, map), pallets);
 }
 
 
-void startCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, OptionButton* buttons, Rectangle *saveOptions){
+/** @brief Dá fade in nos fantasmas em sincronia com a música */
+void gameStartCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, OptionButton* buttons, Rectangle *saveOptions){
     Music startTrack = LoadMusicStream("../../audio/Music/GameStart/GameStart.wav");
     PlayMusicStream(startTrack);
     startTrack.looping = false;
@@ -116,15 +116,53 @@ void startCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, OptionButton* b
             if(GetMusicTimePlayed(startTrack) >= 1.35f*i && ghosts[i].chara.color.a < 255)
                 fadeIn(&(ghosts[i].chara.color), &(ghosts[i].chara.procAnimation), 2);
 
-        draw(map, pacmaiden, ghosts, buttons, saveOptions);
+        BeginDrawing();
+        drawLevel(map, pacmaiden, ghosts, buttons, saveOptions);
+        DrawText("TAB para pular", LARGURA/2 - 80, ALTURA+15, 20, RAYWHITE);
+        EndDrawing();
 
-        if(GetMusicTimePlayed(startTrack) >= 10 || IsKeyPressed(KEY_TAB))
+        if(!IsMusicStreamPlaying(startTrack) || IsKeyPressed(KEY_TAB))
             gameState = RUNNING;
     }
     for(int i=0; i<4; i++)
         ghosts[i].chara.color.a = 255;
+    pacmaiden->timePivot = GetTime();
     StopMusicStream(startTrack);
     UnloadMusicStream(startTrack);
+}
+
+
+/** @brief Escreve a mensagem de fim de jogo e toca a música de derrota */
+int gameOverCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, OptionButton* buttons, Rectangle *saveOptions){
+    Music gameOverTrack = LoadMusicStream("../../audio/Music/GameOver/GameOver.wav");
+    PlayMusicStream(gameOverTrack);
+    gameOverTrack.looping = false;
+
+    WaitTime(0.5);
+
+    Color messageColorRec = BLACK;
+    Color messageColorText = RAYWHITE;
+    ProceduralAnimation messageRecAnimation = {GetTime(), true};
+    ProceduralAnimation messageTextAnimation = {GetTime(), true};
+
+    while(IsMusicStreamPlaying(gameOverTrack)){
+        UpdateMusicStream(gameOverTrack);
+
+        if(messageRecAnimation.running)
+            fadeIn(&messageColorRec, &messageRecAnimation, 5);
+        if(messageTextAnimation.running)
+            fadeIn(&messageColorText, &messageTextAnimation, 5);
+
+        BeginDrawing();
+        drawLevel(map, pacmaiden, ghosts, buttons, saveOptions);
+        DrawRectangle(0, ALTURA/2 - 100, LARGURA, 200, messageColorRec);
+        DrawText("Se Fodeu", LARGURA/2 - 400, ALTURA/2 - 100, 200, messageColorText);
+        EndDrawing();
+    }
+    
+    Rectangle fadeOutRec = {0,0, ALTURA+ALTURAHUD, LARGURA};
+
+    return TITLE;
 }
 
 
@@ -138,10 +176,12 @@ int update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, R
         if(DEBUG_MODE)
             userClose();
 
-        draw(map,pacmaiden,ghosts,buttons,saveOptions);
-        
-        if(isPacMaidenDead(pacmaiden))
+        restricDrawLevel(map, pacmaiden, ghosts, buttons, saveOptions);
+
+        if(pacmaiden->state == DEAD){
+            gameState = GAMEOVER;
             return TITLE;
+        }
         if(pallets<=0)
             return NEXT;
 
@@ -203,8 +243,10 @@ int level(int levelNumber){
     changePacmaidenState(&pacmaiden, IMMORTAL);
 
     if(gameState == STARTING)
-        startCutscene(&pacmaiden, ghosts, map, buttons, saveOptions);
+        gameStartCutscene(&pacmaiden, ghosts, map, buttons, saveOptions);
     screen=update(&pacmaiden,ghosts,map,buttons,saveOptions, tracks);
+    if(gameState == GAMEOVER)
+        gameOverCutscene(&pacmaiden, ghosts, map, buttons, saveOptions);
 
     freeMusic(tracks);
     free(map);
@@ -214,6 +256,7 @@ int level(int levelNumber){
 
     return screen;
 }
+
 
 int loadLevel(int levelNumber){
     int screen;

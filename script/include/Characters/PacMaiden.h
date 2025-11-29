@@ -12,6 +12,7 @@
 typedef enum {
     NORMAL,
     DYING,
+    DEAD,
     IMMORTAL
 } PacState;
 
@@ -59,6 +60,8 @@ void changePacmaidenState(PacMaiden* pacmaiden, PacState state){
         case DYING:
             pacmaiden->chara.procAnimation.initTime = GetTime();
             break;
+
+        case DEAD: break;
 
         case IMMORTAL:
             pacmaiden->chara.moveDirection = (Vector2){0,0};
@@ -128,13 +131,6 @@ void countPoints(PacMaiden* pacMaiden, Map map, char object, int *pallets){
 }
 
 
-/** @brief Rotina a ser realizada quando a Pacmaiden chega a 0 pontos de vida. */
-void die(PacMaiden* pacmaiden){
-    printf("Damn morri omg");
-
-}
-
-
 /** @brief Dá dano a pacmaiden caso o cooldown seja obedecido.
  * @return Se a pacmaiden levou dano ou não */
 bool hurtPacmaiden(PacMaiden* pacmaiden, Map map){
@@ -145,7 +141,7 @@ bool hurtPacmaiden(PacMaiden* pacmaiden, Map map){
     changePacmaidenState(pacmaiden, DYING);
     
     if(pacmaiden->lifes <= 0)
-        die(pacmaiden);
+        changePacmaidenState(pacmaiden, DEAD);
     
     return true;
 }
