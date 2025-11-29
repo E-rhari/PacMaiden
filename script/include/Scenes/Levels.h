@@ -137,6 +137,10 @@ int gameOverCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, OptionButton*
     Music gameOverTrack = LoadMusicStream("../../audio/Music/GameOver/GameOver.wav");
     PlayMusicStream(gameOverTrack);
     gameOverTrack.looping = false;
+    
+    BeginDrawing();
+    DrawText("TAB para pular", LARGURA/2 - 80, ALTURA+15, 20, RAYWHITE);
+    EndDrawing();
 
     WaitTime(0.5);
 
@@ -145,7 +149,7 @@ int gameOverCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, OptionButton*
     ProceduralAnimation messageRecAnimation = {GetTime(), true};
     ProceduralAnimation messageTextAnimation = {GetTime(), true};
 
-    while(IsMusicStreamPlaying(gameOverTrack)){
+    while(GetMusicTimePlayed(gameOverTrack) < 5.0f){
         UpdateMusicStream(gameOverTrack);
 
         if(messageRecAnimation.running)
@@ -157,20 +161,49 @@ int gameOverCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, OptionButton*
         drawLevel(map, pacmaiden, ghosts, buttons, saveOptions);
         DrawRectangle(0, ALTURA/2 - 100, LARGURA, 200, messageColorRec);
         DrawText("Se Fodeu", LARGURA/2 - 400, ALTURA/2 - 100, 200, messageColorText);
+        DrawText("TAB para pular", LARGURA/2 - 80, ALTURA+15, 20, RAYWHITE);
         EndDrawing();
+
+        if(IsKeyPressed(KEY_TAB)){
+            StopMusicStream(gameOverTrack);
+            break;
+        }
     }
     
-    Rectangle fadeOutRec = {0,0, ALTURA+ALTURAHUD, LARGURA};
+    messageColorRec.a = 255;
+    messageColorText.a = 255;
+
+    Color fadeOutColor = BLACK;
+    fadeOutColor.a = 0;
+    ProceduralAnimation fadeOutAnimation = {GetTime(), true};
+
+    while(fadeOutAnimation.running){
+        UpdateMusicStream(gameOverTrack);
+
+        fadeIn(&fadeOutColor, &fadeOutAnimation, 2.0f);
+
+        BeginDrawing();
+        drawLevel(map, pacmaiden, ghosts, buttons, saveOptions);
+        DrawRectangle(0, ALTURA/2 - 100, LARGURA, 200, messageColorRec);
+        DrawText("Se Fodeu", LARGURA/2 - 400, ALTURA/2 - 100, 200, messageColorText);
+        DrawRectangle(0,0, LARGURA, ALTURA+ALTURAHUD, fadeOutColor);
+        EndDrawing();
+    }
+
+    while(IsMusicStreamPlaying(gameOverTrack))
+        UpdateMusicStream(gameOverTrack);
+
+    StopMusicStream(gameOverTrack);
 
     return TITLE;
 }
 
 
 /** @brief Roda todo frame. */
-int update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, Rectangle *saveOptions, Music* tracks){
+void update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, Rectangle *saveOptions, Music* tracks){
     int fileNumber;
     int pallets = countPallets(map);
-
+    printf("\n\n\nUpdate(%.2f, %.2f)\n\n\n", pacmaiden->chara.circle.center.x,pacmaiden->chara.circle.center.y);
     while(!WindowShouldClose()){
         fileNumber=-1;
         if(DEBUG_MODE)
@@ -180,10 +213,14 @@ int update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, R
 
         if(pacmaiden->state == DEAD){
             gameState = GAMEOVER;
-            return TITLE;
+            changeScreenState(TITLE);
+            return;
         }
-        if(pallets<=0)
-            return NEXT;
+        if(pallets<=0){
+            changeScreenState(NEXT);
+            return;
+        }
+
 
         if(IsKeyPressed(KEY_TAB)){
             if(gameState==PAUSED)    
@@ -213,7 +250,8 @@ int update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, R
                     load(map,pacmaiden,ghosts,fileNumber);
             break;
             case EXIT:
-                return TITLE;
+                changeScreenState(TITLE);
+                return;
             break;
         }
     }
@@ -221,16 +259,25 @@ int update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, R
 
 
 /** @brief Roda a fase desejada */
-int level(int levelNumber){
+void level(int levelNumber){
 
-    int screen;
-    gameState=STARTING;
-
+    PacMaiden pacmaiden;
+    Ghost* ghosts;
     Map map=setUpMap();
-    readMap(levelNumber,map);
 
-    PacMaiden pacmaiden = initPacMaiden(searchInMap(map, 'P')[0], RADIUS, SPEED, YELLOW, 3, 0);
-    Ghost* ghosts = instantiateGhostsInLevel(map);
+    if(currentScreen==LOAD){
+        gameState = RUNNING;
+        ghosts = malloc(sizeof(Ghost)*4);
+        load(map, &pacmaiden, ghosts, levelNumber);
+    }
+    else if(currentScreen==NEWGAME){
+        gameState=STARTING;
+        readMap(levelNumber,map);
+        pacmaiden = initPacMaiden(searchInMap(map, 'P')[0], RADIUS, SPEED, YELLOW, 1, 0);
+        ghosts = instantiateGhostsInLevel(map);
+        changePacmaidenState(&pacmaiden, IMMORTAL);
+    }
+
     OptionButton *buttons = malloc(sizeof(OptionButton)*4);
     initOptionButton(buttons);
     Rectangle* saveOptions = malloc(sizeof(Rectangle)*3);
@@ -239,51 +286,16 @@ int level(int levelNumber){
     Music tracks[SONG_AMOUT];
     initiateMusic(tracks); 
     focusTrack(tracks, MAIN_THEME);
-
-    changePacmaidenState(&pacmaiden, IMMORTAL);
 
     if(gameState == STARTING)
         gameStartCutscene(&pacmaiden, ghosts, map, buttons, saveOptions);
-    screen=update(&pacmaiden,ghosts,map,buttons,saveOptions, tracks);
+    update(&pacmaiden,ghosts,map,buttons,saveOptions, tracks);
     if(gameState == GAMEOVER)
         gameOverCutscene(&pacmaiden, ghosts, map, buttons, saveOptions);
-
-    freeMusic(tracks);
-    free(map);
-    free(ghosts);
-    free(saveOptions);
-    free(buttons);
-
-    return screen;
-}
-
-
-int loadLevel(int levelNumber){
-    int screen;
-    gameState=RUNNING;
-
-    Map map=setUpMap();
-    PacMaiden pacmaiden;
-    Ghost* ghosts = malloc(sizeof(Ghost)*4);
-
-    load(map,&pacmaiden,ghosts,levelNumber);
-    
-    OptionButton *buttons = malloc(sizeof(OptionButton)*4);
-    initOptionButton(buttons);
-    Rectangle* saveOptions = malloc(sizeof(Rectangle)*3);
-    initSaveButton(saveOptions);
-
-
-    Music tracks[SONG_AMOUT];
-    initiateMusic(tracks); 
-    focusTrack(tracks, MAIN_THEME);
-
-    screen=update(&pacmaiden,ghosts,map,buttons,saveOptions, tracks);
 
     freeMusic(tracks);
     freeMap(map);
     free(ghosts);
     free(saveOptions);
     free(buttons);
-    return screen;
 }
