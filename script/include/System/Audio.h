@@ -28,6 +28,14 @@ void stopMusic(Music* tracks){
 }
 
 
+void freeMusic(Music* tracks){
+    stopMusic(tracks);
+    for(int i=0; i<SONG_AMOUT; i++)
+        UnloadMusicStream(tracks[i]);
+
+}
+
+
 void focusTrack(Music* tracks, Track trackName){
     for(int i=0; i<SONG_AMOUT; i++)
         SetMusicVolume(tracks[i], 0.0f);
@@ -40,7 +48,7 @@ void handleMusic(Music* tracks, bool pause){
         focusTrack(tracks, PAUSED_MAIN_THEME);
     else
         focusTrack(tracks, MAIN_THEME);
-        
+
     for(int i=0; i<SONG_AMOUT; i++)
         UpdateMusicStream(tracks[i]);
 }

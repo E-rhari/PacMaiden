@@ -1,5 +1,6 @@
 /** @brief Estado de jogo em que ocorre a gameplay propriamente dita. */
 typedef enum GameState{
+    STARTING,
     RUNNING,
     PAUSED,
     SAVING,
@@ -33,9 +34,9 @@ Ghost* instantiateGhostsInLevel(Map map){
     Ghost *ladies = malloc(sizeof(Ghost)*4); 
     Vector2* positions = searchInMap(map, 'f');
 
-    // ladies[0] = initGhost(positions[0], RADIUS, SPEED, RED, AMBUSHER); //homura
-    // ladies[1] = initGhost(positions[1], RADIUS, SPEED, SKYBLUE, AMBUSHER);//sora
-    // ladies[2] = initGhost(positions[2], RADIUS, SPEED, ORANGE, AWARE);//hikari
+    ladies[0] = initGhost(positions[0], RADIUS, SPEED, RED, AMBUSHER); //homura
+    ladies[1] = initGhost(positions[1], RADIUS, SPEED, SKYBLUE, AMBUSHER);//sora
+    ladies[2] = initGhost(positions[2], RADIUS, SPEED, ORANGE, AWARE);//hikari
     ladies[3] = initGhost(positions[3], RADIUS, SPEED, PINK, AWARE);//hana
 
     return ladies;
@@ -61,8 +62,10 @@ void draw(Map map,PacMaiden* pacmaiden, Ghost* ghosts,OptionButton* buttons,Rect
 
     if(gameState==PAUSED)
         drawOpenedMenu(buttons);
-    if(gameState==SAVING ||gameState==LOADING)
+    if(gameState==SAVING || gameState==LOADING)
         drawSaveStates(saveOptions);
+    if(gameState==STARTING)
+        DrawText("TAB para pular", LARGURA/2 - 80, ALTURA+15, 20, RAYWHITE);
         
     EndDrawing();
 }
@@ -92,8 +95,41 @@ bool isPacMaidenDead(PacMaiden* PacMaiden){
     return false;
 }
 
+
+void startCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, OptionButton* buttons, Rectangle *saveOptions){
+    Music startTrack = LoadMusicStream("../../audio/Music/GameStart/GameStart.wav");
+    PlayMusicStream(startTrack);
+    startTrack.looping = false;
+
+    for(int i=0; i<4; i++){
+        ghosts[i].chara.color.a = 0;
+        ghosts[i].chara.procAnimation.running = false;
+    }
+
+    while(gameState == STARTING){
+        if(DEBUG_MODE)
+            userClose();
+            
+        UpdateMusicStream(startTrack);
+
+        for(int i=0; i<4; i++)
+            if(GetMusicTimePlayed(startTrack) >= 1.35f*i && ghosts[i].chara.color.a < 255)
+                fadeIn(&(ghosts[i].chara.color), &(ghosts[i].chara.procAnimation), 2);
+
+        draw(map, pacmaiden, ghosts, buttons, saveOptions);
+
+        if(GetMusicTimePlayed(startTrack) >= 10 || IsKeyPressed(KEY_TAB))
+            gameState = RUNNING;
+    }
+    for(int i=0; i<4; i++)
+        ghosts[i].chara.color.a = 255;
+    StopMusicStream(startTrack);
+    UnloadMusicStream(startTrack);
+}
+
+
 /** @brief Roda todo frame. */
-int update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, Rectangle *saveOptions, Music* songs){
+int update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, Rectangle *saveOptions, Music* tracks){
     int fileNumber;
     int pallets = countPallets(map);
 
@@ -116,7 +152,7 @@ int update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, R
                 gameState=PAUSED;
         }
 
-        handleMusic(songs, gameState!=RUNNING);
+        handleMusic(tracks, gameState!=RUNNING);
 
         switch (gameState)
         {
@@ -148,7 +184,7 @@ int update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, R
 int level(int levelNumber){
 
     int screen;
-    gameState=RUNNING;
+    gameState=STARTING;
 
     Map map=setUpMap();
     readMap(levelNumber,map);
@@ -165,9 +201,12 @@ int level(int levelNumber){
     focusTrack(tracks, MAIN_THEME);
 
     changePacmaidenState(&pacmaiden, IMMORTAL);
+
+    if(gameState == STARTING)
+        startCutscene(&pacmaiden, ghosts, map, buttons, saveOptions);
     screen=update(&pacmaiden,ghosts,map,buttons,saveOptions, tracks);
 
-    stopMusic(tracks);
+    freeMusic(tracks);
     free(map);
     free(ghosts);
     free(saveOptions);
@@ -179,7 +218,6 @@ int level(int levelNumber){
 int loadLevel(int levelNumber){
     int screen;
     gameState=RUNNING;
-
 
     Map map=setUpMap();
     PacMaiden pacmaiden;
@@ -199,7 +237,7 @@ int loadLevel(int levelNumber){
 
     screen=update(&pacmaiden,ghosts,map,buttons,saveOptions, tracks);
 
-    stopMusic(tracks);
+    freeMusic(tracks);
     freeMap(map);
     free(ghosts);
     free(saveOptions);

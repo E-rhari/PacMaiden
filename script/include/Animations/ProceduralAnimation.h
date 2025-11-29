@@ -51,11 +51,16 @@ void fadeOut(Color* color, ProceduralAnimation* animation, int duration){
 
 /** @brief Eleva ao máximo a opacidade de uma cor na duração específica. */
 void fadeIn(Color* color, ProceduralAnimation* animation, int duration){
+    if(animation->running == false)
+        animation->initTime = GetTime();
+
+    animation->running =  true;
     double timeElapsed = GetTime() - animation->initTime;
     color->a = (int)(255*(timeElapsed/duration));
+
     if(timeElapsed>=duration){
+        color->a = 255;
         animation->running =  false;
         return;
     }
-    animation->running =  true;
 }
