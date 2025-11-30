@@ -7,6 +7,9 @@
 #include<stdlib.h>
 #include<math.h>
 
+#pragma once
+
+
 /** @brief Struct que controla uma animação desenhada por código. */
 typedef struct {
     int initTime;
@@ -42,6 +45,7 @@ void fadeOut(Color* color, ProceduralAnimation* animation, float duration){
     double timeElapsed = GetTime() - animation->initTime;
     color->a = (int)(255 - 255*(timeElapsed/duration));
     if(timeElapsed>=duration){
+        color->a = 0;
         animation->running = false;
         return;
     }

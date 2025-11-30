@@ -9,6 +9,7 @@
 #include "../include/Scenes/Levels.h"
 #include "../include/Scenes/TitleScreen.h"
 #include "../include/System/PacMath.h"
+#include "../include/Scenes/TeamLogo.h"
 
 int main(){
     inicializeWindow();
@@ -19,6 +20,8 @@ int main(){
 
     Rectangle* saveOptions = malloc(sizeof(Rectangle)*3);
     initSaveTitleButton(saveOptions);
+
+    teamLogo();
 
     while(!WindowShouldClose()){
         switch (currentScreen)

@@ -32,7 +32,6 @@ void freeMusic(Music* tracks){
     stopMusic(tracks);
     for(int i=0; i<SONG_AMOUT; i++)
         UnloadMusicStream(tracks[i]);
-
 }
 
 
