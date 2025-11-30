@@ -76,11 +76,14 @@ void drawPVP(Map map,PacMaiden* players, Ghost* ghosts,OptionButton* buttons){
 
     for(int j=0;j<2;j++){
         DrawCircleV(players[j].chara.circle.center, players[j].chara.circle.radius, players[j].chara.color);
-        for(int i=0; i<players[j].lifes; i++)
-            DrawCircle(LARGURA-(i+1)*(20)-(i*20), ALTURA+20, 20,players[j].initialValues.color);
          //DrawText(TextFormat("Pontuação: %d", pacmaiden->points), SCOREPOSY, ALTURA, SCORESIZE, RAYWHITE);
     }
 
+    for(int i=0; i<players[0].lifes; i++)
+        DrawCircle(LARGURA-(i+1)*(20)-(i*20), ALTURA+20, 20,players[0].initialValues.color);
+    for(int i=0; i<players[1].lifes; i++)
+        DrawCircle(0+(i+1)*(20)+(i*20), ALTURA+20, 20,players[1].initialValues.color);
+    
     for(int i=0; i<4; i++)
         DrawCircleV(ghosts[i].chara.circle.center, ghosts[i].chara.circle.radius, ghosts[i].chara.color);
 
@@ -89,6 +92,8 @@ void drawPVP(Map map,PacMaiden* players, Ghost* ghosts,OptionButton* buttons){
         
     EndDrawing();
 }
+
+
 void charactersPVPBehaviours(PacMaiden* players, Ghost* ghosts, Map map,int *pallets){
 
     for(int i=0;i<2;i++){
@@ -99,17 +104,31 @@ void charactersPVPBehaviours(PacMaiden* players, Ghost* ghosts, Map map,int *pal
                 changePacmaidenState(&players[i], IMMORTAL);
             return;
         }
-        
+
         getBufferedInput(&players[i].chara.moveDirection, isCharacterInGridCenter(players[i].chara)
                                                 && isCharacterInsideScreen(players[i].chara, (Vector2){0,0}),i,&players[i].bufferedInput);
 
+        if(checkCharacterCollision(players[0].chara,players[1].chara)){
+            players[0].canMove=false;
+            players[1].canMove=false;
+        }
+        canPlayersMove(players);
+            
+        
         pacmaidenBehaviour(&players[i], map);
 
         for(int j=0; j<4; j++)
             ghostBehaviour(&ghosts[j], map, &players[i]);
 
         countPoints(&players[i], map, charCollided(players[i], map),pallets);
-    }
+    }   
+}
+
+bool isPlayersDead(PacMaiden* players){
+    for(int i=0;i<2;i++)
+        if(players[i].lifes<=0)
+            return true;
+    return false;
 }
 int updatePVP(PacMaiden* players,Ghost* ghosts, Map map, OptionButton* buttons){
 
@@ -122,8 +141,8 @@ int updatePVP(PacMaiden* players,Ghost* ghosts, Map map, OptionButton* buttons){
         drawPVP(map,players,ghosts,buttons);
         
         
-        //if(isPacMaidenDead(pacmaiden))
-            //return TITLE;
+        if(isPlayersDead(players))
+            return TITLE;
         if(pallets<=0)
             return TITLE;
         if(IsKeyPressed(KEY_TAB))
@@ -162,7 +181,7 @@ int StartPVP(){
     readMap(level,map,isSinglePlayer);
 
     PacMaiden player1 = initPacMaiden(searchInMap(map, 'P')[0], RADIUS, SPEED, YELLOW, 3, 0);
-    PacMaiden player2 = initPacMaiden(searchInMap(map, 'P')[1], RADIUS, SPEED, PURPLE, 3, 0);
+    PacMaiden player2 = initPacMaiden(searchInMap(map, 'P')[1], RADIUS, SPEED, GREEN, 3, 0);
 
     PacMaiden *players = malloc(sizeof(PacMaiden)*2);
     players[0]=player1;
