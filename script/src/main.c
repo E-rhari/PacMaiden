@@ -8,6 +8,7 @@
 #include "../include/System/WindowControl.h"
 #include "../include/Scenes/Levels.h"
 #include "../include/Scenes/TitleScreen.h"
+#include "../include/Scenes/PVP.h"
 
 int main(){
     inicializeWindow();
@@ -24,7 +25,7 @@ int main(){
                 myScreen=drawTitleScreen();
             break;
             case NEWGAME:
-                file=1;
+                file=0;
                 myScreen=level(file);
             break;
             case NEXT:
@@ -36,6 +37,9 @@ int main(){
                 file=isSaveTitleFileClicked(saveOptions);
                 if(file!=-1)
                     myScreen=loadLevel(file);
+            break;
+            case PVP:
+                myScreen = StartPVP();
             break;
         }
     }
