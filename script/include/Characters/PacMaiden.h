@@ -135,13 +135,6 @@ void countPoints(PacMaiden* pacMaiden, Map map, char object, int *pallets){
 }
 
 
-/** @brief Rotina a ser realizada quando a Pacmaiden chega a 0 pontos de vida. */
-void die(PacMaiden* pacmaiden){
-    printf("Damn morri omg");
-
-}
-
-
 /** @brief Dá dano a pacmaiden caso o cooldown seja obedecido.
  * @return Se a pacmaiden levou dano ou não */
 bool hurtPacmaiden(PacMaiden* pacmaiden, Map map){
@@ -150,9 +143,6 @@ bool hurtPacmaiden(PacMaiden* pacmaiden, Map map){
     addPoints(pacmaiden, -200);
     
     changePacmaidenState(pacmaiden, DYING);
-    
-    if(pacmaiden->lifes <= 0)
-        die(pacmaiden);
     
     return true;
 }
@@ -178,8 +168,8 @@ void canPlayersMove(PacMaiden* players){
    
 
     for(int i=0;i<2;i++){
-        playerNewCenter[i].x+= players[i].chara.moveDirection.x;
-        playerNewCenter[i].y+= players[i].chara.moveDirection.y;
+        playerNewCenter[i].x+= players[i].chara.moveDirection.x*3;
+        playerNewCenter[i].y+= players[i].chara.moveDirection.y*3;
     }
     if(!CheckCollisionCircles(playerNewCenter[0],players[0].chara.circle.radius,playerNewCenter[1],players[1].chara.circle.radius)){
         players[0].canMove=true;

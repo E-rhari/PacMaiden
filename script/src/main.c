@@ -25,7 +25,7 @@ int main(){
                 myScreen=drawTitleScreen();
             break;
             case NEWGAME:
-                file=1;
+                file=0;
                 myScreen=level(file);
             break;
             case NEXT:
@@ -39,7 +39,7 @@ int main(){
                     myScreen=loadLevel(file);
             break;
             case PVP:
-                myScreen= StartPVP();
+                myScreen = StartPVP();
             break;
         }
     }

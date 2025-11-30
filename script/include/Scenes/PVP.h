@@ -46,10 +46,10 @@ int PVPMapsQuantity(){
     int files = 0;
     
     #ifdef _WIN32
-        directory = opendir("PacMaiden/sprites/maps/PVPMaps");
+        directory = opendir("PacMaiden/sprites/maps");
 
     #elif __linux__
-        directory = opendir("../../sprites/maps/PVPMaps");
+        directory = opendir("../../sprites/maps");
     #endif
 
     if(!directory){
@@ -74,15 +74,15 @@ void drawPVP(Map map,PacMaiden* players, Ghost* ghosts,OptionButton* buttons){
     drawMap(map);
     DrawRectangle(0, 800, LARGURA, (int)GRID2PIX, BLACK);
 
-    for(int j=0;j<2;j++){
-        DrawCircleV(players[j].chara.circle.center, players[j].chara.circle.radius, players[j].chara.color);
-         //DrawText(TextFormat("Pontuação: %d", pacmaiden->points), SCOREPOSY, ALTURA, SCORESIZE, RAYWHITE);
-    }
+    DrawText(TextFormat("Pontuação: %d", players[0].points),SCOREPOSY*14, ALTURA, SCORESIZE, RAYWHITE);
+    DrawText(TextFormat("Pontuação: %d", players[1].points),LARGURA-SCOREPOSY*45, ALTURA, SCORESIZE, RAYWHITE);
 
-    for(int i=0; i<players[0].lifes; i++)
-        DrawCircle(LARGURA-(i+1)*(20)-(i*20), ALTURA+20, 20,players[0].initialValues.color);
+    for(int j=0;j<2;j++)
+        DrawCircleV(players[j].chara.circle.center, players[j].chara.circle.radius, players[j].chara.color);
     for(int i=0; i<players[1].lifes; i++)
-        DrawCircle(0+(i+1)*(20)+(i*20), ALTURA+20, 20,players[1].initialValues.color);
+        DrawCircle(LARGURA-(i+1)*(20)-(i*20), ALTURA+20, 20,players[1].initialValues.color);
+    for(int i=0; i<players[0].lifes; i++)
+        DrawCircle((i+1)*(20)+(i*20), ALTURA+20, 20,players[0].initialValues.color);
     
     for(int i=0; i<4; i++)
         DrawCircleV(ghosts[i].chara.circle.center, ghosts[i].chara.circle.radius, ghosts[i].chara.color);
@@ -99,7 +99,7 @@ void charactersPVPBehaviours(PacMaiden* players, Ghost* ghosts, Map map,int *pal
     for(int i=0;i<2;i++){
 
         if(players[i].state == DYING){
-            fadeOut(&players[i].chara.color, &players[i].chara.procAnimation, 3);
+            fadeOut(&players[i].chara.color, &players[i].chara.procAnimation,1);
             if(!players[i].chara.procAnimation.running)
                 changePacmaidenState(&players[i], IMMORTAL);
             return;
@@ -169,19 +169,23 @@ int StartPVP(){
 
     int screen;
     bool isSinglePlayer = false;
-    int level;
+    int level,player1Spawn,player2Spawn;
 
     level = rand() % PVPMapsQuantity();
-    printf("%d",level);
+
 
     gameState=RUNNING;
     
     Map map=setUpMap();
-    
-    readMap(level,map,isSinglePlayer);
+    readMap(level,map);
 
-    PacMaiden player1 = initPacMaiden(searchInMap(map, 'P')[0], RADIUS, SPEED, YELLOW, 3, 0);
-    PacMaiden player2 = initPacMaiden(searchInMap(map, 'P')[1], RADIUS, SPEED, GREEN, 3, 0);
+    player2Spawn = rand() % countPallets(map);
+    do{
+        player1Spawn = rand() % countPallets(map);
+    }while(player2Spawn==player1Spawn);
+
+    PacMaiden player1 = initPacMaiden(searchInMap(map, '.')[0], RADIUS, SPEED, YELLOW, 3, 0);
+    PacMaiden player2 = initPacMaiden(searchInMap(map, '.')[player2Spawn], RADIUS, SPEED, GREEN, 3, 0);
 
     PacMaiden *players = malloc(sizeof(PacMaiden)*2);
     players[0]=player1;

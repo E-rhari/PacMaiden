@@ -46,35 +46,24 @@ void drawMap(Map map) {
 /** @brief Transforma o arquivo map#.txt em uma matriz do tipo char.
  * @param level Número do mapa a ser lido. Substitui o # em map#.txt.
  * @param map Referência da variável na qual será salvo o mapa. */
-void readMap (int level, Map map, bool isSinglePLayer)
+void readMap (int level, Map map)
 {
     char temp;
     char path[50];
     
     #ifdef _WIN32
-        if(isSinglePLayer)
-            strcpy(path,"PacMaiden/sprites/maps/SinglePlayerMaps/map");
-        else
-            strcpy(path,"PacMaiden/sprites/maps/PVPMaps/map");
+        strcpy(path,"PacMaiden/sprites/maps/map");
         char nivelString[3];
 
         itoa(level,nivelString,10);
         strcat(path,nivelString);
         strcat(path,".txt");
-
     #elif __linux__
-        if(isSinglePLayer)
-            sprintf(path, "../../sprites/maps/SinglePlayerMaps/map%d.txt", level);
-        else
-            sprintf(path, "../../sprites/maps/PVPMaps/map%d.txt", level);
-
+        sprintf(path, "../../sprites/maps/map%d.txt", level);
         printf(path);
     #else
         printf("Sistema operacional não detectado. Proseguindo com configuração do linux");
-        if(isSinglePLayer)
-            sprintf(path, "../../sprites/maps/SinglePlayerMaps/map%d.txt", level);
-        else
-            sprintf(path, "../../sprites/maps/PVPMaps/map%d.txt", level);;
+        sprintf(path, "../../sprites/maps/map%d.txt", level);
         printf(path);
     #endif
 

@@ -143,7 +143,7 @@ int level(int levelNumber){
     gameState=RUNNING;
 
     Map map=setUpMap();
-    readMap(levelNumber,map,isSinglePlayer);
+    readMap(levelNumber,map);
 
     PacMaiden pacmaiden = initPacMaiden(searchInMap(map, 'P')[0], RADIUS, SPEED, YELLOW, 3, 0);
     Ghost* ghosts = instantiateGhostsInLevel(map);
