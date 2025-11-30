@@ -2,14 +2,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include "raylib.h"
+
+#include "./GridVector.h"
 #include "../System/WindowControl.h"
+#include "../System/PacMath.h"
 
 #pragma once
 
 
 /** @brief Apelido semântico para char** */
 typedef char** Map;
-
 
 
 void drawMap(Map map) {
@@ -88,19 +90,30 @@ void readMap (int level, Map map)
 }
 
 
-/** @brief Lê o valor da matriz na posição enviada. A posição est
+
+bool isInsideMap(GridVector gridPosition, Map map, GridVector displacement){
+    return (int)gridPosition.y+(int)displacement.y>=0 && (int)gridPosition.y+(int)displacement.y<ALTURA/40
+        && (int)gridPosition.x+(int)displacement.x>=0 && (int)gridPosition.x+(int)displacement.x<LARGURA/40;
+}
+
+
+char readCoordinatesInMap(GridVector gridPosition, Map map, GridVector displacement){
+    if(isInsideMap(gridPosition, map, displacement))
+        return map[(int)gridPosition.y+(int)displacement.y][(int)gridPosition.x + (int)displacement.x];
+    return ' ';
+}
+
+
+/** @brief Lê o valor da matriz na posição enviada.
  * @param position (px) Vetor da posição a ser lida no mapa. Ela deve estar em pixels e na
  *                 escala da tela do jogo. A conversão de pixel para célula da matriz é intera na função.
  * @param map Mapa do qual será lido o valor.
  * @param displacement (matrix cell) Deslocamento da posição que será lida na matriz. */
 char readPositionInMap(Vector2 position, Map map, Vector2 displacement){
-    // Muda a medida de pixels para células do grid
-    Vector2 gridPosition = Vector2Scale(position, PIX2GRID);
+    GridVector gridPosition = vector2ToGridVector(position);
+    GridVector gridDisplacement = {(int)displacement.x, (int)displacement.y};
 
-    if((int)gridPosition.y+(int)displacement.y>=0 && (int)gridPosition.y+(int)displacement.y<ALTURA/40
-    && (int)gridPosition.x+(int)displacement.x>=0 && (int)gridPosition.x+(int)displacement.x<LARGURA/40)
-        return map[(int)gridPosition.y+(int)displacement.y][(int)gridPosition.x + (int)displacement.x];
-    return ' ';
+    return readCoordinatesInMap(gridPosition, map, gridDisplacement);
 }
 
 
