@@ -56,11 +56,21 @@ void drawTitleScreen(){
 
 
 void titleScreen(){
+
+    Music titleTheme = LoadMusicStream("../../audio/Music/Title/Title.wav");
+    PlayMusicStream(titleTheme);
+
+
     while(currentScreen == TITLE){
+
+        UpdateMusicStream(titleTheme);
+
         BeginDrawing();
         drawTitleScreen();
         EndDrawing();
     }
+    StopMusicStream(titleTheme);
+    UnloadMusicStream(titleTheme);
 }
 
 
