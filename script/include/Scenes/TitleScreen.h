@@ -61,14 +61,33 @@ void titleScreen(){
     PlayMusicStream(titleTheme);
 
 
+    Color fadeColor = BLACK;
+    ProceduralAnimation fadeAnimation = {GetTime(), true};
+
     while(currentScreen == TITLE){
+        if(fadeAnimation.running)
+            fadeOut(&fadeColor, &fadeAnimation, 1.0f);
 
         UpdateMusicStream(titleTheme);
 
         BeginDrawing();
         drawTitleScreen();
+        DrawRectangle(0,0, LARGURA, ALTURA, fadeColor);
         EndDrawing();
     }
+    fadeAnimation = (ProceduralAnimation){GetTime(), true};
+    while(fadeAnimation.running){
+        fadeIn(&fadeColor, &fadeAnimation, 2.0f);
+
+        UpdateMusicStream(titleTheme);
+
+        BeginDrawing();
+        drawTitleScreen();
+        DrawRectangle(0,0, LARGURA, ALTURA, fadeColor);
+        EndDrawing();
+    }
+    WaitTime(1);
+
     StopMusicStream(titleTheme);
     UnloadMusicStream(titleTheme);
 }
