@@ -10,6 +10,7 @@
 #include "../include/Scenes/TitleScreen.h"
 #include "../include/System/PacMath.h"
 #include "../include/Scenes/TeamLogo.h"
+#include "../include/Scenes/PVP.h"
 
 int main(){
     inicializeWindow();
@@ -42,6 +43,9 @@ int main(){
                 file=isSaveTitleFileClicked(saveOptions);
                 if(file!=-1)
                     level(file);
+            break;
+            case PVP:
+                myScreen = StartPVP();
             break;
         }
     }

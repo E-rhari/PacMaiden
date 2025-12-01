@@ -14,10 +14,12 @@ typedef enum {
     DYING,
     DEAD,
     IMMORTAL
+    IMMORTAL,
+    KILLER
 } PacState;
 
 
-/** @brief Personagem do jogador e protagonista do jogo :-)
+/** @brief Personagem do jogador e protagonista do jogo :-
  * @param chara Struct abstrata dos personagens. Lida com a posição, tamanho, velocidade e cor da PacMaiden.
  * @param initialValues Struct constante do tip Character para salver os valores iniciais de posição, tamanho, velocidade e cor.
  * @param life Contador de vidas
@@ -30,7 +32,10 @@ typedef struct {
     int lifes;
     int points;
     int timePivot;
+    Vector2 bufferedInput;
+    bool canMove;
     PacState state;
+    
 
 } PacMaiden;
 
@@ -44,7 +49,7 @@ typedef struct {
  * @param points Valor inicial do contador de pontos */
 PacMaiden initPacMaiden(Vector2 position, int radius, float speed, Color color, int lifes, int points){
     Character chara = initCharacter((Vector2){position.x, position.y}, speed, radius, color);
-    return (PacMaiden){chara, chara, lifes, points, 0};
+    return (PacMaiden){chara, chara, lifes, points, 0, (Vector2){0,0},true};
 }
 
 
@@ -55,6 +60,9 @@ void changePacmaidenState(PacMaiden* pacmaiden, PacState state){
 
     switch (state){
         case NORMAL:
+            break;
+
+        case KILLER:
             break;
 
         case DYING:
@@ -149,12 +157,30 @@ bool hurtPacmaiden(PacMaiden* pacmaiden, Map map){
 
 /** @brief Todas as ações de comportamento da PacMaiden que devem ser rodadas por frame */
 void pacmaidenBehaviour(PacMaiden* pacmaiden, Map map){
-    move(&pacmaiden->chara, map);
-    portalBorders(&pacmaiden->chara);
+    
+    if(pacmaiden->canMove)
+        move(&pacmaiden->chara, map);
 
+    portalBorders(&pacmaiden->chara);
+    
     if(pacmaiden->state == IMMORTAL){
-        blinkAnimation(&pacmaiden->chara.color, YELLOW, WHITE, &pacmaiden->chara.procAnimation, HURT_COOLDOWN, 2);
+        blinkAnimation(&pacmaiden->chara.color, pacmaiden->initialValues.color , WHITE, &pacmaiden->chara.procAnimation, HURT_COOLDOWN, 2);
         if(!pacmaiden->chara.procAnimation.running)
             changePacmaidenState(pacmaiden, NORMAL);
     }
+}
+
+void canPlayersMove(PacMaiden* players){
+    Vector2 playerNewCenter[2] = {players[0].chara.circle.center,players[1].chara.circle.center};
+   
+
+    for(int i=0;i<2;i++){
+        playerNewCenter[i].x+= players[i].chara.moveDirection.x*3;
+        playerNewCenter[i].y+= players[i].chara.moveDirection.y*3;
+    }
+    if(!CheckCollisionCircles(playerNewCenter[0],players[0].chara.circle.radius,playerNewCenter[1],players[1].chara.circle.radius)){
+        players[0].canMove=true;
+        players[1].canMove=true;
+    }
+    
 }
