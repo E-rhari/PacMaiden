@@ -12,6 +12,8 @@
 typedef enum {
     NORMAL,
     DYING,
+    DEAD,
+    IMMORTAL
     IMMORTAL,
     KILLER
 } PacState;
@@ -66,6 +68,8 @@ void changePacmaidenState(PacMaiden* pacmaiden, PacState state){
         case DYING:
             pacmaiden->chara.procAnimation.initTime = GetTime();
             break;
+
+        case DEAD: break;
 
         case IMMORTAL:
             pacmaiden->chara.moveDirection = (Vector2){0,0};
@@ -143,6 +147,9 @@ bool hurtPacmaiden(PacMaiden* pacmaiden, Map map){
     addPoints(pacmaiden, -200);
     
     changePacmaidenState(pacmaiden, DYING);
+    
+    if(pacmaiden->lifes <= 0)
+        changePacmaidenState(pacmaiden, DEAD);
     
     return true;
 }

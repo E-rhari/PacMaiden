@@ -24,29 +24,25 @@ bool isTitleButtonHovered(titleButton button){
     return CheckCollisionPointRec(mousePosition,button.optionBox);
 }
 
-int isTitleButtonClicked(titleButton *button){
+void isTitleButtonClicked(titleButton *button){
     for(int i=0;i<4;i++)
         if(isTitleButtonHovered(button[i]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-            return button[i].id;
-    return TITLE;
+            changeScreenState(button[i].id);
 }
 
-int drawTitleScreen(){
+
+void drawTitleScreen(){
     titleButton buttons[4];
     char *optionsText[]={"New Game","Load","PVP","Creditos"};
     int paddingYButton=110, paddingYTxt=110;
 
-
     Vector4 optionMeasures = {450,200,700,70};
     Rectangle background = {300,50,1000,750};
-
-    BeginDrawing();
 
     ClearBackground(BLACK);
     DrawRectangleRec(background,DARKBLUE);
 
     for(int i=0;i<4;i++){
-
         buttons[i] = (titleButton){(Rectangle){optionMeasures.x, optionMeasures.y+paddingYButton*i, optionMeasures.z, optionMeasures.w},BUTTONTITLEBASE, BUTTONTITLEHOVER,i};
         Color optionColor = isTitleButtonHovered(buttons[i])? buttons[i].colorHover : buttons[i].colorBase;
         DrawRectangleRounded(buttons[i].optionBox, 0.2f, 10, optionColor);
@@ -55,10 +51,46 @@ int drawTitleScreen(){
         DrawTextEx(GetFontDefault(), optionsText[i], (Vector2){background.x + (background.width - optionSize.x) / 2, background.y + paddingYTxt*i + 180}, 18, 1, BUTTONTITLEBAR);
     }
 
-    EndDrawing();
-    return isTitleButtonClicked(buttons);
+    isTitleButtonClicked(buttons);
 }
 
+
+void titleScreen(){
+
+    Music titleTheme = LoadMusicStream("../../audio/Music/Title/Title.wav");
+    PlayMusicStream(titleTheme);
+
+
+    Color fadeColor = BLACK;
+    ProceduralAnimation fadeAnimation = {GetTime(), true};
+
+    while(currentScreen == TITLE){
+        if(fadeAnimation.running)
+            fadeOut(&fadeColor, &fadeAnimation, 1.0f);
+
+        UpdateMusicStream(titleTheme);
+
+        BeginDrawing();
+        drawTitleScreen();
+        DrawRectangle(0,0, LARGURA, ALTURA, fadeColor);
+        EndDrawing();
+    }
+    fadeAnimation = (ProceduralAnimation){GetTime(), true};
+    while(fadeAnimation.running){
+        fadeIn(&fadeColor, &fadeAnimation, 2.0f);
+
+        UpdateMusicStream(titleTheme);
+
+        BeginDrawing();
+        drawTitleScreen();
+        DrawRectangle(0,0, LARGURA, ALTURA, fadeColor);
+        EndDrawing();
+    }
+    WaitTime(1);
+
+    StopMusicStream(titleTheme);
+    UnloadMusicStream(titleTheme);
+}
 
 
 void initSaveTitleButton(Rectangle *save){

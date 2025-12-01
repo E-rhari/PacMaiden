@@ -7,6 +7,9 @@
 #include<stdlib.h>
 #include<math.h>
 
+#pragma once
+
+
 /** @brief Struct que controla uma animação desenhada por código. */
 typedef struct {
     int initTime;
@@ -38,10 +41,11 @@ void blinkAnimation(Color* currentColor, Color color1, Color color2, ProceduralA
 
 
 /** @brief Remove a opacidade de uma cor na duração especificada. */
-void fadeOut(Color* color, ProceduralAnimation* animation, int duration){
+void fadeOut(Color* color, ProceduralAnimation* animation, float duration){
     double timeElapsed = GetTime() - animation->initTime;
     color->a = (int)(255 - 255*(timeElapsed/duration));
     if(timeElapsed>=duration){
+        color->a = 0;
         animation->running = false;
         return;
     }
@@ -50,12 +54,37 @@ void fadeOut(Color* color, ProceduralAnimation* animation, int duration){
 
 
 /** @brief Eleva ao máximo a opacidade de uma cor na duração específica. */
-void fadeIn(Color* color, ProceduralAnimation* animation, int duration){
+void fadeIn(Color* color, ProceduralAnimation* animation, float duration){
+    if(animation->running == false)
+        animation->initTime = GetTime();
+
+    animation->running =  true;
     double timeElapsed = GetTime() - animation->initTime;
     color->a = (int)(255*(timeElapsed/duration));
+
     if(timeElapsed>=duration){
+        color->a = 255;
         animation->running =  false;
         return;
     }
-    animation->running =  true;
 }
+
+
+// void fadeOutScreen(){
+//     static Color fadeOutColor = BLACK;
+//     fadeOutColor.a = 0;
+//     static ProceduralAnimation fadeOutAnimation = {0, false};
+//     static bool hasPreviousEnded = true;
+    
+//     if(hasPreviousEnded){
+//         fadeOutAnimation = (ProceduralAnimation){GetTime(), true};
+//         hasPreviousEnded = false;
+//     }
+
+//     if(fadeOutAnimation.running)
+//         fadeIn(&fadeOutColor, &fadeOutAnimation, 2.0f);
+//     else if(!hasPreviousEnded)
+//         hasPreviousEnded = true;
+
+//     DrawRectangle(0,0, LARGURA, ALTURA+ALTURAHUD, fadeOutColor);
+// }

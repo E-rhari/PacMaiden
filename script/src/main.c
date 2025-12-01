@@ -8,40 +8,47 @@
 #include "../include/System/WindowControl.h"
 #include "../include/Scenes/Levels.h"
 #include "../include/Scenes/TitleScreen.h"
+#include "../include/System/PacMath.h"
+#include "../include/Scenes/TeamLogo.h"
 #include "../include/Scenes/PVP.h"
 
 int main(){
     inicializeWindow();
+    InitAudioDevice();
+
     int file;
-    enum screenBehavior myScreen = TITLE;
+    currentScreen = TITLE;
 
     Rectangle* saveOptions = malloc(sizeof(Rectangle)*3);
     initSaveTitleButton(saveOptions);
 
+    teamLogo();
+
     while(!WindowShouldClose()){
-        switch (myScreen)
+        switch (currentScreen)
         {
             case TITLE:
-                myScreen=drawTitleScreen();
+                titleScreen();
             break;
             case NEWGAME:
-                file=0;
-                myScreen=level(file);
+                file=2;
+                level(file);
             break;
             case NEXT:
-                file++;
-                myScreen=level(file);
+                file = modulate(file+1, 2) + 1;
+                level(file);
             break;
             case LOAD:
                 drawTitleSaveStates(saveOptions);
                 file=isSaveTitleFileClicked(saveOptions);
                 if(file!=-1)
-                    myScreen=loadLevel(file);
+                    level(file);
             break;
             case PVP:
                 myScreen = StartPVP();
             break;
         }
     }
-
+    CloseAudioDevice();
+    CloseWindow();
 }
