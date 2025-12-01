@@ -271,11 +271,11 @@ void level(int levelNumber){
         ghosts = malloc(sizeof(Ghost)*4);
         load(map, &pacmaiden, ghosts, levelNumber);
     }
-    else if(currentScreen==NEWGAME){
+    else if(currentScreen==NEWGAME || currentScreen==NEXT){
         gameState=STARTING;
         readMap(levelNumber,map);
         pacmaiden = initPacMaiden(searchInMap(map, 'P')[0], RADIUS, SPEED, YELLOW, 1, 0);
-        ghosts = instantiateGhostsInLevel(map);
+        ghosts=instantiateGhostsInLevel(map);
         changePacmaidenState(&pacmaiden, IMMORTAL);
     }
 
@@ -293,10 +293,12 @@ void level(int levelNumber){
     update(&pacmaiden,ghosts,map,buttons,saveOptions, tracks);
     if(gameState == GAMEOVER)
         gameOverCutscene(&pacmaiden, ghosts, map, buttons, saveOptions);
-
+        
+    
     freeMusic(tracks);
     freeMap(map);
     free(ghosts);
     free(saveOptions);
     free(buttons);
+
 }
