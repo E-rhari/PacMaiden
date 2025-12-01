@@ -13,7 +13,6 @@ typedef enum {
     NORMAL,
     DYING,
     DEAD,
-    IMMORTAL
     IMMORTAL,
     KILLER
 } PacState;

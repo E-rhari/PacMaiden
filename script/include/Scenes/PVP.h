@@ -1,24 +1,12 @@
-typedef enum GameState{
-    RUNNING,
-    PAUSED,
-    SAVING,
-    LOADING,
-    EXIT
-}GameState;
-
 GameState gameState;
-
 
 #include "../Characters/Character.h"
 #include "../Characters/PacMaiden.h"
-#include "../Characters/Ghost.h"
+#include "../Characters/Ghosts/Ghost.h"
 #include "../System/WindowControl.h"
 #include "../System/Input.h"
 #include "../Map/Map.h"
 #include "Menu.h"
-
-#include "../Characters/CopyGhost.h"
-#include "../Characters/StupidGhost.h"
 
 #include <dirent.h>
 #include <string.h>
@@ -163,16 +151,13 @@ int updatePVP(PacMaiden* players,Ghost* ghosts, Map map, OptionButton* buttons){
     }
 }
 
-int StartPVP(){
-
+void StartPVP(){
     srand(time(NULL));
 
-    int screen;
     bool isSinglePlayer = false;
     int level,player1Spawn,player2Spawn;
 
     level = rand() % PVPMapsQuantity();
-
 
     gameState=RUNNING;
     
@@ -197,7 +182,8 @@ int StartPVP(){
 
     changePacmaidenState(&players[0], IMMORTAL);
     changePacmaidenState(&players[1], IMMORTAL);
-    screen=updatePVP(players,ghosts,map,buttons);
+
+    updatePVP(players,ghosts,map,buttons);
 
     free(map);
     for(int i=0;i<20;i++)
@@ -206,6 +192,4 @@ int StartPVP(){
     free(ghosts);
     free(buttons);
     free(players);
-
-    return screen;
 }

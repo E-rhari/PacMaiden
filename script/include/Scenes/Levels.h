@@ -260,11 +260,7 @@ void update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, 
 
 /** @brief Roda a fase desejada */
 void level(int levelNumber){
-int level(int levelNumber){
-
-    int screen;
     bool isSinglePlayer = true;
-    gameState=RUNNING;
 
     PacMaiden pacmaiden;
     Ghost* ghosts;

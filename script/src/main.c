@@ -45,7 +45,7 @@ int main(){
                     level(file);
             break;
             case PVP:
-                myScreen = StartPVP();
+                StartPVP();
             break;
         }
     }
