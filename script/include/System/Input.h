@@ -16,7 +16,7 @@ bool getBufferedInput(Vector2* lastInput, bool refreshCondition,int player,Vecto
     Vector2 recievedInput = {0,0};
     bool moved = false;
 
-    if(player==1){
+    if(player==0){
         recievedInput.x = fmaxf(IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_RIGHT), IsKeyDown(KEY_RIGHT))
             - fmaxf(IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_LEFT), IsKeyDown(KEY_LEFT));
         recievedInput.y = fmaxf(IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN), IsKeyDown(KEY_DOWN))
@@ -32,9 +32,12 @@ bool getBufferedInput(Vector2* lastInput, bool refreshCondition,int player,Vecto
         if(recievedInput.x != 0 || recievedInput.y != 0)    
             *bufferedInput = recievedInput;
 
-    if(refreshCondition || (lastInput->x!=0 && bufferedInput->x!=0) || (lastInput->y!=0 && bufferedInput->y!=0)){
+
+    if(refreshCondition || (lastInput->x!=0 && bufferedInput->x!=0) || (lastInput->y!=0 && bufferedInput->y!=0)  ){
         *lastInput = *bufferedInput;
         moved = true;
     }
     return moved;
 }
+
+//readPositionInMap(escaper->circle.center, map, directions[i]) != '#'

@@ -20,7 +20,7 @@ char* selecSaveFile(int saveFile){
         strcpy(path,"PacMaiden/sprites/saves/saveMap");
         char saveString[3];
 
-      itoa(saveFile,saveString,10);
+        itoa(saveFile,saveString,10);
         strcat(path,saveString);
         strcat(path,".bin");
     #elif __linux__

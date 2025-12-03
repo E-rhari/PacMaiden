@@ -31,13 +31,26 @@ typedef enum screenBehavior{
     CREDITS,
     TITLE,
     NEXT
-} ScreenBehavior; 
+} Scenes; 
 
-ScreenBehavior currentScreen;
+Scenes currenctScene;
+
+typedef enum GameState{
+    STARTING,
+    RUNNING,
+    PAUSED,
+    SAVING,
+    LOADING,
+    GAMEOVER,
+    EXIT
+}GameState;
 
 
-void changeScreenState(ScreenBehavior screen){
-    currentScreen = screen;
+GameState gameState;
+
+
+void changeScreenState(Scenes screen){
+    currenctScene = screen;
 
     switch (screen)
     {

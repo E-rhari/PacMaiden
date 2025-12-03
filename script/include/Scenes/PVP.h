@@ -7,6 +7,7 @@ GameState gameState;
 #include "../System/Input.h"
 #include "../Map/Map.h"
 #include "Menu.h"
+#include "Levels.h"
 
 #include <dirent.h>
 #include <string.h>
@@ -55,40 +56,43 @@ int PVPMapsQuantity(){
     return files;
 }
 
-void drawPVP(Map map,PacMaiden* players, Ghost* ghosts,OptionButton* buttons){
+
+void drawHudPVP(PacMaiden* players){
+    for(int i=0; i<players[0].lifes; i++)
+        DrawCircle(LARGURA-(i+1)*(20)-(i*20), ALTURA+20, 20,players[0].initialValues.color);
+    for(int i=0; i<players[1].lifes; i++)
+        DrawCircle((i+1)*(20)+(i*20), ALTURA+20, 20,players[1].initialValues.color);
+    DrawRectangle(0, 800, LARGURA, (int)GRID2PIX, BLACK);
+    DrawText(TextFormat("Pontuação: %d", players[1].points),SCOREPOSY*14, ALTURA, SCORESIZE, RAYWHITE);
+    DrawText(TextFormat("Pontuação: %d", players[0].points),LARGURA-SCOREPOSY*45, ALTURA, SCORESIZE, RAYWHITE);
+}
+
+
+void drawCharactersPVP(PacMaiden* players, Ghost* ghosts){
+    for(int j=0;j<2;j++)
+        DrawCircleV(players[j].chara.circle.center, players[j].chara.circle.radius, players[j].chara.color);
+    for(int i=0; i<4; i++)
+        DrawCircleV(ghosts[i].chara.circle.center, ghosts[i].chara.circle.radius, ghosts[i].chara.color);
+}
+
+
+void drawPVP(Map map,PacMaiden* players, Ghost* ghosts, OptionButton* buttons){
     BeginDrawing();
 
     ClearBackground(BLACK);
     drawMap(map);
-    DrawRectangle(0, 800, LARGURA, (int)GRID2PIX, BLACK);
 
-    DrawText(TextFormat("Pontuação: %d", players[0].points),SCOREPOSY*14, ALTURA, SCORESIZE, RAYWHITE);
-    DrawText(TextFormat("Pontuação: %d", players[1].points),LARGURA-SCOREPOSY*45, ALTURA, SCORESIZE, RAYWHITE);
-
-    for(int j=0;j<2;j++)
-        DrawCircleV(players[j].chara.circle.center, players[j].chara.circle.radius, players[j].chara.color);
-    for(int i=0; i<players[1].lifes; i++)
-        DrawCircle(LARGURA-(i+1)*(20)-(i*20), ALTURA+20, 20,players[1].initialValues.color);
-    for(int i=0; i<players[0].lifes; i++)
-        DrawCircle((i+1)*(20)+(i*20), ALTURA+20, 20,players[0].initialValues.color);
+    drawCharactersPVP(players, ghosts);
+    drawHudPVP(players);
     
-    for(int i=0; i<4; i++)
-        DrawCircleV(ghosts[i].chara.circle.center, ghosts[i].chara.circle.radius, ghosts[i].chara.color);
-
     if(gameState==PAUSED)
         drawOpenedMenu(buttons);
         
     EndDrawing();
 }
 
-void fixCenterPositon(PacMaiden* players){
-    
-}
-
 void PVPinteractions(PacMaiden* players){
     int playerArrayPosition;
-    
-
 
     for(int i=0;i<2;i++){
         if(players[i].state==KILLER)
@@ -97,7 +101,6 @@ void PVPinteractions(PacMaiden* players){
         playerArrayPosition=(i+1)%2;
 
         if(checkCharacterCollision(players[0].chara,players[1].chara)){
-
             if(players[i].state==KILLER && players[playerArrayPosition].state==NORMAL){
                 hurtPacmaiden(&players[playerArrayPosition]);
                 addPoints(&players[i],400);
@@ -106,11 +109,7 @@ void PVPinteractions(PacMaiden* players){
 
             players[i].canMove=false;
         }
-
-
     }
-
-
     canPlayersMove(players);
 }
 
@@ -122,7 +121,7 @@ void charactersPVPBehaviours(PacMaiden* players, Ghost* ghosts, Map map,int *pal
             fadeOut(&players[i].chara.color, &players[i].chara.procAnimation,1);
             if(!players[i].chara.procAnimation.running)
                 changePacmaidenState(&players[i], IMMORTAL);
-            return;
+        
         }
 
         getBufferedInput(&players[i].chara.moveDirection, isCharacterInGridCenter(players[i].chara)

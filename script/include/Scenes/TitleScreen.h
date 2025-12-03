@@ -64,7 +64,7 @@ void titleScreen(){
     Color fadeColor = BLACK;
     ProceduralAnimation fadeAnimation = {GetTime(), true};
 
-    while(currentScreen == TITLE){
+    while(currenctScene == TITLE){
         if(fadeAnimation.running)
             fadeOut(&fadeColor, &fadeAnimation, 1.0f);
 

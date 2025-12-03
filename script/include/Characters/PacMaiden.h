@@ -184,8 +184,8 @@ void canPlayersMove(PacMaiden* players){
    
 
     for(int i=0;i<2;i++){
-        playerNewCenter[i].x+= players[i].chara.moveDirection.x*10;
-        playerNewCenter[i].y+= players[i].chara.moveDirection.y*10;
+        playerNewCenter[i].x+= players[i].chara.moveDirection.x*30;
+        playerNewCenter[i].y+= players[i].chara.moveDirection.y*30;
     }
     if(!CheckCollisionCircles(playerNewCenter[0],players[0].chara.circle.radius,playerNewCenter[1],players[1].chara.circle.radius)){
         players[0].canMove=true;
