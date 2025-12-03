@@ -17,7 +17,7 @@ int main(){
     InitAudioDevice();
 
     int file;
-    currentScreen = TITLE;
+    currenctScene = TITLE;
 
     Rectangle* saveOptions = malloc(sizeof(Rectangle)*3);
     initSaveTitleButton(saveOptions);
@@ -25,7 +25,7 @@ int main(){
     teamLogo();
 
     while(!WindowShouldClose()){
-        switch (currentScreen)
+        switch (currenctScene)
         {
             case TITLE:
                 titleScreen();

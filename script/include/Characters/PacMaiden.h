@@ -62,6 +62,7 @@ void changePacmaidenState(PacMaiden* pacmaiden, PacState state){
             break;
 
         case KILLER:
+                pacmaiden->chara.procAnimation.initTime = GetTime();
             break;
 
         case DYING:
@@ -101,12 +102,21 @@ char charCollided(PacMaiden pacMaiden, Map map){
 
     return ' ';
 }
+void killerTime(PacMaiden* pacMaiden,int duration){
+    double timeElapsed = GetTime() - pacMaiden->chara.procAnimation.initTime;
+    if(timeElapsed>=duration)
+       changePacmaidenState(pacMaiden,NORMAL);
 
+    
+}
 
 /** @brief Verifica se a pacmaiden está tocando a Pellet */
 bool checkPowerPellet(PacMaiden* pacmaiden, Map map){
-    if(charCollided(*pacmaiden, map) == 'o')
+    if(charCollided(*pacmaiden, map) == 'o'){
+        changePacmaidenState(pacmaiden,KILLER);
+
         return true;
+    }
     return false;
 }
 
@@ -140,7 +150,7 @@ void countPoints(PacMaiden* pacMaiden, Map map, char object, int *pallets){
 
 /** @brief Dá dano a pacmaiden caso o cooldown seja obedecido.
  * @return Se a pacmaiden levou dano ou não */
-bool hurtPacmaiden(PacMaiden* pacmaiden, Map map){
+bool hurtPacmaiden(PacMaiden* pacmaiden){
     pacmaiden->lifes--;
     pacmaiden->timePivot = GetTime();
     addPoints(pacmaiden, -200);
@@ -174,8 +184,8 @@ void canPlayersMove(PacMaiden* players){
    
 
     for(int i=0;i<2;i++){
-        playerNewCenter[i].x+= players[i].chara.moveDirection.x*3;
-        playerNewCenter[i].y+= players[i].chara.moveDirection.y*3;
+        playerNewCenter[i].x+= players[i].chara.moveDirection.x*30;
+        playerNewCenter[i].y+= players[i].chara.moveDirection.y*30;
     }
     if(!CheckCollisionCircles(playerNewCenter[0],players[0].chara.circle.radius,playerNewCenter[1],players[1].chara.circle.radius)){
         players[0].canMove=true;

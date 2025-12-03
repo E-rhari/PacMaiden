@@ -88,7 +88,7 @@ void hurtGhost(Ghost* ghost){
 void ghostAttackPacmaiden(PacMaiden* pacmaiden, Ghost* ghost, Map map){
     if(pacmaiden->state != IMMORTAL)
         if(checkCharacterCollision(pacmaiden->chara, ghost->chara))
-            hurtPacmaiden(pacmaiden, map);
+            hurtPacmaiden(pacmaiden);
 }
 
 
@@ -132,8 +132,10 @@ void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden){
         blinkAnimation(&ghost->chara.color, DARKBLUE, GRAY, &ghost->chara.procAnimation, 5, 2.5);
         if(!ghost->chara.procAnimation.running)
             changeGhostState(ghost, SPOOKY);
+            
+
         
-        if(checkCharacterCollision(pacmaiden->chara, ghost->chara)){
+        if(checkCharacterCollision(pacmaiden->chara, ghost->chara) && pacmaiden->state==KILLER){
             hurtGhost(ghost);
             addPoints(pacmaiden, 100);
         }
