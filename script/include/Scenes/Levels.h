@@ -94,7 +94,6 @@ void charactersBehaviours(PacMaiden* pacmaiden, Ghost* ghosts, Map map,int *pall
 void update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, Rectangle *saveOptions, Music* tracks){
     int fileNumber;
     int pallets = countPallets(map);
-    printf("\n\n\nUpdate(%.2f, %.2f)\n\n\n", pacmaiden->chara.circle.center.x,pacmaiden->chara.circle.center.y);
     
     while(!WindowShouldClose()){
         fileNumber=-1;

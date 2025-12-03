@@ -19,7 +19,7 @@ void drawCharactersPVP(PacMaiden* pacmaidens, Ghost* ghosts);
 
 /** @brief Dá fade in nos fantasmas em sincronia com a música */
 void gameStartCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, bool PVP){
-    Music startTrack = LoadMusicStream("../../audio/Music/GameStart/GameStart.wav");
+    Music startTrack = LoadMusicStream(getFilePath("../../audio/Music/GameStart/GameStart.wav"));
     PlayMusicStream(startTrack);
     startTrack.looping = false;
     
@@ -64,7 +64,7 @@ void gameStartCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, bool PVP){
 
 /** @brief Escreve a mensagem de fim de jogo e toca a música de derrota */
 int gameOverCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, bool PVP){
-    Music gameOverTrack = LoadMusicStream("../../audio/Music/GameOver/GameOver.wav");
+    Music gameOverTrack = LoadMusicStream(getFilePath("../../audio/Music/GameOver/GameOver.wav"));
     PlayMusicStream(gameOverTrack);
     gameOverTrack.looping = false;
     
