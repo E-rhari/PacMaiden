@@ -57,7 +57,7 @@ void drawTitleScreen(){
 
 void titleScreen(){
 
-    Music titleTheme = LoadMusicStream("../../audio/Music/Title/Title.wav");
+    Music titleTheme = LoadMusicStream(getFilePath("../../audio/Music/Title/Title.wav"));
     PlayMusicStream(titleTheme);
 
 
