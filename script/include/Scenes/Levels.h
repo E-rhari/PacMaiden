@@ -25,6 +25,7 @@ GameState gameState;
 #include "../Characters/Ghosts/AwareGhost.h"
 #include "../Characters/Ghosts/UnawareGhost.h"
 #include "../Characters/Ghosts/AmbusherGhost.h"
+#include "../Characters/Ghosts/GreedyGhost.h"
 
 #pragma once
 
@@ -37,7 +38,7 @@ Ghost* instantiateGhostsInLevel(Map map){
     ladies[0] = initGhost(positions[0], RADIUS, SPEED, RED, STALKER); //homura
     ladies[1] = initGhost(positions[1], RADIUS, SPEED, SKYBLUE, AMBUSHER);//sora
     ladies[2] = initGhost(positions[2], RADIUS, SPEED, ORANGE, AWARE);//hikari
-    ladies[3] = initGhost(positions[3], RADIUS, SPEED, PINK, AWARE);//hana
+    ladies[3] = initGhost(positions[3], RADIUS, SPEED, PINK, GREEDY);//hana
 
     return ladies;
 }

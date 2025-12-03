@@ -23,7 +23,8 @@ typedef enum {
     UNAWARE,
     AWARE,
     STALKER,
-    AMBUSHER
+    AMBUSHER,
+    GREEDY
 } GhostType;
 
 
@@ -54,6 +55,7 @@ bool choseDestinationUnaware(Ghost* ghost);
 bool chooseDestinationAware(Ghost* ghost, Map map);
 NodeList stalkPacmaiden(Ghost* ghost, Map map, PacMaiden* pacmaiden);
 void ambushPacmaiden(Ghost* ghost, Map map, PacMaiden* pacmaiden, int blocksAhead);
+void getState(Ghost* ghost, Map map);
 
 
 
@@ -103,6 +105,7 @@ void chooseDestinationByType(Ghost* ghost, Map map, PacMaiden* pacmaiden){
             case AWARE:     chooseDestinationAware(ghost, map); break;
             case STALKER:   stalkPacmaiden(ghost, map, pacmaiden); break;
             case AMBUSHER:  ambushPacmaiden(ghost, map, pacmaiden, 4); break;
+            case GREEDY:    getState(ghost, map); break;
         }
         ghost->canChooseDestination = false;
     }
