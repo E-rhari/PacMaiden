@@ -72,7 +72,7 @@ void restricDrawLevel(Map map,PacMaiden* pacmaiden, Ghost* ghosts, OptionButton*
 
 
 /** @brief Realiza todas as funções de movimento dos personagens */
-void charactersBehaviours(PacMaiden* pacmaiden, Ghost* ghosts, Map map,int *pallets){
+void charactersBehaviours(PacMaiden* pacmaiden, Ghost* ghosts, Map map,int *pallets, Sound* effects){
     if(pacmaiden->state == DYING){
         fadeOut(&pacmaiden->chara.color, &pacmaiden->chara.procAnimation, 3);
         if(!pacmaiden->chara.procAnimation.running)
@@ -84,14 +84,14 @@ void charactersBehaviours(PacMaiden* pacmaiden, Ghost* ghosts, Map map,int *pall
                                                    && isCharacterInsideScreen(pacmaiden->chara, (Vector2){0,0}),0,&pacmaiden->bufferedInput);
     pacmaidenBehaviour(pacmaiden, map);
     for(int i=0; i<4; i++)
-        ghostBehaviour(&ghosts[i], map, pacmaiden);
+        ghostBehaviour(&ghosts[i], map, pacmaiden, effects[EAT_GHOST]);
 
-    countPoints(pacmaiden, map, charCollided(*pacmaiden, map), pallets);
+    countPoints(pacmaiden, map, charCollided(*pacmaiden, map), pallets, effects);
 }
 
 
 /** @brief Roda todo frame. */
-void update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, Rectangle *saveOptions, Music* tracks){
+void update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, Rectangle *saveOptions, Music* tracks, Sound* effects){
     int fileNumber;
     int pallets = countPallets(map);
     
@@ -127,7 +127,7 @@ void update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, 
                 isOptionButtonClicked(buttons, GetKeyPressed());
             break;
             case RUNNING:
-                charactersBehaviours(pacmaiden, ghosts, map, &pallets);
+                charactersBehaviours(pacmaiden, ghosts, map, &pallets, effects);
             break;
             case SAVING:
                 fileNumber=isSaveFileClicked(saveOptions);
@@ -178,9 +178,12 @@ void level(int levelNumber){
     initiateMusic(tracks); 
     focusTrack(tracks, MAIN_THEME);
 
+    Sound effects[SOUND_AMOUNT];
+    initiateSFX(effects);
+
     if(gameState == STARTING)
         gameStartCutscene(&pacmaiden, ghosts, map, false);
-    update(&pacmaiden,ghosts,map,buttons,saveOptions, tracks);
+    update(&pacmaiden,ghosts,map,buttons,saveOptions, tracks, effects);
     if(gameState == GAMEOVER)
         gameOverCutscene(&pacmaiden, ghosts, map, false);
         

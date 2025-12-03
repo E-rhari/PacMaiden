@@ -113,7 +113,7 @@ void chooseDestinationByType(Ghost* ghost, Map map, PacMaiden* pacmaiden){
 
 
 /** @brief Todas as ações de comportamento de um fantasma genérico que devem ser rodadas por frame */
-void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden){
+void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden, Sound dyingEffect){
     if(ghost->state == SPAWNING){
         blinkAnimation(&ghost->chara.color, ghost->initialValues.color, WHITE, &ghost->chara.procAnimation, 3, 1);
         if(!ghost->chara.procAnimation.running)
@@ -136,6 +136,7 @@ void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden){
 
         
         if(checkCharacterCollision(pacmaiden->chara, ghost->chara) && pacmaiden->state==KILLER){
+            PlaySound(dyingEffect);
             hurtGhost(ghost);
             addPoints(pacmaiden, 100);
         }

@@ -5,6 +5,7 @@ GameState gameState;
 #include "../Characters/Ghosts/Ghost.h"
 #include "../System/WindowControl.h"
 #include "../System/Input.h"
+#include "../System/Audio.h"
 #include "../Map/Map.h"
 #include "Menu.h"
 #include "Levels.h"
@@ -114,6 +115,8 @@ void PVPinteractions(PacMaiden* players){
 }
 
 void charactersPVPBehaviours(PacMaiden* players, Ghost* ghosts, Map map,int *pallets){
+    Sound effects[SOUND_AMOUNT];
+    initiateSFX(effects);
 
     for(int i=0;i<2;i++){
 
@@ -130,11 +133,10 @@ void charactersPVPBehaviours(PacMaiden* players, Ghost* ghosts, Map map,int *pal
         PVPinteractions(players);
 
         pacmaidenBehaviour(&players[i], map);
-
         for(int j=0; j<4; j++)
-            ghostBehaviour(&ghosts[j], map, &players[i]);
+            ghostBehaviour(&ghosts[j], map, &players[i], effects[EAT_GHOST]);
 
-        countPoints(&players[i], map, charCollided(players[i], map),pallets);
+        countPoints(&players[i], map, charCollided(players[i], map), pallets, effects);
     }   
 }
 
@@ -152,7 +154,7 @@ int updatePVP(PacMaiden* players,Ghost* ghosts, Map map, OptionButton* buttons){
 
     while(!WindowShouldClose()){
         if(DEBUG_MODE)
-            userClose();
+            userClose(); 
     
         drawPVP(map,players,ghosts,buttons);
         

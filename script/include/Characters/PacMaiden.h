@@ -2,6 +2,7 @@
 #include<stdbool.h>
 
 #include "./Character.h"
+//#include "../System/Audio.h"
 
 #pragma once
 
@@ -125,17 +126,20 @@ bool checkPowerPellet(PacMaiden* pacmaiden, Map map){
  * @param pacMaiden Personagem do jogador que receberá a pontuação.
  * @param map Mapa de onde será contado o ponto.
  * @param object Caractere que indica o tipo de objeto. */
-void countPoints(PacMaiden* pacMaiden, Map map, char object, int *pallets){
+void countPoints(PacMaiden* pacMaiden, Map map, char object, int *pallets, Sound* effects){
     Vector2 colliderBound = (Vector2){pacMaiden->chara.circle.center.x + pacMaiden->chara.circle.radius*pacMaiden->chara.moveDirection.x,
                                       pacMaiden->chara.circle.center.y + pacMaiden->chara.circle.radius*pacMaiden->chara.moveDirection.y};
     Vector2 convertedPos = Vector2Scale(colliderBound, PIX2GRID);
     switch(object)
     {
         case '.':
+            SetSoundPitch(effects[0], .75 + ((float)(rand() % 5))/10);
+            PlaySound(effects[0]);
             addPoints(pacMaiden, 10);
             *pallets=*pallets-1;
             break;
         case 'o':
+            PlaySound(effects[1]);
             addPoints(pacMaiden, 50);
             break;
         case 'B':
