@@ -55,15 +55,6 @@ void readMap (int level, Map map)
     char path[50];
 
     sprintf(path, getFilePath("../../sprites/maps/map%d.txt"), level);
-    
-    #ifdef _WIN32
-        strcpy(path,"PacMaiden/sprites/maps/map");
-        char nivelString[3];
-
-        itoa(level,nivelString,10);
-        strcat(path,nivelString);
-        strcat(path,".txt");
-    #endif
 
     FILE* arq = fopen(path, "r");
 

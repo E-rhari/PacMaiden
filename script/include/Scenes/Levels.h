@@ -97,7 +97,7 @@ void charactersBehaviours(PacMaiden* pacmaiden, Ghost* ghosts, Map map,int *pall
 
 /** @brief Dá fade in nos fantasmas em sincronia com a música */
 void gameStartCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, OptionButton* buttons, Rectangle *saveOptions){
-    Music startTrack = LoadMusicStream("../../audio/Music/GameStart/GameStart.wav");
+    Music startTrack = LoadMusicStream(getFilePath("../../audio/Music/GameStart/GameStart.wav"));
     PlayMusicStream(startTrack);
     startTrack.looping = false;
 
@@ -109,7 +109,7 @@ void gameStartCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, OptionButto
     while(gameState == STARTING){
         if(DEBUG_MODE)
             userClose();
-            
+
         UpdateMusicStream(startTrack);
 
         for(int i=0; i<4; i++)
@@ -134,7 +134,7 @@ void gameStartCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, OptionButto
 
 /** @brief Escreve a mensagem de fim de jogo e toca a música de derrota */
 int gameOverCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, OptionButton* buttons, Rectangle *saveOptions){
-    Music gameOverTrack = LoadMusicStream("../../audio/Music/GameOver/GameOver.wav");
+    Music gameOverTrack = LoadMusicStream(getFilePath("../../audio/Music/GameOver/GameOver.wav"));
     PlayMusicStream(gameOverTrack);
     gameOverTrack.looping = false;
     
