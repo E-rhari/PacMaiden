@@ -23,8 +23,10 @@ bool getBufferedInput(Vector2* lastInput, bool refreshCondition,int player,Vecto
             - fmaxf(IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_UP), IsKeyDown(KEY_UP));
     }
     else{
-        recievedInput.x = IsKeyDown(KEY_D)- IsKeyDown(KEY_A);
-        recievedInput.y = IsKeyDown(KEY_S) - IsKeyDown(KEY_W);   
+        recievedInput.x = fmaxf(IsGamepadButtonDown(1, GAMEPAD_BUTTON_LEFT_FACE_RIGHT), IsKeyDown(KEY_D))
+            - fmaxf(IsGamepadButtonDown(1, GAMEPAD_BUTTON_LEFT_FACE_LEFT), IsKeyDown(KEY_A));
+        recievedInput.y = fmaxf(IsGamepadButtonDown(1, GAMEPAD_BUTTON_LEFT_FACE_DOWN), IsKeyDown(KEY_S))
+            - fmaxf(IsGamepadButtonDown(1, GAMEPAD_BUTTON_LEFT_FACE_UP), IsKeyDown(KEY_W));
     }
 
 
