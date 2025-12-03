@@ -12,8 +12,8 @@ typedef enum {
 
 
 Music* initiateMusic(Music* tracks){
-    tracks[MAIN_THEME]        = LoadMusicStream("../../audio/Music/MainTheme/MainTheme.wav");
-    tracks[PAUSED_MAIN_THEME] = LoadMusicStream("../../audio/Music/MainTheme/PausedMainTheme.wav");
+    tracks[MAIN_THEME]        = LoadMusicStream(getFilePath("../../audio/Music/MainTheme/MainTheme.wav"));
+    tracks[PAUSED_MAIN_THEME] = LoadMusicStream(getFilePath("../../audio/Music/MainTheme/PausedMainTheme.wav"));
 
     PlayMusicStream(tracks[MAIN_THEME]);
     PlayMusicStream(tracks[PAUSED_MAIN_THEME]);

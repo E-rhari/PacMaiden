@@ -6,6 +6,7 @@
 #include "./GridVector.h"
 #include "../System/WindowControl.h"
 #include "../System/PacMath.h"
+#include "../System/Files.h"
 
 #pragma once
 
@@ -52,6 +53,8 @@ void readMap (int level, Map map)
 {
     char temp;
     char path[50];
+
+    sprintf(path, getFilePath("../../sprites/maps/map%d.txt"), level);
     
     #ifdef _WIN32
         strcpy(path,"PacMaiden/sprites/maps/map");
@@ -60,13 +63,6 @@ void readMap (int level, Map map)
         itoa(level,nivelString,10);
         strcat(path,nivelString);
         strcat(path,".txt");
-    #elif __linux__
-        sprintf(path, "../../sprites/maps/map%d.txt", level);
-        printf(path);
-    #else
-        printf("Sistema operacional não detectado. Proseguindo com configuração do linux");
-        sprintf(path, "../../sprites/maps/map%d.txt", level);
-        printf(path);
     #endif
 
     FILE* arq = fopen(path, "r");
