@@ -27,7 +27,7 @@ bool isTitleButtonHovered(titleButton button){
 void isTitleButtonClicked(titleButton *button){
     for(int i=0;i<4;i++)
         if(isTitleButtonHovered(button[i]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-            changeScreenState(button[i].id);
+            changeScene(button[i].id);
 }
 
 

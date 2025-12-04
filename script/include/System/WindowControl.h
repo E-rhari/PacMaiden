@@ -49,7 +49,7 @@ typedef enum GameState{
 GameState gameState;
 
 
-void changeScreenState(Scenes screen){
+void changeScene(Scenes screen){
     currenctScene = screen;
 
     switch (screen)

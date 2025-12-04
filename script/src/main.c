@@ -9,7 +9,7 @@
 #include "../include/Scenes/Levels.h"
 #include "../include/Scenes/TitleScreen.h"
 #include "../include/System/PacMath.h"
-#include "../include/Scenes/TeamLogo.h"
+#include "../include/Scenes/Cutscenes.h"
 #include "../include/Scenes/PVP.h"
 
 int main(){

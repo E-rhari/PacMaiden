@@ -157,12 +157,17 @@ int updatePVP(PacMaiden* players,Ghost* ghosts, Map map, OptionButton* buttons, 
         drawPVP(map,players,ghosts,buttons);
         
         
-        if(isPlayersDead(players))
-            return TITLE;
-        if(pallets<=0)
-            return TITLE;
-        if(IsKeyPressed(KEY_TAB))
-            gameState=PAUSED;
+        if(isPlayersDead(players)){
+            gameState = GAMEOVER;
+            changeScene(TITLE);
+            return;
+        }
+        if(pallets<=0){
+            changeScene(NEXT);
+            return;
+        }
+
+        gamePause();
 
         switch (gameState)
         {
@@ -173,7 +178,8 @@ int updatePVP(PacMaiden* players,Ghost* ghosts, Map map, OptionButton* buttons, 
                 charactersPVPBehaviours(players, ghosts, map, &pallets, effects);
             break;
             case EXIT:
-                return TITLE;
+                changeScene(TITLE);
+                return;
             break;
         }
     }
@@ -187,7 +193,7 @@ void StartPVP(){
 
     level = rand() % PVPMapsQuantity();
 
-    gameState=RUNNING;
+    gameState=STARTING;
     
     Map map=setUpMap();
     readMap(level,map);
@@ -215,10 +221,14 @@ void StartPVP(){
     initiateSFX(effects);
 
     updatePVP(players,ghosts,map,buttons, effects);
+    if(gameState == STARTING)
+        gameStartCutscene(players, ghosts, map, true);
+    if(gameState == GAMEOVER)
+        gameOverCutscene(players, ghosts, map, true);
 
-    free(map);
     for(int i=0;i<20;i++)
         free(*(map+i));
+    free(map);
 
     free(ghosts);
     free(buttons);

@@ -90,6 +90,16 @@ void charactersBehaviours(PacMaiden* pacmaiden, Ghost* ghosts, Map map,int *pall
 }
 
 
+void gamePause(){
+    if(IsKeyPressed(KEY_TAB)){
+        if(gameState==PAUSED)    
+            gameState=RUNNING;
+        else 
+            gameState=PAUSED;
+    }
+}
+
+
 /** @brief Roda todo frame. */
 void update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, Rectangle *saveOptions, Music* tracks, Sound* effects){
     int fileNumber;
@@ -104,20 +114,15 @@ void update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, 
 
         if(pacmaiden->state == DEAD){
             gameState = GAMEOVER;
-            changeScreenState(TITLE);
+            changeScene(TITLE);
             return;
         }
         if(pallets<=0){
-            changeScreenState(NEXT);
+            changeScene(NEXT);
             return;
         }
 
-        if(IsKeyPressed(KEY_TAB)){
-            if(gameState==PAUSED)    
-               gameState=RUNNING;
-            else 
-                gameState=PAUSED;
-        }
+        gamePause();
 
         handleMusic(tracks, gameState!=RUNNING);
 
@@ -140,7 +145,7 @@ void update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, 
                     load(map,pacmaiden,ghosts,fileNumber);
             break;
             case EXIT:
-                changeScreenState(TITLE);
+                changeScene(TITLE);
                 return;
             break;
         }
@@ -164,7 +169,7 @@ void level(int levelNumber){
     else if(currenctScene==NEWGAME || currenctScene==NEXT){
         gameState=STARTING;
         readMap(levelNumber,map);
-        pacmaiden = initPacMaiden(searchInMap(map, 'P')[0], RADIUS, SPEED, YELLOW, 1, 0);
+        pacmaiden = initPacMaiden(searchInMap(map, 'P')[0], RADIUS, SPEED, YELLOW, 3, 0);
         ghosts=instantiateGhostsInLevel(map);
         changePacmaidenState(&pacmaiden, IMMORTAL);
     }
