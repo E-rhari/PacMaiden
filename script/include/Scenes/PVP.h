@@ -146,7 +146,7 @@ bool isPlayersDead(PacMaiden* players){
 }
 
 
-int updatePVP(PacMaiden* players,Ghost* ghosts, Map map, OptionButton* buttons, Sound* effects){
+void updatePVP(PacMaiden* players,Ghost* ghosts, Map map, OptionButton* buttons, Music* tracks, Sound* effects){
 
     int pallets = countPallets(map);
 
@@ -168,6 +168,7 @@ int updatePVP(PacMaiden* players,Ghost* ghosts, Map map, OptionButton* buttons, 
         }
 
         gamePause();
+        handleMusic(tracks, gameState!=RUNNING);
 
         switch (gameState)
         {
@@ -216,13 +217,17 @@ void StartPVP(){
 
     changePacmaidenState(&players[0], IMMORTAL);
     changePacmaidenState(&players[1], IMMORTAL);
+
+    Music tracks[SONG_AMOUT];
+    initiateMusic(tracks); 
+    focusTrack(tracks, MAIN_THEME);
     
     Sound effects[SOUND_AMOUNT];
     initiateSFX(effects);
 
-    updatePVP(players,ghosts,map,buttons, effects);
     if(gameState == STARTING)
         gameStartCutscene(players, ghosts, map, true);
+    updatePVP(players,ghosts,map,buttons, tracks, effects);
     if(gameState == GAMEOVER)
         gameOverCutscene(players, ghosts, map, true);
 
