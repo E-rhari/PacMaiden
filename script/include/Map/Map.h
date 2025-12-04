@@ -3,7 +3,6 @@
 #include <string.h>
 #include "raylib.h"
 
-#include "./GridVector.h"
 #include "../System/WindowControl.h"
 #include "../System/PacMath.h"
 #include "../System/Files.h"
@@ -79,8 +78,8 @@ void readMap (int level, Map map)
 
 
 bool isInsideMap(GridVector gridPosition, Map map, GridVector displacement){
-    return (int)gridPosition.y+(int)displacement.y>=0 && (int)gridPosition.y+(int)displacement.y<ALTURA/40
-        && (int)gridPosition.x+(int)displacement.x>=0 && (int)gridPosition.x+(int)displacement.x<LARGURA/40;
+    return (int)gridPosition.y+(int)displacement.y>=0 && (int)gridPosition.y+(int)displacement.y<HEIGHT/40
+        && (int)gridPosition.x+(int)displacement.x>=0 && (int)gridPosition.x+(int)displacement.x<WIDTH/40;
 }
 
 

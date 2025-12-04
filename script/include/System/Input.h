@@ -41,5 +41,3 @@ bool getBufferedInput(Vector2* lastInput, bool refreshCondition,int player,Vecto
     }
     return moved;
 }
-
-//readPositionInMap(escaper->circle.center, map, directions[i]) != '#'

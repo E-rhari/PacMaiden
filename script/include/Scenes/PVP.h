@@ -60,12 +60,12 @@ int PVPMapsQuantity(){
 
 void drawHudPVP(PacMaiden* players){
     for(int i=0; i<players[0].lifes; i++)
-        DrawCircle(LARGURA-(i+1)*(20)-(i*20), ALTURA+20, 20,players[0].initialValues.color);
+        DrawCircle(WIDTH-(i+1)*(20)-(i*20), HEIGHT+20, 20,players[0].initialValues.color);
     for(int i=0; i<players[1].lifes; i++)
-        DrawCircle((i+1)*(20)+(i*20), ALTURA+20, 20,players[1].initialValues.color);
-    DrawRectangle(0, 800, LARGURA, (int)GRID2PIX, BLACK);
-    DrawText(TextFormat("Pontuação: %d", players[1].points),SCOREPOSY*14, ALTURA, SCORESIZE, RAYWHITE);
-    DrawText(TextFormat("Pontuação: %d", players[0].points),LARGURA-SCOREPOSY*45, ALTURA, SCORESIZE, RAYWHITE);
+        DrawCircle((i+1)*(20)+(i*20), HEIGHT+20, 20,players[1].initialValues.color);
+    DrawRectangle(0, 800, WIDTH, (int)GRID2PIX, BLACK);
+    DrawText(TextFormat("Pontuação: %d", players[1].points),SCOREPOSY*14, HEIGHT, SCORESIZE, RAYWHITE);
+    DrawText(TextFormat("Pontuação: %d", players[0].points),WIDTH-SCOREPOSY*45, HEIGHT, SCORESIZE, RAYWHITE);
 }
 
 

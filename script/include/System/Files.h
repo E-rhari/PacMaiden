@@ -5,7 +5,8 @@
 #pragma once
 
 
-
+/** @brief Determina o caminho para um arquivo de acordo com o sistema operacional. 
+ * @param path Caminho relativo até o arquivo desejado. É o formato usado no Linux por padrão. */
 char* getFilePath(char* path){
     #ifdef _WIN32
         int i=0;

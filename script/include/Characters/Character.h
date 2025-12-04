@@ -140,14 +140,14 @@ bool move(Character* character, Map map){
 void portalBorders(Character* chara){
     // Horizontal
     if(chara->circle.center.x < 0 - chara->circle.radius*2)
-        chara->circle.center.x = LARGURA;
-    else if(chara->circle.center.x > LARGURA)
+        chara->circle.center.x = WIDTH;
+    else if(chara->circle.center.x > WIDTH)
         chara->circle.center.x = 0 - chara->circle.radius*2;
         
     // Vertical
     if(chara->circle.center.y < 0 - chara->circle.radius*2)
-        chara->circle.center.y = ALTURA;
-    else if(chara->circle.center.y > ALTURA)
+        chara->circle.center.y = HEIGHT;
+    else if(chara->circle.center.y > HEIGHT)
         chara->circle.center.y = 0 - chara->circle.radius*2;   
 }
 
@@ -181,7 +181,7 @@ void recklessEscape(Character* escaper, Character threat, Map map){
 
     for(int i=0; i<4; i++)
         if(readPositionInMap(escaper->circle.center, map, directions[i]) != '#'){
-            Vector2 nextPosition = {modulate(escaperGridPosition.x+directions[i].x, LARGURA*PIX2GRID), modulate(escaperGridPosition.y+directions[i].y, ALTURA*PIX2GRID)};
+            Vector2 nextPosition = {modulate(escaperGridPosition.x+directions[i].x, WIDTH*PIX2GRID), modulate(escaperGridPosition.y+directions[i].y, HEIGHT*PIX2GRID)};
             float currentGCost = fabs(nextPosition.x - threatGridPosition.x) + fabs(nextPosition.y - threatGridPosition.y);
 
             if(currentGCost > biggestGCost){

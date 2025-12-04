@@ -172,10 +172,10 @@ void printNodeList(NodeList list){
 
 /** @brief Aloca uma matriz de Nodes na memória com um chute dos seus custos calculados */
 Node** setUpNodeMap(GridVector start, GridVector end){
-    Node** nodeMap = (Node**)malloc((LARGURA*PIX2GRID)*sizeof(Node*));
-    for(int i=0; i<LARGURA*PIX2GRID; i++){
-        nodeMap[i] = (Node*)malloc((ALTURA*PIX2GRID)*sizeof(Node));
-        for(int j=0; j<ALTURA*PIX2GRID; j++)
+    Node** nodeMap = (Node**)malloc((WIDTH*PIX2GRID)*sizeof(Node*));
+    for(int i=0; i<WIDTH*PIX2GRID; i++){
+        nodeMap[i] = (Node*)malloc((HEIGHT*PIX2GRID)*sizeof(Node));
+        for(int j=0; j<HEIGHT*PIX2GRID; j++)
             innitNode(&nodeMap[i][j], (GridVector){i, j}, start, end);
     }
     return nodeMap;
@@ -245,8 +245,8 @@ NodeList findPath(GridVector start, GridVector end, Map map){
         
         GridVector directions[4] = {{-1,0}, {1,0}, {0,-1}, {0,1}};  // Todas as direções em que um vizinho pode estar
         for(int i=0; i<4; i++){
-            GridVector portalPosition = (GridVector){modulate(currentNode->position.x+directions[i].x, LARGURA*PIX2GRID), 
-                                                     modulate(currentNode->position.y+directions[i].y, ALTURA*PIX2GRID)};
+            GridVector portalPosition = (GridVector){modulate(currentNode->position.x+directions[i].x, WIDTH*PIX2GRID), 
+                                                     modulate(currentNode->position.y+directions[i].y, HEIGHT*PIX2GRID)};
             if(readCoordinatesInMap(portalPosition, map, (GridVector){0,0}) == '#')
                 continue;
 

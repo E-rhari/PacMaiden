@@ -2,15 +2,17 @@
 
 #pragma once
 
-#define SONG_AMOUT 2
-#define SOUND_AMOUNT 3
+#define SONG_AMOUT 2    // Quantidade de músicas tocando simultanêamente durante o levels
+#define SOUND_AMOUNT 3  // Quantidade de efeitos sonoros a serem carregados em levels
 
 
+// Enumeração das possíveis músicas a serem tocadas em  levels
 typedef enum {
     MAIN_THEME,
     PAUSED_MAIN_THEME
 }Track;
 
+// Enumeração dos possíveis SFX a serem tocadas em  levels
 typedef enum {
     PELLET,
     SUPER_PELLET,
@@ -43,6 +45,7 @@ void freeMusic(Music* tracks){
 }
 
 
+/** @brief Coloca o volume de uma música no máximo e muta todas as outras */
 void focusTrack(Music* tracks, Track trackName){
     for(int i=0; i<SONG_AMOUT; i++)
         SetMusicVolume(tracks[i], 0.0f);
@@ -50,6 +53,7 @@ void focusTrack(Music* tracks, Track trackName){
 }
 
 
+/** @brief Controla o pause e atualização da música */
 void handleMusic(Music* tracks, bool pause){
     if(pause)
         focusTrack(tracks, PAUSED_MAIN_THEME);
@@ -59,6 +63,7 @@ void handleMusic(Music* tracks, bool pause){
     for(int i=0; i<SONG_AMOUT; i++)
         UpdateMusicStream(tracks[i]);
 }
+
 
 Sound* initiateSFX(Sound* effects){
     effects[PELLET]       = LoadSound(getFilePath("../../audio/SFX/pellet.wav"));

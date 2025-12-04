@@ -15,7 +15,7 @@ typedef struct {
     Rectangle optionBox;
     Color colorBase;
     Color colorHover;
-    enum screenBehavior id;
+    Scenes id;
 } titleButton;
 
 
@@ -56,23 +56,21 @@ void drawTitleScreen(){
 
 
 void titleScreen(){
-
     Music titleTheme = LoadMusicStream(getFilePath("../../audio/Music/Title/Title.wav"));
     PlayMusicStream(titleTheme);
-
 
     Color fadeColor = BLACK;
     ProceduralAnimation fadeAnimation = {GetTime(), true};
 
     while(currenctScene == TITLE){
-        if(fadeAnimation.running)
-            fadeOut(&fadeColor, &fadeAnimation, 1.0f);
-
         UpdateMusicStream(titleTheme);
+
+        if(fadeAnimation.running)
+            fadeOut(&fadeColor, &fadeAnimation, 2.0f);
 
         BeginDrawing();
         drawTitleScreen();
-        DrawRectangle(0,0, LARGURA, ALTURA, fadeColor);
+        DrawRectangle(0,0, WIDTH, HEIGHT, fadeColor);
         EndDrawing();
     }
     fadeAnimation = (ProceduralAnimation){GetTime(), true};
@@ -83,7 +81,7 @@ void titleScreen(){
 
         BeginDrawing();
         drawTitleScreen();
-        DrawRectangle(0,0, LARGURA, ALTURA, fadeColor);
+        DrawRectangle(0,0, WIDTH, HEIGHT, fadeColor);
         EndDrawing();
     }
     WaitTime(1);

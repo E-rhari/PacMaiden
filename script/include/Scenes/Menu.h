@@ -169,7 +169,7 @@ void drawOptionButtons(Rectangle menuBox, OptionButton *buttons){
 
 void drawOpenedMenu(OptionButton *buttons) {
     Rectangle menuBox = {650, 200, 300, 400};
-    DrawRectangle(0, 0, LARGURA, ALTURAHUD, (Color){0, 20, 60, 150});
+    DrawRectangle(0, 0, WIDTH, HUDHEIGHT, (Color){0, 20, 60, 150});
     DrawRectangleRounded(menuBox, 0.1f, 10, (Color){ 30, 80, 255, 255 });
     Vector2 textSize = MeasureTextEx(GetFontDefault(), "Menu", 18, 1);
     DrawTextEx(GetFontDefault(), "Menu", (Vector2){menuBox.x + (menuBox.width - textSize.x) / 2, menuBox.y + (50 - textSize.y) / 2}, 18, 1, RAYWHITE);

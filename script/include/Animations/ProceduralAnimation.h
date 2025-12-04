@@ -86,5 +86,5 @@ void fadeIn(Color* color, ProceduralAnimation* animation, float duration){
 //     else if(!hasPreviousEnded)
 //         hasPreviousEnded = true;
 
-//     DrawRectangle(0,0, LARGURA, ALTURA+ALTURAHUD, fadeOutColor);
+//     DrawRectangle(0,0, WIDTH, HEIGHT+HUDHEIGHT, fadeOutColor);
 // }

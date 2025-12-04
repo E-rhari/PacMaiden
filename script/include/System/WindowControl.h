@@ -6,9 +6,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define LARGURA 1600
-#define ALTURA 800
-#define ALTURAHUD 40
+#define WIDTH 1600
+#define HEIGHT 800
+#define HUDHEIGHT 40
 
 #define SCORESIZE 40
 #define SCOREPOSY 10
@@ -24,7 +24,7 @@
 #pragma once
 
 
-typedef enum screenBehavior{
+typedef enum {
     NEWGAME,
     LOAD,
     PVP,
@@ -32,8 +32,8 @@ typedef enum screenBehavior{
     TITLE,
     NEXT
 } Scenes; 
+Scenes currenctScene; // Controla a cena em que o jogo atualmente se encontra
 
-Scenes currenctScene;
 
 typedef enum GameState{
     STARTING,
@@ -44,9 +44,7 @@ typedef enum GameState{
     GAMEOVER,
     EXIT
 }GameState;
-
-
-GameState gameState;
+GameState gameState; // Controla o estado de levels
 
 
 void changeScene(Scenes screen){
@@ -72,7 +70,7 @@ void userClose(){
 
 
 void inicializeWindow(){
-    InitWindow(LARGURA, ALTURA + ALTURAHUD, "Jogo Irado!!!");
+    InitWindow(WIDTH, HEIGHT + HUDHEIGHT, "-= PacMaiden =-");
     SetTargetFPS(60);
     srand(time(NULL));
 }
@@ -80,6 +78,6 @@ void inicializeWindow(){
 
 /** @brief Verifica se a posição está dentro da tela do jogo */
 bool isPositionInsideScreen(Vector2 position,Vector2 displacement){
-    return (int)position.y+(int)displacement.y>=0 && (int)position.y+(int)displacement.y<ALTURA
-        && (int)position.x+(int)displacement.x>=0 && (int)position.x+(int)displacement.x<LARGURA;
+    return (int)position.y+(int)displacement.y>=0 && (int)position.y+(int)displacement.y<HEIGHT
+        && (int)position.x+(int)displacement.x>=0 && (int)position.x+(int)displacement.x<WIDTH;
 }

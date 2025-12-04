@@ -39,10 +39,10 @@ void drawCharacters(PacMaiden* pacmaiden, Ghost* ghosts){
 
 
 void drawHud(PacMaiden* pacmaiden){
-    DrawRectangle(0, 800, LARGURA, (int)GRID2PIX, BLACK);
-    DrawText(TextFormat("Pontuação: %d", pacmaiden->points), SCOREPOSY, ALTURA, SCORESIZE, RAYWHITE);
+    DrawRectangle(0, 800, WIDTH, (int)GRID2PIX, BLACK);
+    DrawText(TextFormat("Pontuação: %d", pacmaiden->points), SCOREPOSY, HEIGHT, SCORESIZE, RAYWHITE);
     for(int i=0; i<pacmaiden->lifes; i++)
-        DrawCircle(LARGURA-(i+1)*(20)-(i*20), ALTURA+20, 20, pacmaiden->initialValues.color);
+        DrawCircle(WIDTH-(i+1)*(20)-(i*20), HEIGHT+20, 20, pacmaiden->initialValues.color);
 }
 
 
@@ -90,6 +90,7 @@ void charactersBehaviours(PacMaiden* pacmaiden, Ghost* ghosts, Map map,int *pall
 }
 
 
+/** @brief Pause ou despausa o jogo caso o jogador aperte tab */
 void gamePause(){
     if(IsKeyPressed(KEY_TAB)){
         if(gameState==PAUSED)    
