@@ -114,9 +114,7 @@ void PVPinteractions(PacMaiden* players){
     canPlayersMove(players);
 }
 
-void charactersPVPBehaviours(PacMaiden* players, Ghost* ghosts, Map map,int *pallets){
-    Sound effects[SOUND_AMOUNT];
-    initiateSFX(effects);
+void charactersPVPBehaviours(PacMaiden* players, Ghost* ghosts, Map map,int *pallets, Sound* effects){
 
     for(int i=0;i<2;i++){
 
@@ -148,7 +146,7 @@ bool isPlayersDead(PacMaiden* players){
 }
 
 
-int updatePVP(PacMaiden* players,Ghost* ghosts, Map map, OptionButton* buttons){
+int updatePVP(PacMaiden* players,Ghost* ghosts, Map map, OptionButton* buttons, Sound* effects){
 
     int pallets = countPallets(map);
 
@@ -172,7 +170,7 @@ int updatePVP(PacMaiden* players,Ghost* ghosts, Map map, OptionButton* buttons){
                 isOptionButtonClicked(buttons,GetKeyPressed());
             break;
             case RUNNING:
-                charactersPVPBehaviours(players, ghosts, map, &pallets);
+                charactersPVPBehaviours(players, ghosts, map, &pallets, effects);
             break;
             case EXIT:
                 return TITLE;
@@ -212,8 +210,11 @@ void StartPVP(){
 
     changePacmaidenState(&players[0], IMMORTAL);
     changePacmaidenState(&players[1], IMMORTAL);
+    
+    Sound effects[SOUND_AMOUNT];
+    initiateSFX(effects);
 
-    updatePVP(players,ghosts,map,buttons);
+    updatePVP(players,ghosts,map,buttons, effects);
 
     free(map);
     for(int i=0;i<20;i++)
