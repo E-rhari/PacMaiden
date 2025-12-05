@@ -18,3 +18,30 @@ typedef struct {
     bool loop;
     bool running;
 } SpriteAnimation; 
+
+
+void runSpriteAniation(SpriteAnimation* animation){
+    float timePerFrame = 1/animation->speed;
+    animation->timeInFrame += GetFrameTime();
+
+    if(animation->timeInFrame >= timePerFrame){
+        animation->current += animation->step;
+
+        if(animation->current >= animation->last){
+            if(animation->loop)
+                animation->current %= animation->last; 
+            else{
+                animation->current = animation->last;
+                animation->running = false;
+            }
+        }
+        animation->timeInFrame = 0;
+    }
+}
+
+
+Rectangle getSpriteFrame(SpriteAnimation* animation){
+    float x = animation->current*animation->frameSize.x;
+    float y = animation->rowSelect*animation->frameSize.y;
+    return (Rectangle){x, y, animation->frameSize.x, animation->frameSize.y};
+}
