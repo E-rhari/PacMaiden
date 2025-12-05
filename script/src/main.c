@@ -22,7 +22,7 @@ int main(){
     Rectangle* saveOptions = malloc(sizeof(Rectangle)*3);
     initSaveTitleButton(saveOptions);
 
-    teamLogo();
+    teamSplashScreen();
 
     while(!WindowShouldClose()){
         switch (currenctScene)
