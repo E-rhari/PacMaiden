@@ -40,10 +40,10 @@ SpriteAnimation innitSpriteAnimation(char spriteSheet[], Vector2 frameSize, floa
         .first=0,
         .last=(spriteSheetTexture.width/frameSize.x)-1,
         .lineSelect=0,
-        .running=false,
+        .running=true,
         .step=1,
 
-        .loop = loop,
+        .loop=loop,
         .speed=speed,
         .spriteSheet=LoadTexture(spriteSheet),
         .frameSize=frameSize,

@@ -7,6 +7,7 @@
 #include "../Map/Map.h"
 #include "Menu.h"
 
+#include "../Animations/SpriteAnimation.h"
 
 #pragma once
 
@@ -20,18 +21,25 @@ void drawCharacters(PacMaiden* pacmaiden, Ghost* ghosts);
 void drawCharactersPVP(PacMaiden* pacmaidens, Ghost* ghosts);
 
 
+static void drawTeamSplashScreen(Color fadeColor){
+    ClearBackground(BLACK);
+    DrawText("JERB", WIDTH/2 -275, HEIGHT/2 - 100, 200, RAYWHITE);
+    DrawText("Jogos Eletrônicos Radicais e Brabos", WIDTH/2 -475, HEIGHT/2 +75, 50, RAYWHITE);
+    DrawText("João, Evandro, Renato e Binoto", WIDTH/2 -200, HEIGHT/2 + 125, 25, RAYWHITE);
+    DrawRectangle(0,0, WIDTH, HEIGHT+HUDHEIGHT, fadeColor);
+}
+
+
 /** @brief Splash sreen inicial do jogo, mostrando o nome da equipe */
-void teamLogo(){
+void teamSplashScreen(){
     WaitTime(1);
     Color fadeColor = BLACK;
     ProceduralAnimation fadeAnimation = {GetTime(), true};
+
     while(fadeAnimation.running){
         fadeOut(&fadeColor, &fadeAnimation, 2.0f);
         BeginDrawing();
-        DrawText("JERB", WIDTH/2 -275, HEIGHT/2 - 100, 200, RAYWHITE);
-        DrawText("Jogos Eletrônicos Radicais e Brabos", WIDTH/2 -475, HEIGHT/2 +75, 50, RAYWHITE);
-        DrawText("João, Evandro, Renato e Binoto", WIDTH/2 -200, HEIGHT/2 + 125, 25, RAYWHITE);
-        DrawRectangle(0,0, WIDTH, HEIGHT+HUDHEIGHT, fadeColor);
+        drawTeamSplashScreen(fadeColor);
         EndDrawing();
 
         if(IsKeyPressed(KEY_TAB)){
@@ -43,12 +51,8 @@ void teamLogo(){
     fadeAnimation = (ProceduralAnimation){GetTime(), true};
     while(fadeAnimation.running){
         fadeIn(&fadeColor, &fadeAnimation, 2.0f);
-
         BeginDrawing();
-        DrawText("JERB", WIDTH/2 -275, HEIGHT/2 - 100, 200, RAYWHITE);
-        DrawText("Jogos Eletrônicos Radicais e Brabos", WIDTH/2 -475, HEIGHT/2 +75, 50, RAYWHITE);
-        DrawText("João, Evandro, Renato e Binoto", WIDTH/2 -200, HEIGHT/2 + 125, 25, RAYWHITE);
-        DrawRectangle(0,0, WIDTH, HEIGHT+HUDHEIGHT, fadeColor);
+        drawTeamSplashScreen(fadeColor);
         EndDrawing();
 
         if(IsKeyPressed(KEY_TAB)){

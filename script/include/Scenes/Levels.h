@@ -32,9 +32,12 @@ Ghost* instantiateGhostsInLevel(Map map){
 
 
 void drawCharacters(PacMaiden* pacmaiden, Ghost* ghosts){
-    DrawCircleV(pacmaiden->chara.circle.center, pacmaiden->chara.circle.radius, pacmaiden->chara.color);
-    for(int i=0; i<4; i++)
-        DrawCircleV(ghosts[i].chara.circle.center, ghosts[i].chara.circle.radius, ghosts[i].chara.color);
+    // DrawCircleV(pacmaiden->chara.circle.center, pacmaiden->chara.circle.radius, pacmaiden->chara.color);
+    drawCharacterSprite(&pacmaiden->chara);
+    for(int i=0; i<4; i++){
+        // DrawCircleV(ghosts[i].chara.circle.center, ghosts[i].chara.circle.radius, ghosts[i].chara.color);
+        drawCharacterSprite(&ghosts[i].chara);
+    }
 }
 
 
