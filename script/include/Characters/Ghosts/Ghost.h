@@ -44,8 +44,7 @@ typedef struct TGhost{
  * @param radius (px) Raio do círculo de colisão do personagem.
  * @param color Cor do personagem a partir das definições da Raylib. */
 Ghost initGhost(Vector2 position, int radius, float speed, Color color, GhostType type){
-    Circle characterRec = {(Vector2){position.x+radius, position.y+radius}, radius};
-    Character chara = (Character){characterRec, speed, color};
+    Character chara = initCharacter((Vector2){position.x, position.y}, speed, radius, color, getFilePath("../../sprites/pacmaiden/PacMaidenYellow.png"));
     return (Ghost){chara, chara, true, SPOOKY, type};
 }
 

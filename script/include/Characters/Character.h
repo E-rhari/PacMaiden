@@ -6,6 +6,7 @@
 #include "../System/WindowControl.h"
 #include "../Map/Map.h"
 #include "../Animations/ProceduralAnimation.h"
+#include "../Animations/SpriteAnimation.h"
 
 #pragma once
 
@@ -39,6 +40,7 @@ typedef struct {
     Color color;
     Vector2 moveDirection;
     ProceduralAnimation procAnimation; 
+    SpriteAnimation sprite;
 } Character;
 
 
@@ -58,10 +60,11 @@ bool checkCharacterCollision(Character chara1, Character chara2){
  * @param color Cor do personagem a partir das definições da Raylib.
  * 
  * @return Objeto inicializado do personagem. */
-Character initCharacter(Vector2 position, int speed, float radius, Color color){
+Character initCharacter(Vector2 position, int speed, float radius, Color color, char spriteSheet[]){
     Circle characterCircle = {(Vector2){position.x+radius, position.y+radius}, radius};
+    SpriteAnimation sprite = innitSpriteAnimation(spriteSheet, (Vector2){20, 20}, 1, true);
 
-    return (Character){characterCircle, speed, color, (Vector2){0,0}, (ProceduralAnimation){0,false}};
+    return (Character){characterCircle, speed, color, (Vector2){0,0}, (ProceduralAnimation){0,false}, sprite};
 }
 
 
