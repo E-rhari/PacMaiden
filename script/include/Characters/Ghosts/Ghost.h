@@ -44,7 +44,8 @@ typedef struct TGhost{
  * @param radius (px) Raio do círculo de colisão do personagem.
  * @param color Cor do personagem a partir das definições da Raylib. */
 Ghost initGhost(Vector2 position, int radius, float speed, Color color, GhostType type){
-    Character chara = initCharacter((Vector2){position.x, position.y}, speed, radius, color, getFilePath("../../sprites/pacmaiden/PacMaidenYellow.png"));
+    static int ghostNumber = 0;
+    Character chara = initCharacter((Vector2){position.x, position.y}, speed, radius, color, TextFormat("../../sprites/ghosts/Ghost%d.png", ghostNumber++));
     return (Ghost){chara, chara, true, SPOOKY, type};
 }
 
@@ -67,10 +68,13 @@ void changeGhostState(Ghost* ghost, GhostState state){
         case VULNERABLE:
                     ghost->chara.procAnimation.initTime = GetTime();
                     ghost->chara.speed = ghost->initialValues.speed/2;
+                    ghost->chara.sprite.spriteSheet = LoadTexture(getFilePath("../../sprites/ghosts/WeakGhost.png"));
                     break;
         case SPAWNING:
                     ghost->canChooseDestination = true;
                     ghost->chara.procAnimation.initTime = GetTime();
+                    UnloadTexture(ghost->chara.sprite.spriteSheet);
+                    ghost->chara.sprite.spriteSheet = ghost->initialValues.sprite.spriteSheet;
                     break;
     }
 }
