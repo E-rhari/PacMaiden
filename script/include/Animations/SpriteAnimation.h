@@ -6,6 +6,9 @@
 #include "../System/WindowControl.h"
 
 
+#pragma once
+
+
 /** @brief Cuida das propriedades de uma animação baseada numa imagem sprite sheet.*/
 typedef struct {
     Texture2D spriteSheet;  // Textura do spritesheet completo.
@@ -30,11 +33,12 @@ typedef struct {
  * @param speed Velocidade da animação. Quantas vezes por segundo a animação muda de frame.
  * @param loop Se a animação reinicia quando termina. */
 SpriteAnimation innitSpriteAnimation(char spriteSheet[], Vector2 frameSize, float speed, bool loop){
+    Texture spriteSheetTexture=LoadTexture(spriteSheet); 
     return (SpriteAnimation) {
         .timeInFrame=0,
         .current=0,
         .first=0,
-        .last=0,
+        .last=(spriteSheetTexture.width/frameSize.x)-1,
         .lineSelect=0,
         .running=false,
         .step=1,
@@ -63,6 +67,14 @@ void playSpriteAnimation(SpriteAnimation* animation, int animationRow){
 }
 
 
+/** @brief Seleciona a região da spritesheet que se encontra o frame atual */
+Rectangle getSpriteFrame(SpriteAnimation* animation){
+    float x = animation->current*animation->frameSize.x;
+    float y = animation->lineSelect*animation->frameSize.y;
+    return (Rectangle){x, y, animation->frameSize.x, animation->frameSize.y};
+}
+
+
 void updateSpriteAnimation(SpriteAnimation* animation){
     if(!animation->running)
         return;
@@ -73,9 +85,9 @@ void updateSpriteAnimation(SpriteAnimation* animation){
     if(animation->timeInFrame >= timePerFrame){
         animation->current += animation->step;
 
-        if(animation->current >= animation->last){
+        if(animation->current > animation->last){
             if(animation->loop)
-                animation->current = (animation->current%animation->last)+animation->first; 
+                animation->current = (animation->current%animation->last)+animation->first-1; 
             else{
                 animation->current = animation->last;
                 animation->running = false;
@@ -83,14 +95,6 @@ void updateSpriteAnimation(SpriteAnimation* animation){
         }
         animation->timeInFrame = 0;
     }
-}
-
-
-/** @brief Seleciona a região da spritesheet que se encontra o frame atual */
-Rectangle getSpriteFrame(SpriteAnimation* animation){
-    float x = animation->current*animation->frameSize.x;
-    float y = animation->lineSelect*animation->frameSize.y;
-    return (Rectangle){x, y, animation->frameSize.x, animation->frameSize.y};
 }
 
 

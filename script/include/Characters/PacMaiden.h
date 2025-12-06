@@ -48,7 +48,7 @@ typedef struct {
  * @param lifes Valor inicial do contador de vidas
  * @param points Valor inicial do contador de pontos */
 PacMaiden initPacMaiden(Vector2 position, int radius, float speed, Color color, int lifes, int points){
-    Character chara = initCharacter((Vector2){position.x, position.y}, speed, radius, color);
+    Character chara = initCharacter((Vector2){position.x, position.y}, speed, radius, color, getFilePath("../../sprites/pacmaiden/PacMaidenYellow.png"));
     return (PacMaiden){chara, chara, lifes, points, 0, (Vector2){0,0},true};
 }
 
