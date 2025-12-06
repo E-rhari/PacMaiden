@@ -99,7 +99,6 @@ void updateSpriteAnimation(SpriteAnimation* animation){
 
 
 void drawSpriteAnimation(SpriteAnimation* animation, Vector2 position, Vector2 scale){
-    updateSpriteAnimation(animation);
     Vector2 spriteVirtualSize = {animation->frameSize.x*scale.x, animation->frameSize.y*scale.y};
     DrawTexturePro(animation->spriteSheet, getSpriteFrame(animation), (Rectangle){position.x, position.y,  spriteVirtualSize.x, spriteVirtualSize.y}, (Vector2){0,0}, 0, WHITE);
 }
