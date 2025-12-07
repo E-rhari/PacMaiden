@@ -9,10 +9,13 @@
 #pragma once
 
 
+
 /** @brief Cuida das propriedades de uma animação baseada numa imagem sprite sheet.*/
 typedef struct {
     Texture2D spriteSheet;  // Textura do spritesheet completo.
+    Texture2D mask;
     Vector2 frameSize;      // Tamanho de um único frame.
+    Color tint;             // Coloração procedural do sprite
 
     int first;              // Index do primeiro frame da animação.
     int last;               // Index do último frame da animação.
@@ -33,19 +36,28 @@ typedef struct {
  * @param speed Velocidade da animação. Quantas vezes por segundo a animação muda de frame.
  * @param loop Se a animação reinicia quando termina. */
 SpriteAnimation innitSpriteAnimation(char spriteSheet[], Vector2 frameSize, float speed, bool loop){
-    Texture spriteSheetTexture=LoadTexture(spriteSheet); 
+    Image spriteSheetImage = LoadImage(spriteSheet);
+    Texture spriteSheetTexture = LoadTextureFromImage(spriteSheetImage); 
+
+    Image mask = ImageFromChannel(spriteSheetImage, 3);
+    ImageAlphaMask(&mask, mask);
+    Texture whiteSpriteSheetTexture = LoadTextureFromImage(mask); 
+    
     return (SpriteAnimation) {
+        .spriteSheet=spriteSheetTexture,
+        .mask=whiteSpriteSheetTexture,
+        .tint = WHITE,
+
         .timeInFrame=0,
         .current=0,
         .first=0,
         .last=(spriteSheetTexture.width/frameSize.x)-1,
         .lineSelect=0,
-        .running=true,
         .step=1,
-
+        
+        .running=true,
         .loop=loop,
         .speed=speed,
-        .spriteSheet=LoadTexture(spriteSheet),
         .frameSize=frameSize,
     };
 }
@@ -98,7 +110,7 @@ void updateSpriteAnimation(SpriteAnimation* animation){
 }
 
 
-void drawSpriteAnimation(SpriteAnimation* animation, Vector2 position, Vector2 scale){
-    Vector2 spriteVirtualSize = {animation->frameSize.x*scale.x, animation->frameSize.y*scale.y};
-    DrawTexturePro(animation->spriteSheet, getSpriteFrame(animation), (Rectangle){position.x, position.y,  spriteVirtualSize.x, spriteVirtualSize.y}, (Vector2){0,0}, 0, WHITE);
+void drawSpriteAnimation(SpriteAnimation* sprite, Vector2 position, Vector2 scale){
+    Vector2 spriteVirtualSize = {sprite->frameSize.x*scale.x, sprite->frameSize.y*scale.y};
+    DrawTexturePro(sprite->spriteSheet, getSpriteFrame(sprite), (Rectangle){position.x, position.y,  spriteVirtualSize.x, spriteVirtualSize.y}, (Vector2){0,0}, 0, sprite->tint);
 }

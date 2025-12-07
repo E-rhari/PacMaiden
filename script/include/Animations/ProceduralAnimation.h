@@ -1,11 +1,11 @@
 /** @brief Animações procedurais são aquelas que modificam propriedades de um objeto através de funções matemáticas e códigos,
- *         sem renderizar imagens de arquivos externos e alternar entre frames.
- */
+ *         sem renderizar imagens de arquivos externos e alternar entre frames. */
 
 
 #include<raylib.h>
 #include<stdlib.h>
 #include<math.h>
+#include"SpriteAnimation.h"
 
 #pragma once
 
@@ -33,6 +33,22 @@ void blinkAnimation(Color* currentColor, Color color1, Color color2, ProceduralA
 
     if(timeElapsed>=duration){
         *currentColor = color1;
+        animation->running = false;
+        return;
+    }
+    animation->running = true;
+}
+
+
+void spriteBlinkAnimation(Texture* sprite, Texture spriteSheet1, Texture spriteSheet2, ProceduralAnimation* animation, float frequency, float duration){
+    double timeElapsed = GetTime() - animation->initTime;
+    if(sin(frequency*PI*2*timeElapsed)<0) 
+        *sprite = spriteSheet1;
+    else
+        *sprite = spriteSheet2;
+
+    if(timeElapsed>=duration){
+        *sprite = spriteSheet1;
         animation->running = false;
         return;
     }
@@ -68,23 +84,3 @@ void fadeIn(Color* color, ProceduralAnimation* animation, float duration){
         return;
     }
 }
-
-
-// void fadeOutScreen(){
-//     static Color fadeOutColor = BLACK;
-//     fadeOutColor.a = 0;
-//     static ProceduralAnimation fadeOutAnimation = {0, false};
-//     static bool hasPreviousEnded = true;
-    
-//     if(hasPreviousEnded){
-//         fadeOutAnimation = (ProceduralAnimation){GetTime(), true};
-//         hasPreviousEnded = false;
-//     }
-
-//     if(fadeOutAnimation.running)
-//         fadeIn(&fadeOutColor, &fadeOutAnimation, 2.0f);
-//     else if(!hasPreviousEnded)
-//         hasPreviousEnded = true;
-
-//     DrawRectangle(0,0, WIDTH, HEIGHT+HUDHEIGHT, fadeOutColor);
-// }

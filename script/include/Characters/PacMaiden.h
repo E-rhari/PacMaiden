@@ -57,23 +57,22 @@ PacMaiden initPacMaiden(Vector2 position, int radius, float speed, Color color, 
  *        na transição entre os estados. Sempre use no lugar de determinar o valor de state manualmente. */
 void changePacmaidenState(PacMaiden* pacmaiden, PacState state){
     pacmaiden->state = state;
+    pacmaiden->chara.procAnimation.initTime = GetTime();
+    // pacmaiden->chara.sprite.spriteSheet = pacmaiden->initialValues.sprite.spriteSheet;
 
     switch (state){
         case NORMAL:
             break;
-
         case KILLER:
-                pacmaiden->chara.procAnimation.initTime = GetTime();
             break;
-
         case DYING:
-            pacmaiden->chara.procAnimation.initTime = GetTime();
             break;
-
-        case DEAD: break;
+        case DEAD: 
+            break;
 
         case IMMORTAL:
-            pacmaiden->chara.moveDirection = (Vector2){0,0};
+            pacmaiden->chara.moveDirection = (Vector2){0,1};
+            pacmaiden->chara.sprite.tint = pacmaiden->initialValues.sprite.tint;
             pacmaiden->chara.procAnimation.initTime = GetTime();
             pacmaiden->chara.circle.center = pacmaiden->initialValues.circle.center;
             break;
@@ -168,25 +167,10 @@ bool hurtPacmaiden(PacMaiden* pacmaiden){
 }
 
 
-/** @brief Todas as ações de comportamento da PacMaiden que devem ser rodadas por frame */
-void pacmaidenBehaviour(PacMaiden* pacmaiden, Map map){
-    
-    if(pacmaiden->canMove)
-        move(&pacmaiden->chara, map);
-
-    portalBorders(&pacmaiden->chara);
-    
-    if(pacmaiden->state == IMMORTAL){
-        blinkAnimation(&pacmaiden->chara.color, pacmaiden->initialValues.color , WHITE, &pacmaiden->chara.procAnimation, HURT_COOLDOWN, 2);
-        if(!pacmaiden->chara.procAnimation.running)
-            changePacmaidenState(pacmaiden, NORMAL);
-    }
-}
-
 void canPlayersMove(PacMaiden* players){
     Vector2 playerNewCenter[2] = {players[0].chara.circle.center,players[1].chara.circle.center};
-   
-
+    
+    
     for(int i=0;i<2;i++){
         playerNewCenter[i].x+= players[i].chara.moveDirection.x*30;
         playerNewCenter[i].y+= players[i].chara.moveDirection.y*30;
@@ -196,4 +180,19 @@ void canPlayersMove(PacMaiden* players){
         players[1].canMove=true;
     }
     
+}
+
+
+/** @brief Todas as ações de comportamento da PacMaiden que devem ser rodadas por frame */
+void pacmaidenBehaviour(PacMaiden* pacmaiden, Map map){
+    if(pacmaiden->canMove)
+        move(&pacmaiden->chara, map);
+
+    portalBorders(&pacmaiden->chara);
+    
+    if(pacmaiden->state == IMMORTAL){
+        spriteBlinkAnimation(&pacmaiden->chara.sprite.spriteSheet, pacmaiden->initialValues.sprite.spriteSheet , pacmaiden->chara.sprite.mask, &pacmaiden->chara.procAnimation, HURT_COOLDOWN, 2);
+        if(!pacmaiden->chara.procAnimation.running)
+            changePacmaidenState(pacmaiden, NORMAL);
+    }
 }

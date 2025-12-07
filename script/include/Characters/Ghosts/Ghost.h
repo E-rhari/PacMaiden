@@ -45,7 +45,8 @@ typedef struct TGhost{
  * @param color Cor do personagem a partir das definições da Raylib. */
 Ghost initGhost(Vector2 position, int radius, float speed, Color color, GhostType type){
     static int ghostNumber = 0;
-    Character chara = initCharacter((Vector2){position.x, position.y}, speed, radius, color, TextFormat("../../sprites/ghosts/Ghost%d.png", ghostNumber++));
+    Character chara = initCharacter((Vector2){position.x, position.y}, speed, radius, color, TextFormat("../../sprites/ghosts/Ghost%d.png", ghostNumber));
+    ghostNumber = modulate(++ghostNumber, 4);
     return (Ghost){chara, chara, true, SPOOKY, type};
 }
 
@@ -59,22 +60,23 @@ void ambushPacmaiden(Ghost* ghost, Map map, PacMaiden* pacmaiden, int blocksAhea
 
 void changeGhostState(Ghost* ghost, GhostState state){
     ghost->state = state;
+    ghost->chara.sprite.tint = ghost->initialValues.sprite.tint;
+    ghost->chara.procAnimation.initTime = GetTime();
 
     switch(state){
         case SPOOKY:
                     ghost->chara.color = ghost->initialValues.color;
                     ghost->chara.speed = ghost->initialValues.speed;
+                    // UnloadTexture(ghost->chara.sprite.spriteSheet);
+                    ghost->chara.sprite.spriteSheet = ghost->initialValues.sprite.spriteSheet;
                     break;
         case VULNERABLE:
-                    ghost->chara.procAnimation.initTime = GetTime();
                     ghost->chara.speed = ghost->initialValues.speed/2;
                     ghost->chara.sprite.spriteSheet = LoadTexture(getFilePath("../../sprites/ghosts/WeakGhost.png"));
+                    ghost->chara.sprite.tint = GRAY;
                     break;
         case SPAWNING:
                     ghost->canChooseDestination = true;
-                    ghost->chara.procAnimation.initTime = GetTime();
-                    UnloadTexture(ghost->chara.sprite.spriteSheet);
-                    ghost->chara.sprite.spriteSheet = ghost->initialValues.sprite.spriteSheet;
                     break;
     }
 }
@@ -118,7 +120,7 @@ void chooseDestinationByType(Ghost* ghost, Map map, PacMaiden* pacmaiden){
 /** @brief Todas as ações de comportamento de um fantasma genérico que devem ser rodadas por frame */
 void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden, Sound dyingEffect){
     if(ghost->state == SPAWNING){
-        blinkAnimation(&ghost->chara.color, ghost->initialValues.color, WHITE, &ghost->chara.procAnimation, 3, 1);
+        spriteBlinkAnimation(&ghost->chara.sprite.spriteSheet, ghost->initialValues.sprite.spriteSheet , ghost->chara.sprite.mask, &ghost->chara.procAnimation, HURT_COOLDOWN, 2);
         if(!ghost->chara.procAnimation.running)
             changeGhostState(ghost, SPOOKY);
         return;
@@ -132,11 +134,9 @@ void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden, Sound dyingEffe
         changeGhostState(ghost, VULNERABLE);
 
     if(ghost->state == VULNERABLE){
-        blinkAnimation(&ghost->chara.color, DARKBLUE, GRAY, &ghost->chara.procAnimation, 5, 2.5);
+        spriteBlinkAnimation(&ghost->chara.sprite.spriteSheet, ghost->initialValues.sprite.spriteSheet , ghost->chara.sprite.mask, &ghost->chara.procAnimation, 5, 2.5);
         if(!ghost->chara.procAnimation.running)
             changeGhostState(ghost, SPOOKY);
-            
-
         
         if(checkCharacterCollision(pacmaiden->chara, ghost->chara) && pacmaiden->state==KILLER){
             PlaySound(dyingEffect);

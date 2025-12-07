@@ -77,7 +77,7 @@ void restricDrawLevel(Map map,PacMaiden* pacmaiden, Ghost* ghosts, OptionButton*
 /** @brief Realiza todas as funções de movimento dos personagens */
 void charactersBehaviours(PacMaiden* pacmaiden, Ghost* ghosts, Map map,int *pallets, Sound* effects){
     if(pacmaiden->state == DYING){
-        fadeOut(&pacmaiden->chara.color, &pacmaiden->chara.procAnimation, 3);
+        fadeOut(&pacmaiden->chara.sprite.tint, &pacmaiden->chara.procAnimation, 3);
         if(!pacmaiden->chara.procAnimation.running)
             changePacmaidenState(pacmaiden, IMMORTAL);
         return;

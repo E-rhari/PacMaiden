@@ -87,7 +87,7 @@ void gameStartCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, bool PVP){
     startTrack.looping = false;
     
     for(int i=0; i<4; i++){
-        ghosts[i].chara.color.a = 0;
+        ghosts[i].chara.sprite.tint.a = 0;
         ghosts[i].chara.procAnimation.running = false;
     }
     
@@ -98,8 +98,8 @@ void gameStartCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, bool PVP){
         UpdateMusicStream(startTrack);
 
         for(int i=0; i<4; i++)
-            if(GetMusicTimePlayed(startTrack) >= 1.35f*i && ghosts[i].chara.color.a < 255)
-                fadeIn(&(ghosts[i].chara.color), &(ghosts[i].chara.procAnimation), 2);
+            if(GetMusicTimePlayed(startTrack) >= 1.35f*i && ghosts[i].chara.sprite.tint.a < 255)
+                fadeIn(&(ghosts[i].chara.sprite.tint), &(ghosts[i].chara.procAnimation), 2);
 
         BeginDrawing();
         drawStartCutsceneElements(pacmaiden, ghosts, map, PVP);
@@ -109,7 +109,7 @@ void gameStartCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, bool PVP){
             gameState = RUNNING;
     }
     for(int i=0; i<4; i++)
-        ghosts[i].chara.color.a = 255;
+        ghosts[i].chara.sprite.tint.a = 255;
     pacmaiden->timePivot = GetTime();
     StopMusicStream(startTrack);
     UnloadMusicStream(startTrack);
