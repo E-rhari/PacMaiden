@@ -133,8 +133,8 @@ void countPoints(PacMaiden* pacMaiden, Map map, char object, int *pallets, Sound
     switch(object)
     {
         case '.':
-            SetSoundPitch(effects[0], .75 + ((float)(rand() % 5))/10);
-            PlaySound(effects[0]);
+            //SetSoundPitch(effects[0], .75 + ((float)(rand() % 5))/10);
+            //PlaySound(effects[0]);
             addPoints(pacMaiden, 10);
             *pallets=*pallets-1;
             break;
