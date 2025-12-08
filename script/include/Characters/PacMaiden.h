@@ -58,7 +58,7 @@ PacMaiden initPacMaiden(Vector2 position, int radius, float speed, Color color, 
 void changePacmaidenState(PacMaiden* pacmaiden, PacState state){
     pacmaiden->state = state;
     pacmaiden->chara.procAnimation.initTime = GetTime();
-    // pacmaiden->chara.sprite.spriteSheet = pacmaiden->initialValues.sprite.spriteSheet;
+    pacmaiden->chara.sprite.spriteSheet = pacmaiden->initialValues.sprite.spriteSheet;
 
     switch (state){
         case NORMAL:
