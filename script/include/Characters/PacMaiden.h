@@ -191,7 +191,7 @@ void pacmaidenBehaviour(PacMaiden* pacmaiden, Map map){
     portalBorders(&pacmaiden->chara);
     
     if(pacmaiden->state == IMMORTAL){
-        spriteBlinkAnimation(&pacmaiden->chara.sprite.spriteSheet, pacmaiden->initialValues.sprite.spriteSheet , pacmaiden->chara.sprite.mask, &pacmaiden->chara.procAnimation, HURT_COOLDOWN, 2);
+        spriteBlinkAnimation(&pacmaiden->chara.sprite.spriteSheet, pacmaiden->initialValues.sprite.spriteSheet , pacmaiden->chara.sprite.mask, &pacmaiden->chara.procAnimation, HURT_COOLDOWN, 2, 1);
         if(!pacmaiden->chara.procAnimation.running)
             changePacmaidenState(pacmaiden, NORMAL);
     }

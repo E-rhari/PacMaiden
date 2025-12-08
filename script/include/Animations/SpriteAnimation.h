@@ -48,17 +48,18 @@ SpriteAnimation innitSpriteAnimation(char spriteSheet[], Vector2 frameSize, floa
         .mask=whiteSpriteSheetTexture,
         .tint = WHITE,
 
-        .timeInFrame=0,
-        .current=0,
         .first=0,
         .last=(spriteSheetTexture.width/frameSize.x)-1,
+        .current=0,
         .lineSelect=0,
         .step=1,
         
-        .running=true,
-        .loop=loop,
         .speed=speed,
+        .timeInFrame=0,
+        
         .frameSize=frameSize,
+        .loop=loop,
+        .running=true,
     };
 }
 

@@ -40,9 +40,9 @@ void blinkAnimation(Color* currentColor, Color color1, Color color2, ProceduralA
 }
 
 
-void spriteBlinkAnimation(Texture* sprite, Texture spriteSheet1, Texture spriteSheet2, ProceduralAnimation* animation, float frequency, float duration){
+void spriteBlinkAnimation(Texture* sprite, Texture spriteSheet1, Texture spriteSheet2, ProceduralAnimation* animation, float duration, float frequency, float power){
     double timeElapsed = GetTime() - animation->initTime;
-    if(sin(frequency*PI*2*timeElapsed)<0) 
+    if(sin(frequency*PI*2*pow(timeElapsed, power))<0) 
         *sprite = spriteSheet1;
     else
         *sprite = spriteSheet2;
