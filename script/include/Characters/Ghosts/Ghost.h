@@ -20,10 +20,10 @@ typedef enum {
 
 
 typedef enum {
-    UNAWARE,
-    AWARE,
     STALKER,
-    AMBUSHER
+    AMBUSHER,
+    AWARE,
+    UNAWARE,
 } GhostType;
 
 
@@ -44,9 +44,7 @@ typedef struct TGhost{
  * @param radius (px) Raio do círculo de colisão do personagem.
  * @param color Cor do personagem a partir das definições da Raylib. */
 Ghost initGhost(Vector2 position, int radius, float speed, Color color, GhostType type){
-    static int ghostNumber = 0;
-    Character chara = initCharacter((Vector2){position.x, position.y}, speed, radius, color, TextFormat("../../sprites/ghosts/Ghost%d.png", ghostNumber));
-    ghostNumber = modulate(++ghostNumber, 4);
+    Character chara = initCharacter((Vector2){position.x, position.y}, speed, radius, color, TextFormat("../../sprites/ghosts/Ghost%d.png", type));
     return (Ghost){chara, chara, true, SPOOKY, type};
 }
 
@@ -67,12 +65,11 @@ void changeGhostState(Ghost* ghost, GhostState state){
         case SPOOKY:
                     ghost->chara.color = ghost->initialValues.color;
                     ghost->chara.speed = ghost->initialValues.speed;
-                    // UnloadTexture(ghost->chara.sprite.spriteSheet);
-                    ghost->chara.sprite.spriteSheet = ghost->initialValues.sprite.spriteSheet;
+                    changeSprite(&ghost->chara.sprite, getFilePath(TextFormat("../../sprites/ghosts/Ghost%d.png", ghost->type)), true);
                     break;
         case VULNERABLE:
                     ghost->chara.speed = ghost->initialValues.speed/2;
-                    ghost->chara.sprite.spriteSheet = LoadTexture(getFilePath("../../sprites/ghosts/WeakGhost.png"));
+                    changeSprite(&ghost->chara.sprite, getFilePath("../../sprites/ghosts/WeakGhost.png"), true);
                     ghost->chara.sprite.tint = GRAY;
                     break;
         case SPAWNING:
@@ -120,7 +117,7 @@ void chooseDestinationByType(Ghost* ghost, Map map, PacMaiden* pacmaiden){
 /** @brief Todas as ações de comportamento de um fantasma genérico que devem ser rodadas por frame */
 void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden, Sound dyingEffect){
     if(ghost->state == SPAWNING){
-        spriteBlinkAnimation(&ghost->chara.sprite.spriteSheet, ghost->initialValues.sprite.spriteSheet , ghost->chara.sprite.mask, &ghost->chara.procAnimation, HURT_COOLDOWN, 2, 1.5);
+        spriteBlinkAnimation(&ghost->chara.sprite.spriteSheet, ghost->initialValues.sprite.spriteSheet , ghost->chara.sprite.mask, &ghost->chara.procAnimation, HURT_COOLDOWN, 1.0f/4.0f, 3.0f);
         if(!ghost->chara.procAnimation.running)
             changeGhostState(ghost, SPOOKY);
         return;
@@ -134,7 +131,7 @@ void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden, Sound dyingEffe
         changeGhostState(ghost, VULNERABLE);
 
     if(ghost->state == VULNERABLE){
-        spriteBlinkAnimation(&ghost->chara.sprite.spriteSheet, ghost->initialValues.sprite.spriteSheet , ghost->chara.sprite.mask, &ghost->chara.procAnimation, 5, 2, 1.5);
+        spriteBlinkAnimation(&ghost->chara.sprite.spriteSheet, ghost->initialValues.sprite.spriteSheet , ghost->chara.sprite.mask, &ghost->chara.procAnimation, 5.0f, 1.0f/300.0f, 5.0f);
         if(!ghost->chara.procAnimation.running)
             changeGhostState(ghost, SPOOKY);
         

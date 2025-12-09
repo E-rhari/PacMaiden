@@ -12,7 +12,7 @@
 
 /** @brief Struct que controla uma animação desenhada por código. */
 typedef struct {
-    int initTime;
+    double initTime;
     bool running;
 } ProceduralAnimation;
 
@@ -26,7 +26,7 @@ typedef struct {
  * @param frequency (Hz) Quantas vezes por segundo as cores irão alternar, isso é, quantas vezes a color2 será alcançada por segundo. */
 void blinkAnimation(Color* currentColor, Color color1, Color color2, ProceduralAnimation* animation, int duration, float frequency){
     double timeElapsed = GetTime() - animation->initTime;
-    if(sin(frequency*PI*2*timeElapsed)<0) 
+    if(cos(frequency*PI*2*timeElapsed)<=0) 
         *currentColor = color1;
     else
         *currentColor = color2;
@@ -42,7 +42,7 @@ void blinkAnimation(Color* currentColor, Color color1, Color color2, ProceduralA
 
 void spriteBlinkAnimation(Texture* sprite, Texture spriteSheet1, Texture spriteSheet2, ProceduralAnimation* animation, float duration, float frequency, float power){
     double timeElapsed = GetTime() - animation->initTime;
-    if(sin(frequency*PI*2*pow(timeElapsed, power))<0) 
+    if(cos(frequency*PI*2*pow(timeElapsed, power))>0) 
         *sprite = spriteSheet1;
     else
         *sprite = spriteSheet2;
