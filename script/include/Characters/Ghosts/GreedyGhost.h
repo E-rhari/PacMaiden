@@ -4,7 +4,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-Vector2 directions[] = {(Vector2) {1, 0}, (Vector2) {-1, 0}, (Vector2) {0, 1}, (Vector2) {0, -1}};
+Vector2 directions[] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 int moveCounter = 0;
 
 void getLimits(char** map, Vector2 mapSize, Vector2 chunkAmount, Vector2* boundA, Vector2* boundB) {
@@ -57,11 +57,15 @@ void getState(Ghost* ghost, Map map){
     //TraceLog(LOG_INFO, "Limite A: (%f, %f); Limite B: (%f, %f)", limitA.x, limitA.y, limitB.x, limitB.y);
     Vector2 ghostPos = Vector2Scale(ghost->chara.circle.center, PIX2GRID);
 
+    GridVector gridPos = vector2ToGridVector(ghost->chara.circle.center);
+    if(!isInsideMap(gridPos,map,(GridVector){0,0}))
+        chooseDestinationAware(ghost, map);
+
     if (ghostPos.x >= limitA.x && ghostPos.x <= limitB.x && ghostPos.y >= limitA.y && ghostPos.y <= limitB.y){
-        TraceLog(LOG_INFO, "Dentro do quadrante mais denso.");
+        //TraceLog(LOG_INFO, "Dentro do quadrante mais denso.");
         chooseDestinationAware(ghost, map);
     } else {
-        TraceLog(LOG_INFO, "Fora do quadrante mais denso.");
+        //TraceLog(LOG_INFO, "Fora do quadrante mais denso.");
         for (int y = (int)limitA.y; y < (int)limitB.y; y++) {
             for (int x = (int)limitA.x; x < (int)limitB.x; x++) {
                 
