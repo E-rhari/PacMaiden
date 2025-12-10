@@ -9,6 +9,30 @@
 #pragma once
 
 
+typedef enum {
+    YELLOW_PACMAIDEN_SPRITE,
+    YELLOW_POWERED_PACMAIDEN_SPRITE,
+    PURPLE_PACMAIDEN_SPRITE,
+    PURPLE_POWERED_PACMAIDEN_SPRITE,
+
+    RED_GHOST_SPRITE,
+    BLUE_GHOST_SPRITE,
+    PINK_GHOST_SPRITE,
+    ORANGE_GHOST_SPRITE,
+    WAEK_GHOST_SPRITE,
+
+    TILESET_SPRITE,
+    PELLET_SPRITE,
+    POWER_PELLET_SPRITE,
+    PORTAL_SPRITE,
+
+    AMOUNT_OF_SPRITES
+} SpriteName;
+
+
+Texture* SPRITES;
+
+
 
 /** @brief Cuida das propriedades de uma animação baseada numa imagem sprite sheet.*/
 typedef struct {
@@ -144,5 +168,28 @@ void changeSpriteTexture(SpriteAnimation* animation, Texture texture, bool unloa
 
 void drawSpriteAnimation(SpriteAnimation* sprite, Vector2 position, Vector2 scale){
     Vector2 spriteVirtualSize = {sprite->frameSize.x*scale.x, sprite->frameSize.y*scale.y};
-    DrawTexturePro(sprite->spriteSheet, getSpriteFrame(sprite), (Rectangle){position.x, position.y,  spriteVirtualSize.x, spriteVirtualSize.y}, (Vector2){0,0}, 0, sprite->tint);
+    DrawTexturePro(sprite->spriteSheet, getSpriteFrame(sprite), (Rectangle){position.x, position.y, spriteVirtualSize.x, spriteVirtualSize.y}, (Vector2){0,0}, 0, sprite->tint);
+}
+
+
+void loadAllSprites(){
+    if(SPRITES != NULL)
+        free(SPRITES);
+    SPRITES = (Texture*)malloc(sizeof(Texture)*AMOUNT_OF_SPRITES);
+
+    SPRITES[YELLOW_PACMAIDEN_SPRITE]         = LoadTexture(getFilePath(getFilePath("../../sprites/pacmaiden/PacMaidenYellow.png")));
+    SPRITES[YELLOW_POWERED_PACMAIDEN_SPRITE] = LoadTexture(getFilePath(getFilePath("../../sprites/pacmaiden/PacMaidenYellowPower.png")));
+    SPRITES[PURPLE_PACMAIDEN_SPRITE]         = LoadTexture(getFilePath(getFilePath("../../sprites/pacmaiden/PacMaidenPurple.png")));
+    SPRITES[PURPLE_POWERED_PACMAIDEN_SPRITE] = LoadTexture(getFilePath(getFilePath("../../sprites/pacmaiden/PacMaidenPurplePower.png")));
+
+    SPRITES[RED_GHOST_SPRITE]    = LoadTexture(getFilePath("../../sprites/ghosts/Ghost0.png"));
+    SPRITES[BLUE_GHOST_SPRITE]   = LoadTexture(getFilePath("../../sprites/ghosts/Ghost1.png"));
+    SPRITES[PINK_GHOST_SPRITE]   = LoadTexture(getFilePath("../../sprites/ghosts/Ghost2.png"));
+    SPRITES[ORANGE_GHOST_SPRITE] = LoadTexture(getFilePath("../../sprites/ghosts/Ghost3.png"));
+    SPRITES[WAEK_GHOST_SPRITE]   = LoadTexture(getFilePath("../../sprites/ghosts/WeakGhost.png"));
+
+    SPRITES[TILESET_SPRITE]      = LoadTexture(getFilePath("../../sprites/tiles/Tilesheet.png"));
+    SPRITES[PELLET_SPRITE]       = LoadTexture(getFilePath("../../sprites/pellets/Pellet.png"));
+    SPRITES[POWER_PELLET_SPRITE] = LoadTexture(getFilePath("../../sprites/pellets/PowerPellet.png"));
+    SPRITES[PORTAL_SPRITE]       = LoadTexture(getFilePath("../../sprites/tiles/Portal.png"));
 }

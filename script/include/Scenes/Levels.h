@@ -58,18 +58,18 @@ void drawMenu(OptionButton* buttons, Rectangle* saveOptions){
 
 
 /** @brief Desenha todas as coisas do jogo. */
-void drawLevel(Map map,PacMaiden* pacmaiden, Ghost* ghosts, OptionButton* buttons, Rectangle* saveOptions){
+void drawLevel(Map map, Vector2** mapCellPosInSprite, PacMaiden* pacmaiden, Ghost* ghosts, OptionButton* buttons, Rectangle* saveOptions){
     ClearBackground(BLACK);
-    drawMap(map);
+    drawMap(map, mapCellPosInSprite);
     drawCharacters(pacmaiden, ghosts);
     drawHud(pacmaiden);
     drawMenu(buttons, saveOptions);
 }
 
 /** @brief Desenha todas as coisas do jogo e fecha a rotina de desenhar, impedindo modificações futuras na tela sem apagá-la por completo */
-void restricDrawLevel(Map map,PacMaiden* pacmaiden, Ghost* ghosts, OptionButton* buttons,Rectangle* saveOptions){
+void restricDrawLevel(Map map, Vector2** mapCellPosInSprite, PacMaiden* pacmaiden, Ghost* ghosts, OptionButton* buttons,Rectangle* saveOptions){
     BeginDrawing();
-    drawLevel(map, pacmaiden, ghosts, buttons, saveOptions);
+    drawLevel(map, mapCellPosInSprite, pacmaiden, ghosts, buttons, saveOptions);
     EndDrawing();
 }
 
@@ -105,16 +105,16 @@ void gamePause(){
 
 
 /** @brief Roda todo frame. */
-void update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, Rectangle *saveOptions, Music* tracks, Sound* effects){
+void update(PacMaiden* pacmaiden, Vector2** mapCellPosInSprite, Ghost* ghosts, Map map, OptionButton* buttons, Rectangle *saveOptions, Music* tracks, Sound* effects){
     int fileNumber;
     int pallets = countPallets(map);
-    
+
     while(!WindowShouldClose()){
         fileNumber=-1;
         if(DEBUG_MODE)
             userClose();
 
-        restricDrawLevel(map, pacmaiden, ghosts, buttons, saveOptions);
+        restricDrawLevel(map, mapCellPosInSprite, pacmaiden, ghosts, buttons, saveOptions);
 
         if(pacmaiden->state == DEAD){
             gameState = GAMEOVER;
@@ -177,6 +177,7 @@ void level(int levelNumber){
         ghosts=instantiateGhostsInLevel(map);
         changePacmaidenState(&pacmaiden, IMMORTAL);
     }
+    Vector2** mapCellPosInSprite = decideMapCellsSprite(map);
 
     OptionButton *buttons = malloc(sizeof(OptionButton)*4);
     initOptionButton(buttons);
@@ -190,11 +191,14 @@ void level(int levelNumber){
     Sound effects[SOUND_AMOUNT];
     initiateSFX(effects);
 
+    printf("\n\nPosição do sprite: (%d, %d)\n\n", mapCellPosInSprite[0][0].x,mapCellPosInSprite[0][0].y);
+
+
     if(gameState == STARTING)
-        gameStartCutscene(&pacmaiden, ghosts, map, false);
-    update(&pacmaiden,ghosts,map,buttons,saveOptions, tracks, effects);
+        gameStartCutscene(&pacmaiden, mapCellPosInSprite, ghosts, map, false);
+    update(&pacmaiden, mapCellPosInSprite, ghosts,map,buttons,saveOptions, tracks, effects);
     if(gameState == GAMEOVER)
-        gameOverCutscene(&pacmaiden, ghosts, map, false);
+        gameOverCutscene(&pacmaiden, mapCellPosInSprite, ghosts, map, false);
         
     
     freeMusic(tracks);

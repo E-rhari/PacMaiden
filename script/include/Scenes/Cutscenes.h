@@ -12,8 +12,6 @@
 #pragma once
 
 
-void drawMap(Map map);
-
 void drawHud(PacMaiden* pacmaiden);
 void drawHudPVP(PacMaiden* pacmaiden);
 
@@ -65,9 +63,9 @@ void teamSplashScreen(){
 
 
 /** @brief Desenha tudo que a cutscene de início precisa */
-static void drawStartCutsceneElements(PacMaiden* pacmaiden, Ghost* ghosts, Map map, bool PVP){
+static void drawStartCutsceneElements(PacMaiden* pacmaiden, Vector2** mapCellPosInSprite, Ghost* ghosts, Map map, bool PVP){
     ClearBackground(BLACK);
-    drawMap(map);
+    drawMap(map, mapCellPosInSprite);
     if(PVP){
         drawCharactersPVP(pacmaiden, ghosts);
         drawHudPVP(pacmaiden);
@@ -81,7 +79,7 @@ static void drawStartCutsceneElements(PacMaiden* pacmaiden, Ghost* ghosts, Map m
 
 
 /** @brief Dá fade in nos fantasmas em sincronia com a música */
-void gameStartCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, bool PVP){
+void gameStartCutscene(PacMaiden* pacmaiden, Vector2** mapCellPosInSprite, Ghost* ghosts, Map map, bool PVP){
     Music startTrack = LoadMusicStream(getFilePath("../../audio/Music/GameStart/GameStart.wav"));
     PlayMusicStream(startTrack);
     startTrack.looping = false;
@@ -102,7 +100,7 @@ void gameStartCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, bool PVP){
                 fadeIn(&(ghosts[i].chara.sprite.tint), &(ghosts[i].chara.procAnimation), 2);
 
         BeginDrawing();
-        drawStartCutsceneElements(pacmaiden, ghosts, map, PVP);
+        drawStartCutsceneElements(pacmaiden, mapCellPosInSprite, ghosts, map, PVP);
         EndDrawing();
 
         if(!IsMusicStreamPlaying(startTrack) || IsKeyPressed(KEY_TAB))
@@ -116,9 +114,9 @@ void gameStartCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, bool PVP){
 }
 
 
-static void drawGameOverCutsceneElements(PacMaiden* pacmaiden, Ghost* ghosts, Map map, bool PVP, Color messageColorRec, Color messageColorText){
+static void drawGameOverCutsceneElements(PacMaiden* pacmaiden, Vector2** mapCellPosInSprite, Ghost* ghosts, Map map, bool PVP, Color messageColorRec, Color messageColorText){
     ClearBackground(BLACK);
-    drawMap(map);
+    drawMap(map, mapCellPosInSprite);
     if(PVP){
         drawCharactersPVP(pacmaiden, ghosts);
         drawHudPVP(pacmaiden);
@@ -134,7 +132,7 @@ static void drawGameOverCutsceneElements(PacMaiden* pacmaiden, Ghost* ghosts, Ma
 
 
 /** @brief Escreve a mensagem de fim de jogo e toca a música de derrota */
-void gameOverCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, bool PVP){
+void gameOverCutscene(PacMaiden* pacmaiden, Vector2** mapCellPosInSprite, Ghost* ghosts, Map map, bool PVP){
     Music gameOverTrack = LoadMusicStream(getFilePath("../../audio/Music/GameOver/GameOver.wav"));
     PlayMusicStream(gameOverTrack);
     gameOverTrack.looping = false;
@@ -159,7 +157,7 @@ void gameOverCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, bool PVP){
             fadeIn(&messageColorText, &messageTextAnimation, 5);
 
         BeginDrawing();
-        drawGameOverCutsceneElements(pacmaiden, ghosts, map, PVP, messageColorRec, messageColorText);
+        drawGameOverCutsceneElements(pacmaiden, mapCellPosInSprite, ghosts, map, PVP, messageColorRec, messageColorText);
         EndDrawing();
 
         if(IsKeyPressed(KEY_TAB)){
@@ -181,7 +179,7 @@ void gameOverCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, bool PVP){
         fadeIn(&fadeOutColor, &fadeOutAnimation, 2.0f);
 
         BeginDrawing();
-        drawGameOverCutsceneElements(pacmaiden, ghosts, map, PVP, messageColorRec, messageColorText);
+        drawGameOverCutsceneElements(pacmaiden, mapCellPosInSprite, ghosts, map, PVP, messageColorRec, messageColorText);
         DrawRectangle(0,0, WIDTH, HEIGHT+HUDHEIGHT, fadeOutColor);
         EndDrawing();
     }

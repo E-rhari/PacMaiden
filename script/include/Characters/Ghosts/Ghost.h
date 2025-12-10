@@ -117,7 +117,7 @@ void chooseDestinationByType(Ghost* ghost, Map map, PacMaiden* pacmaiden){
 /** @brief Todas as ações de comportamento de um fantasma genérico que devem ser rodadas por frame */
 void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden, Sound dyingEffect){
     if(ghost->state == SPAWNING){
-        spriteBlinkAnimation(&ghost->chara.sprite.spriteSheet, ghost->initialValues.sprite.spriteSheet , ghost->chara.sprite.mask, &ghost->chara.procAnimation, HURT_COOLDOWN, 1.0f/4.0f, 3.0f);
+        spriteBlinkAnimation(&ghost->chara.sprite.spriteSheet, ghost->initialValues.sprite.spriteSheet , ghost->chara.sprite.mask, &ghost->chara.procAnimation, HURT_COOLDOWN, 1.0f/4.0f, 5.0f);
         if(!ghost->chara.procAnimation.running)
             changeGhostState(ghost, SPOOKY);
         return;

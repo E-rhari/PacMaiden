@@ -15,6 +15,7 @@
 int main(){
     inicializeWindow();
     InitAudioDevice();
+    loadAllSprites();
 
     int file;
     currenctScene = TITLE;
