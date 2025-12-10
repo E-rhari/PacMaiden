@@ -181,6 +181,7 @@ void level(int levelNumber){
         ghosts=instantiateGhostsInLevel(map);
         changePacmaidenState(&pacmaiden, IMMORTAL);
     }
+
     Vector2** mapCellPosInSprite = decideMapCellsSprite(map);
     OptionButton *buttons = malloc(sizeof(OptionButton)*4);
     initOptionButton(buttons);
