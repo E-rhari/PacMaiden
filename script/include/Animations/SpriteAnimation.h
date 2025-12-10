@@ -157,10 +157,10 @@ void loadAllSprites(){
         free(SPRITES);
     SPRITES = (Texture*)malloc(sizeof(Texture)*AMOUNT_OF_SPRITES);
 
-    SPRITES[YELLOW_PACMAIDEN_SPRITE]         = LoadTexture(getFilePath(getFilePath("../../sprites/pacmaiden/PacMaidenYellow.png")));
-    SPRITES[YELLOW_POWERED_PACMAIDEN_SPRITE] = LoadTexture(getFilePath(getFilePath("../../sprites/pacmaiden/PacMaidenYellowPower.png")));
-    SPRITES[PURPLE_PACMAIDEN_SPRITE]         = LoadTexture(getFilePath(getFilePath("../../sprites/pacmaiden/PacMaidenPurple.png")));
-    SPRITES[PURPLE_POWERED_PACMAIDEN_SPRITE] = LoadTexture(getFilePath(getFilePath("../../sprites/pacmaiden/PacMaidenPurplePower.png")));
+    SPRITES[YELLOW_PACMAIDEN_SPRITE]         = LoadTexture(getFilePath("../../sprites/pacmaiden/PacMaidenYellow.png"));
+    SPRITES[YELLOW_POWERED_PACMAIDEN_SPRITE] = LoadTexture(getFilePath("../../sprites/pacmaiden/PacMaidenYellowPower.png"));
+    SPRITES[PURPLE_PACMAIDEN_SPRITE]         = LoadTexture(getFilePath("../../sprites/pacmaiden/PacMaidenPurple.png"));
+    SPRITES[PURPLE_POWERED_PACMAIDEN_SPRITE] = LoadTexture(getFilePath("../../sprites/pacmaiden/PacMaidenPurplePower.png"));
 
     SPRITES[RED_GHOST_SPRITE]    = LoadTexture(getFilePath("../../sprites/ghosts/Ghost0.png"));
     SPRITES[BLUE_GHOST_SPRITE]   = LoadTexture(getFilePath("../../sprites/ghosts/Ghost1.png"));

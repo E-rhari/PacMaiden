@@ -68,7 +68,7 @@ void readMap (int level, Map map)
 
     if(arq == NULL)
     {
-        printf("Erro de abertura de arquivo\n");
+        printf("\nErro de abertura de arquivo\n");
         return;
     }
     
@@ -165,19 +165,23 @@ Vector2** decideMapCellsSprite(Map map){
     for(int i=0;i<20;i++)
         *(spriteSheetPos+i) = (Vector2*)malloc(sizeof(Vector2)*40);
     
-    printf("\nCHIRASHIZUSHI\n");
-    for(int i=0; i<20; i++){
-        for(int j=0; j<40; j++){
+    for(int i=0; i<20; i++)
+        for(int j=0; j<40; j++)
             if(readCoordinatesInMap((GridVector){j, i}, map, (GridVector){0,0}) == '#'){
-                int spriteCollumn = rand()%4;
-                if(!isPositionInsideScreen((Vector2){j*GRID2PIX, i*GRID2PIX}, (Vector2){0,1}) || readCoordinatesInMap((GridVector){j, i}, map, (GridVector){0,1}) == '#')
+                int spriteCollumn;
+                if(!isPositionInsideScreen((Vector2){j*GRID2PIX, i*GRID2PIX}, (Vector2){0,1}) || readCoordinatesInMap((GridVector){j, i}, map, (GridVector){0,1}) == '#'){
+                    // Teto
+                    spriteCollumn = GetRandomValue(0, 4);
                     spriteSheetPos[i][j] = (Vector2){spriteCollumn, 0};
-                else
+                }
+                else{
+                    // Parede
+                    if(GetRandomValue(1, 100) <= 75)
+                        spriteCollumn = 4;
+                    else
+                        spriteCollumn = GetRandomValue(0, 3);
                     spriteSheetPos[i][j] = (Vector2){spriteCollumn, 1};
+                }
             }
-            else
-                spriteSheetPos[i][j] = (Vector2){-1,-1};
-        }
-    }
     return spriteSheetPos;
 }

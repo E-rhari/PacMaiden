@@ -178,7 +178,6 @@ void level(int levelNumber){
         changePacmaidenState(&pacmaiden, IMMORTAL);
     }
     Vector2** mapCellPosInSprite = decideMapCellsSprite(map);
-
     OptionButton *buttons = malloc(sizeof(OptionButton)*4);
     initOptionButton(buttons);
     Rectangle* saveOptions = malloc(sizeof(Rectangle)*3);
@@ -190,9 +189,6 @@ void level(int levelNumber){
 
     Sound effects[SOUND_AMOUNT];
     initiateSFX(effects);
-
-    printf("\n\nPosição do sprite: (%d, %d)\n\n", mapCellPosInSprite[0][0].x,mapCellPosInSprite[0][0].y);
-
 
     if(gameState == STARTING)
         gameStartCutscene(&pacmaiden, mapCellPosInSprite, ghosts, map, false);

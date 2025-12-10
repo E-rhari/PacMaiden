@@ -70,7 +70,7 @@ Sound* initiateSFX(Sound* effects){
     effects[SUPER_PELLET] = LoadSound(getFilePath("../../audio/SFX/superPellet.wav"));
     effects[EAT_GHOST]    = LoadSound(getFilePath("../../audio/SFX/eatGhost.wav"));
     
-    for (int i = 0; i < SOUND_AMOUNT; i++)
+    for (int i = 0; i < SOUND_AMOUNT-1; i++)
         SetSoundVolume(effects[i], .4f);
     return effects;
 }
