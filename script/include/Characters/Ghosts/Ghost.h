@@ -86,16 +86,41 @@ void hurtGhost(Ghost* ghost){
 
 /** @brief Trata de toda a colisão da pacmaiden com os fantasmas, levando em consideração o seu estado e posição */
 void ghostAttackPacmaiden(PacMaiden* pacmaiden, Ghost* ghost, Map map){
-    if(pacmaiden->state != IMMORTAL)
-        if(checkCharacterCollision(pacmaiden->chara, ghost->chara))
+    if(pacmaiden->state == NORMAL )
+        if(checkCharacterCollision(pacmaiden->chara, ghost->chara)){
+            ghost->canChooseDestination=true;
             hurtPacmaiden(pacmaiden);
+        }
+
+
 }
 
-
+void flee(Ghost* ghost, Map map, PacMaiden* pacmaiden){
+    if(currenctScene==PVP){
+        for(int i=0;i<2;i++){
+            if(pacmaiden[i].state==KILLER)
+                recklessEscape(&ghost->chara, pacmaiden[i].chara, map);
+            else
+                chooseDestinationAware(ghost, map);
+            return;
+        }
+    }
+    else{
+        if(pacmaiden->state==KILLER)
+            recklessEscape(&ghost->chara, pacmaiden->chara, map);
+        else
+            chooseDestinationAware(ghost, map);
+        return;   
+    }
+}
 void chooseDestinationByType(Ghost* ghost, Map map, PacMaiden* pacmaiden){
+
+    if(ghost->type==STALKER)
+        ghost->canChooseDestination=true;
+
     if(ghost->canChooseDestination && isCharacterInGridCenter(ghost->chara)){
         if(ghost->state == VULNERABLE){
-            recklessEscape(&ghost->chara, pacmaiden->chara, map);
+            flee(ghost,map,pacmaiden);
             return;
         }
         switch (ghost->type){
@@ -109,6 +134,7 @@ void chooseDestinationByType(Ghost* ghost, Map map, PacMaiden* pacmaiden){
 
     if (!isCharacterInGridCenter(ghost->chara))
         ghost->canChooseDestination=true;
+        
 }
 
 
@@ -121,7 +147,6 @@ void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden, Sound dyingEffe
         return;
     }
 
-    chooseDestinationByType(ghost, map, pacmaiden);
     move(&ghost->chara, map);
     portalBorders(&ghost->chara);
 
@@ -144,3 +169,28 @@ void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden, Sound dyingEffe
     else
         ghostAttackPacmaiden(pacmaiden, ghost, map);
 }
+
+PacMaiden chooseClosestPacMaiden(Ghost *ghost, PacMaiden* players,Map map){
+            
+    PacMaiden chosenPacmaiden = players[0];
+
+    NodeList path;
+    path.start=NULL;
+    path.size=1000000;
+
+    for(int i=0;i<2;i++){
+
+        NodeList temp;
+        if(players[i].state!=NORMAL)
+            continue;
+        
+        temp = findPath(vector2ToGridVector(ghost->chara.circle.center), vector2ToGridVector(players[i].chara.circle.center), map);
+        
+        if(path.size>temp.size){
+            path=temp;
+            chosenPacmaiden = players[i];
+        }
+    }
+
+    return chosenPacmaiden;
+} 
