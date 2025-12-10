@@ -1,15 +1,14 @@
 #include "raylib.h"
 
 #pragma once
-
-#define SONG_AMOUT 2    // Quantidade de músicas tocando simultanêamente durante o levels
-#define SOUND_AMOUNT 4  // Quantidade de efeitos sonoros a serem carregados em levels
+ 
 
 
 // Enumeração das possíveis músicas a serem tocadas em  levels
 typedef enum {
     MAIN_THEME,
-    PAUSED_MAIN_THEME
+    PAUSED_MAIN_THEME,
+    SONG_AMOUT // Quantidade de músicas tocando simultanêamente durante o levels
 }Track;
 
 // Enumeração dos possíveis SFX a serem tocadas em  levels
@@ -17,7 +16,8 @@ typedef enum {
     PELLET,
     SUPER_PELLET,
     EAT_GHOST,
-    DEATH
+    DIE,
+    SOUND_AMOUNT // Quantidade de efeitos sonoros a serem carregados em levels
 } Sfx;
 
 
@@ -71,7 +71,7 @@ Sound* initiateSFX(Sound* effects){
     effects[EAT_GHOST]    = LoadSound(getFilePath("../../audio/SFX/eatGhost.wav"));
     effects[DEATH]        = LoadSound(getFilePath("../../audio/SFX/death.wav"));
     
-    for (int i = 0; i < SOUND_AMOUNT - 1; i++)
+    for (int i = 0; i < SOUND_AMOUNT-1; i++)
         SetSoundVolume(effects[i], .4f);
     return effects;
 }

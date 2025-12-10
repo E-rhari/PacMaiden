@@ -32,9 +32,12 @@ Ghost* instantiateGhostsInLevel(Map map){
 
 
 void drawCharacters(PacMaiden* pacmaiden, Ghost* ghosts){
-    DrawCircleV(pacmaiden->chara.circle.center, pacmaiden->chara.circle.radius, pacmaiden->chara.color);
-    for(int i=0; i<4; i++)
-        DrawCircleV(ghosts[i].chara.circle.center, ghosts[i].chara.circle.radius, ghosts[i].chara.color);
+    // DrawCircleV(pacmaiden->chara.circle.center, pacmaiden->chara.circle.radius, pacmaiden->chara.color);
+    drawCharacterSprite(&pacmaiden->chara);
+    for(int i=0; i<4; i++){
+        // DrawCircleV(ghosts[i].chara.circle.center, ghosts[i].chara.circle.radius, ghosts[i].chara.color);
+        drawCharacterSprite(&ghosts[i].chara);
+    }
 }
 
 
@@ -55,18 +58,18 @@ void drawMenu(OptionButton* buttons, Rectangle* saveOptions){
 
 
 /** @brief Desenha todas as coisas do jogo. */
-void drawLevel(Map map,PacMaiden* pacmaiden, Ghost* ghosts, OptionButton* buttons, Rectangle* saveOptions){
+void drawLevel(Map map, Vector2** mapCellPosInSprite, PacMaiden* pacmaiden, Ghost* ghosts, OptionButton* buttons, Rectangle* saveOptions){
     ClearBackground(BLACK);
-    drawMap(map);
+    drawMap(map, mapCellPosInSprite);
     drawCharacters(pacmaiden, ghosts);
     drawHud(pacmaiden);
     drawMenu(buttons, saveOptions);
 }
 
 /** @brief Desenha todas as coisas do jogo e fecha a rotina de desenhar, impedindo modificações futuras na tela sem apagá-la por completo */
-void restricDrawLevel(Map map,PacMaiden* pacmaiden, Ghost* ghosts, OptionButton* buttons,Rectangle* saveOptions){
+void restricDrawLevel(Map map, Vector2** mapCellPosInSprite, PacMaiden* pacmaiden, Ghost* ghosts, OptionButton* buttons,Rectangle* saveOptions){
     BeginDrawing();
-    drawLevel(map, pacmaiden, ghosts, buttons, saveOptions);
+    drawLevel(map, mapCellPosInSprite, pacmaiden, ghosts, buttons, saveOptions);
     EndDrawing();
 }
 
@@ -74,7 +77,7 @@ void restricDrawLevel(Map map,PacMaiden* pacmaiden, Ghost* ghosts, OptionButton*
 /** @brief Realiza todas as funções de movimento dos personagens */
 void charactersBehaviours(PacMaiden* pacmaiden, Ghost* ghosts, Map map,int *pallets, Sound* effects){
     if(pacmaiden->state == DYING){
-        fadeOut(&pacmaiden->chara.color, &pacmaiden->chara.procAnimation, 3);
+        fadeOut(&pacmaiden->chara.sprite.tint, &pacmaiden->chara.procAnimation, 3);
         if(!pacmaiden->chara.procAnimation.running)
             changePacmaidenState(pacmaiden, IMMORTAL);
         return;
@@ -107,16 +110,16 @@ void gamePause(){
 
 
 /** @brief Roda todo frame. */
-void update(PacMaiden* pacmaiden,Ghost* ghosts, Map map, OptionButton* buttons, Rectangle *saveOptions, Music* tracks, Sound* effects){
+void update(PacMaiden* pacmaiden, Vector2** mapCellPosInSprite, Ghost* ghosts, Map map, OptionButton* buttons, Rectangle *saveOptions, Music* tracks, Sound* effects){
     int fileNumber;
     int pallets = countPallets(map);
-    
+
     while(!WindowShouldClose()){
         fileNumber=-1;
         if(DEBUG_MODE)
             userClose();
 
-        restricDrawLevel(map, pacmaiden, ghosts, buttons, saveOptions);
+        restricDrawLevel(map, mapCellPosInSprite, pacmaiden, ghosts, buttons, saveOptions);
 
         if(pacmaiden->state == DEAD){
             gameState = GAMEOVER;
@@ -179,7 +182,7 @@ void level(int levelNumber){
         ghosts=instantiateGhostsInLevel(map);
         changePacmaidenState(&pacmaiden, IMMORTAL);
     }
-
+    Vector2** mapCellPosInSprite = decideMapCellsSprite(map);
     OptionButton *buttons = malloc(sizeof(OptionButton)*4);
     initOptionButton(buttons);
     Rectangle* saveOptions = malloc(sizeof(Rectangle)*3);
@@ -193,10 +196,10 @@ void level(int levelNumber){
     initiateSFX(effects);
 
     if(gameState == STARTING)
-        gameStartCutscene(&pacmaiden, ghosts, map, false);
-    update(&pacmaiden,ghosts,map,buttons,saveOptions, tracks, effects);
+        gameStartCutscene(&pacmaiden, mapCellPosInSprite, ghosts, map, false);
+    update(&pacmaiden, mapCellPosInSprite, ghosts,map,buttons,saveOptions, tracks, effects);
     if(gameState == GAMEOVER)
-        gameOverCutscene(&pacmaiden, ghosts, map, false);
+        gameOverCutscene(&pacmaiden, mapCellPosInSprite, ghosts, map, false);
         
     
     freeMusic(tracks);

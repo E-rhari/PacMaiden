@@ -2,6 +2,7 @@
 #include<stdbool.h>
 
 #include "./Character.h"
+#include "../Animations/SpriteAnimation.h"
 //#include "../System/Audio.h"
 
 #pragma once
@@ -35,8 +36,6 @@ typedef struct {
     Vector2 bufferedInput;
     bool canMove;
     PacState state;
-    
-
 } PacMaiden;
 
 
@@ -48,7 +47,7 @@ typedef struct {
  * @param lifes Valor inicial do contador de vidas
  * @param points Valor inicial do contador de pontos */
 PacMaiden initPacMaiden(Vector2 position, int radius, float speed, Color color, int lifes, int points){
-    Character chara = initCharacter((Vector2){position.x, position.y}, speed, radius, color);
+    Character chara = initCharacter((Vector2){position.x, position.y}, speed, radius, color, YELLOW_PACMAIDEN_SPRITE);
     return (PacMaiden){chara, chara, lifes, points, 0, (Vector2){0,0},true};
 }
 
@@ -57,23 +56,26 @@ PacMaiden initPacMaiden(Vector2 position, int radius, float speed, Color color, 
  *        na transição entre os estados. Sempre use no lugar de determinar o valor de state manualmente. */
 void changePacmaidenState(PacMaiden* pacmaiden, PacState state){
     pacmaiden->state = state;
+    pacmaiden->chara.procAnimation.initTime = GetTime();
+    pacmaiden->chara.sprite.spriteSheet = pacmaiden->initialValues.sprite.spriteSheet;
 
     switch (state){
         case NORMAL:
+            changeSprite(&pacmaiden->chara.sprite, YELLOW_PACMAIDEN_SPRITE);
             break;
-
         case KILLER:
-                pacmaiden->chara.procAnimation.initTime = GetTime();
+            changeSprite(&pacmaiden->chara.sprite, YELLOW_POWERED_PACMAIDEN_SPRITE);
             break;
-
         case DYING:
             pacmaiden->canMove=false;
             pacmaiden->chara.procAnimation.initTime = GetTime();
             break;
-
-        case DEAD: break;
+        case DEAD: 
+            break;
 
         case IMMORTAL:
+            pacmaiden->chara.moveDirection = (Vector2){0,1};
+            pacmaiden->chara.sprite.tint = pacmaiden->initialValues.sprite.tint;
             pacmaiden->canMove=true;
             pacmaiden->chara.moveDirection = (Vector2){0,0};
             pacmaiden->chara.procAnimation.initTime = GetTime();
@@ -108,9 +110,7 @@ char charCollided(PacMaiden pacMaiden, Map map){
 void killerTime(PacMaiden* pacMaiden,int duration){
     double timeElapsed = GetTime() - pacMaiden->chara.procAnimation.initTime;
     if(timeElapsed>=duration)
-       changePacmaidenState(pacMaiden,NORMAL);
-
-    
+       changePacmaidenState(pacMaiden, NORMAL);    
 }
 
 /** @brief Verifica se a pacmaiden está tocando a Pellet */
@@ -172,25 +172,10 @@ bool hurtPacmaiden(PacMaiden* pacmaiden, Sound deathEffect){
 }
 
 
-/** @brief Todas as ações de comportamento da PacMaiden que devem ser rodadas por frame */
-void pacmaidenBehaviour(PacMaiden* pacmaiden, Map map){
-    
-    if(pacmaiden->canMove)
-        move(&pacmaiden->chara, map);
-
-    portalBorders(&pacmaiden->chara);
-    
-    if(pacmaiden->state == IMMORTAL){
-        blinkAnimation(&pacmaiden->chara.color, pacmaiden->initialValues.color , WHITE, &pacmaiden->chara.procAnimation, HURT_COOLDOWN, 2);
-        if(!pacmaiden->chara.procAnimation.running)
-            changePacmaidenState(pacmaiden, NORMAL);
-    }
-}
-
 void canPlayersMove(PacMaiden* players){
     Vector2 playerNewCenter[2] = {players[0].chara.circle.center,players[1].chara.circle.center};
-   
-
+    
+    
     for(int i=0;i<2;i++){
         playerNewCenter[i].x+= players[i].chara.moveDirection.x*30;
         playerNewCenter[i].y+= players[i].chara.moveDirection.y*30;
@@ -200,4 +185,21 @@ void canPlayersMove(PacMaiden* players){
         players[1].canMove=true;
     }
     
+}
+
+
+/** @brief Todas as ações de comportamento da PacMaiden que devem ser rodadas por frame */
+void pacmaidenBehaviour(PacMaiden* pacmaiden, Map map){
+    if(pacmaiden->canMove)
+        move(&pacmaiden->chara, map);
+
+    portalBorders(&pacmaiden->chara);
+    
+    if(pacmaiden->state == IMMORTAL){
+        spriteBlinkAnimation(&pacmaiden->chara.sprite.spriteSheet, pacmaiden->initialValues.sprite.spriteSheet , pacmaiden->chara.sprite.mask, &pacmaiden->chara.procAnimation, HURT_COOLDOWN, 2, 1);
+        if(!pacmaiden->chara.procAnimation.running)
+            changePacmaidenState(pacmaiden, NORMAL);
+    }
+    else if(pacmaiden->state==KILLER)
+            killerTime(pacmaiden,5);
 }

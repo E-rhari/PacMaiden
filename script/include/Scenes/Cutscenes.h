@@ -7,11 +7,10 @@
 #include "../Map/Map.h"
 #include "Menu.h"
 
+#include "../Animations/SpriteAnimation.h"
 
 #pragma once
 
-
-void drawMap(Map map);
 
 void drawHud(PacMaiden* pacmaiden);
 void drawHudPVP(PacMaiden* pacmaiden);
@@ -20,18 +19,25 @@ void drawCharacters(PacMaiden* pacmaiden, Ghost* ghosts);
 void drawCharactersPVP(PacMaiden* pacmaidens, Ghost* ghosts);
 
 
+static void drawTeamSplashScreen(Color fadeColor){
+    ClearBackground(BLACK);
+    DrawText("JERB", WIDTH/2 -275, HEIGHT/2 - 100, 200, RAYWHITE);
+    DrawText("Jogos Eletrônicos Radicais e Brabos", WIDTH/2 -475, HEIGHT/2 +75, 50, RAYWHITE);
+    DrawText("João, Evandro, Renato e Binoto", WIDTH/2 -200, HEIGHT/2 + 125, 25, RAYWHITE);
+    DrawRectangle(0,0, WIDTH, HEIGHT+HUDHEIGHT, fadeColor);
+}
+
+
 /** @brief Splash sreen inicial do jogo, mostrando o nome da equipe */
-void teamLogo(){
+void teamSplashScreen(){
     WaitTime(1);
     Color fadeColor = BLACK;
     ProceduralAnimation fadeAnimation = {GetTime(), true};
+
     while(fadeAnimation.running){
         fadeOut(&fadeColor, &fadeAnimation, 2.0f);
         BeginDrawing();
-        DrawText("JERB", WIDTH/2 -275, HEIGHT/2 - 100, 200, RAYWHITE);
-        DrawText("Jogos Eletrônicos Radicais e Brabos", WIDTH/2 -475, HEIGHT/2 +75, 50, RAYWHITE);
-        DrawText("João, Evandro, Renato e Binoto", WIDTH/2 -200, HEIGHT/2 + 125, 25, RAYWHITE);
-        DrawRectangle(0,0, WIDTH, HEIGHT+HUDHEIGHT, fadeColor);
+        drawTeamSplashScreen(fadeColor);
         EndDrawing();
 
         if(IsKeyPressed(KEY_TAB)){
@@ -43,12 +49,8 @@ void teamLogo(){
     fadeAnimation = (ProceduralAnimation){GetTime(), true};
     while(fadeAnimation.running){
         fadeIn(&fadeColor, &fadeAnimation, 2.0f);
-
         BeginDrawing();
-        DrawText("JERB", WIDTH/2 -275, HEIGHT/2 - 100, 200, RAYWHITE);
-        DrawText("Jogos Eletrônicos Radicais e Brabos", WIDTH/2 -475, HEIGHT/2 +75, 50, RAYWHITE);
-        DrawText("João, Evandro, Renato e Binoto", WIDTH/2 -200, HEIGHT/2 + 125, 25, RAYWHITE);
-        DrawRectangle(0,0, WIDTH, HEIGHT+HUDHEIGHT, fadeColor);
+        drawTeamSplashScreen(fadeColor);
         EndDrawing();
 
         if(IsKeyPressed(KEY_TAB)){
@@ -61,9 +63,9 @@ void teamLogo(){
 
 
 /** @brief Desenha tudo que a cutscene de início precisa */
-static void drawStartCutsceneElements(PacMaiden* pacmaiden, Ghost* ghosts, Map map, bool PVP){
+static void drawStartCutsceneElements(PacMaiden* pacmaiden, Vector2** mapCellPosInSprite, Ghost* ghosts, Map map, bool PVP){
     ClearBackground(BLACK);
-    drawMap(map);
+    drawMap(map, mapCellPosInSprite);
     if(PVP){
         drawCharactersPVP(pacmaiden, ghosts);
         drawHudPVP(pacmaiden);
@@ -77,13 +79,13 @@ static void drawStartCutsceneElements(PacMaiden* pacmaiden, Ghost* ghosts, Map m
 
 
 /** @brief Dá fade in nos fantasmas em sincronia com a música */
-void gameStartCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, bool PVP){
+void gameStartCutscene(PacMaiden* pacmaiden, Vector2** mapCellPosInSprite, Ghost* ghosts, Map map, bool PVP){
     Music startTrack = LoadMusicStream(getFilePath("../../audio/Music/GameStart/GameStart.wav"));
     PlayMusicStream(startTrack);
     startTrack.looping = false;
     
     for(int i=0; i<4; i++){
-        ghosts[i].chara.color.a = 0;
+        ghosts[i].chara.sprite.tint.a = 0;
         ghosts[i].chara.procAnimation.running = false;
     }
     
@@ -94,27 +96,27 @@ void gameStartCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, bool PVP){
         UpdateMusicStream(startTrack);
 
         for(int i=0; i<4; i++)
-            if(GetMusicTimePlayed(startTrack) >= 1.35f*i && ghosts[i].chara.color.a < 255)
-                fadeIn(&(ghosts[i].chara.color), &(ghosts[i].chara.procAnimation), 2);
+            if(GetMusicTimePlayed(startTrack) >= 1.35f*i && ghosts[i].chara.sprite.tint.a < 255)
+                fadeIn(&(ghosts[i].chara.sprite.tint), &(ghosts[i].chara.procAnimation), 2);
 
         BeginDrawing();
-        drawStartCutsceneElements(pacmaiden, ghosts, map, PVP);
+        drawStartCutsceneElements(pacmaiden, mapCellPosInSprite, ghosts, map, PVP);
         EndDrawing();
 
         if(!IsMusicStreamPlaying(startTrack) || IsKeyPressed(KEY_TAB))
             gameState = RUNNING;
     }
     for(int i=0; i<4; i++)
-        ghosts[i].chara.color.a = 255;
+        ghosts[i].chara.sprite.tint.a = 255;
     pacmaiden->timePivot = GetTime();
     StopMusicStream(startTrack);
     UnloadMusicStream(startTrack);
 }
 
 
-static void drawGameOverCutsceneElements(PacMaiden* pacmaiden, Ghost* ghosts, Map map, bool PVP, Color messageColorRec, Color messageColorText){
+static void drawGameOverCutsceneElements(PacMaiden* pacmaiden, Vector2** mapCellPosInSprite, Ghost* ghosts, Map map, bool PVP, Color messageColorRec, Color messageColorText){
     ClearBackground(BLACK);
-    drawMap(map);
+    drawMap(map, mapCellPosInSprite);
     if(PVP){
         drawCharactersPVP(pacmaiden, ghosts);
         drawHudPVP(pacmaiden);
@@ -123,8 +125,11 @@ static void drawGameOverCutsceneElements(PacMaiden* pacmaiden, Ghost* ghosts, Ma
         drawCharacters(pacmaiden, ghosts);
         drawHud(pacmaiden);
     }
+
+    char* messageText = "Game Over";
     DrawRectangle(0, HEIGHT/2 - 100, WIDTH, 200, messageColorRec);
-    DrawText("Se Fodeu", WIDTH/2 - 400, HEIGHT/2 - 100, 200, messageColorText);
+    Vector2 textSize = MeasureTextEx(GetFontDefault(), messageText, 200, 20);
+    DrawTextEx(GetFontDefault(), messageText, (Vector2){(WIDTH - textSize.x) / 2, ((HEIGHT/2 - 100) + (525 - textSize.y)) /2}, 200, 20, messageColorText);
     DrawText("TAB para pular", WIDTH/2 - 80, HEIGHT+15, 20, RAYWHITE);
 }
 
@@ -157,7 +162,7 @@ void winPVPCutscene(PacMaiden *players){
 }
 
 /** @brief Escreve a mensagem de fim de jogo e toca a música de derrota */
-void gameOverCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, bool PVP){
+void gameOverCutscene(PacMaiden* pacmaiden, Vector2** mapCellPosInSprite, Ghost* ghosts, Map map, bool PVP){
     Music gameOverTrack = LoadMusicStream(getFilePath("../../audio/Music/GameOver/GameOver.wav"));
     PlayMusicStream(gameOverTrack);
     gameOverTrack.looping = false;
@@ -182,7 +187,7 @@ void gameOverCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, bool PVP){
             fadeIn(&messageColorText, &messageTextAnimation, 5);
 
         BeginDrawing();
-        drawGameOverCutsceneElements(pacmaiden, ghosts, map, PVP, messageColorRec, messageColorText);
+        drawGameOverCutsceneElements(pacmaiden, mapCellPosInSprite, ghosts, map, PVP, messageColorRec, messageColorText);
         EndDrawing();
 
         if(IsKeyPressed(KEY_TAB)){
@@ -204,7 +209,7 @@ void gameOverCutscene(PacMaiden* pacmaiden, Ghost* ghosts, Map map, bool PVP){
         fadeIn(&fadeOutColor, &fadeOutAnimation, 2.0f);
 
         BeginDrawing();
-        drawGameOverCutsceneElements(pacmaiden, ghosts, map, PVP, messageColorRec, messageColorText);
+        drawGameOverCutsceneElements(pacmaiden, mapCellPosInSprite, ghosts, map, PVP, messageColorRec, messageColorText);
         DrawRectangle(0,0, WIDTH, HEIGHT+HUDHEIGHT, fadeOutColor);
         EndDrawing();
     }

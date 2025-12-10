@@ -80,11 +80,11 @@ void drawCharactersPVP(PacMaiden* players, Ghost* ghosts){
 }
 
 
-void drawPVP(Map map,PacMaiden* players, Ghost* ghosts, OptionButton* buttons){
+void drawPVP(Map map, Vector2** mapCellPosInSprite, PacMaiden* players, Ghost* ghosts, OptionButton* buttons){
     BeginDrawing();
 
     ClearBackground(BLACK);
-    drawMap(map);
+    drawMap(map, mapCellPosInSprite);
 
     drawCharactersPVP(players, ghosts);
     drawHudPVP(players);
@@ -153,7 +153,7 @@ bool isPlayersDead(PacMaiden* players){
 }
 
 
-void updatePVP(PacMaiden* players,Ghost* ghosts, Map map, OptionButton* buttons, Music* tracks, Sound* effects){
+void updatePVP(PacMaiden* players, Vector2** mapCellPosInSprite, Ghost* ghosts, Map map, OptionButton* buttons, Music* tracks, Sound* effects){
 
     int pallets = countPallets(map);
 
@@ -161,7 +161,7 @@ void updatePVP(PacMaiden* players,Ghost* ghosts, Map map, OptionButton* buttons,
         if(DEBUG_MODE)
             userClose(); 
     
-        drawPVP(map,players,ghosts,buttons);
+        drawPVP(map, mapCellPosInSprite, players,ghosts,buttons);
         
         
         if(isPlayersDead(players)){
@@ -204,6 +204,7 @@ void StartPVP(){
     gameState=STARTING;
     
     Map map=setUpMap();
+    Vector2** mapCellPosInSprite = decideMapCellsSprite(map);
     readMap(level,map);
 
     player2Spawn = rand() % countPallets(map);
@@ -233,11 +234,10 @@ void StartPVP(){
     initiateSFX(effects);
 
     if(gameState == STARTING)
-        gameStartCutscene(players, ghosts, map, true);
-    updatePVP(players,ghosts,map,buttons, tracks, effects);
-    
-    if(gameState!=EXIT)
-        winPVPCutscene(players);
+        gameStartCutscene(players, mapCellPosInSprite, ghosts, map, true);
+    updatePVP(players, mapCellPosInSprite, ghosts,map,buttons, tracks, effects);
+    if(gameState == GAMEOVER)
+        gameOverCutscene(players, mapCellPosInSprite, ghosts, map, true);
 
     for(int i=0;i<20;i++)
         free(*(map+i));
