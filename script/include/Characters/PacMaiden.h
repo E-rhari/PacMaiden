@@ -67,12 +67,14 @@ void changePacmaidenState(PacMaiden* pacmaiden, PacState state){
             break;
 
         case DYING:
+            pacmaiden->canMove=false;
             pacmaiden->chara.procAnimation.initTime = GetTime();
             break;
 
         case DEAD: break;
 
         case IMMORTAL:
+            pacmaiden->canMove=true;
             pacmaiden->chara.moveDirection = (Vector2){0,0};
             pacmaiden->chara.procAnimation.initTime = GetTime();
             pacmaiden->chara.circle.center = pacmaiden->initialValues.circle.center;
