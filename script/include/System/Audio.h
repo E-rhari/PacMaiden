@@ -1,19 +1,29 @@
 #include "raylib.h"
 
 #pragma once
+ 
 
-#define SONG_AMOUT 2
 
-
+// Enumeração das possíveis músicas a serem tocadas em  levels
 typedef enum {
     MAIN_THEME,
-    PAUSED_MAIN_THEME
+    PAUSED_MAIN_THEME,
+    SONG_AMOUT // Quantidade de músicas tocando simultanêamente durante o levels
 }Track;
+
+// Enumeração dos possíveis SFX a serem tocadas em  levels
+typedef enum {
+    PELLET,
+    SUPER_PELLET,
+    EAT_GHOST,
+    DEATH,
+    SOUND_AMOUNT // Quantidade de efeitos sonoros a serem carregados em levels
+} Sfx;
 
 
 Music* initiateMusic(Music* tracks){
-    tracks[MAIN_THEME]        = LoadMusicStream("../../audio/Music/MainTheme/MainTheme.wav");
-    tracks[PAUSED_MAIN_THEME] = LoadMusicStream("../../audio/Music/MainTheme/PausedMainTheme.wav");
+    tracks[MAIN_THEME]        = LoadMusicStream(getFilePath("../../audio/Music/MainTheme/MainTheme.wav"));
+    tracks[PAUSED_MAIN_THEME] = LoadMusicStream(getFilePath("../../audio/Music/MainTheme/PausedMainTheme.wav"));
 
     PlayMusicStream(tracks[MAIN_THEME]);
     PlayMusicStream(tracks[PAUSED_MAIN_THEME]);
@@ -35,6 +45,7 @@ void freeMusic(Music* tracks){
 }
 
 
+/** @brief Coloca o volume de uma música no máximo e muta todas as outras */
 void focusTrack(Music* tracks, Track trackName){
     for(int i=0; i<SONG_AMOUT; i++)
         SetMusicVolume(tracks[i], 0.0f);
@@ -42,6 +53,7 @@ void focusTrack(Music* tracks, Track trackName){
 }
 
 
+/** @brief Controla o pause e atualização da música */
 void handleMusic(Music* tracks, bool pause){
     if(pause)
         focusTrack(tracks, PAUSED_MAIN_THEME);
@@ -50,4 +62,16 @@ void handleMusic(Music* tracks, bool pause){
 
     for(int i=0; i<SONG_AMOUT; i++)
         UpdateMusicStream(tracks[i]);
+}
+
+
+Sound* initiateSFX(Sound* effects){
+    effects[PELLET]       = LoadSound(getFilePath("../../audio/SFX/pellet.wav"));
+    effects[SUPER_PELLET] = LoadSound(getFilePath("../../audio/SFX/superPellet.wav"));
+    effects[EAT_GHOST]    = LoadSound(getFilePath("../../audio/SFX/eatGhost.wav"));
+    effects[DEATH]        = LoadSound(getFilePath("../../audio/SFX/death.wav"));
+    
+    for (int i = 0; i < SOUND_AMOUNT-1; i++)
+        SetSoundVolume(effects[i], .4f);
+    return effects;
 }

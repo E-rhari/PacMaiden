@@ -15,22 +15,8 @@
  */
 char* selecSaveFile(int saveFile){
     char *path= (char*)malloc(sizeof(char)*50);
-    
-    #ifdef _WIN32
-        strcpy(path,"PacMaiden/sprites/saves/saveMap");
-        char saveString[3];
 
-      itoa(saveFile,saveString,10);
-        strcat(path,saveString);
-        strcat(path,".bin");
-    #elif __linux__
-        sprintf(path, "../../sprites/maps/map%d.bin", saveFile);
-        printf(path);
-    #else
-        printf("Sistema operacional não detectado. Proseguindo com configuração do linux");
-        sprintf(path, "../../sprites/maps/map%d.bin", saveFile);
-        printf(path);
-    #endif
+    sprintf(path, getFilePath("../../sprites/saves/saveMap%d.txt"), saveFile);
 
     return path;
 }

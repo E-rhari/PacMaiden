@@ -3,9 +3,10 @@
 #include <string.h>
 #include "raylib.h"
 
-#include "./GridVector.h"
 #include "../System/WindowControl.h"
 #include "../System/PacMath.h"
+#include "../System/Files.h"
+#include "../Animations/SpriteAnimation.h"
 
 #pragma once
 
@@ -14,33 +15,41 @@
 typedef char** Map;
 
 
-void drawMap(Map map) {
+
+void drawMap(Map map, Vector2** mapCellPosInSprite) {
     int cell = 40;
+    Rectangle source = {0, 0, 20, 20};
+    Rectangle dest;
     for(int i = 0; i < 20; i++){
-        for(int j = 0; j < 40; j++)
+        for(int j = 0; j < 40; j++){
+            dest = (Rectangle){(float)(j)*GRID2PIX, (float)(i)*GRID2PIX, 40, 40};
             switch(map[i][j])
             {
                 case '#':
-                    DrawRectangle(j * cell, i * cell, cell, cell, DARKBLUE);
+                    source = (Rectangle){mapCellPosInSprite[i][j].x*20, mapCellPosInSprite[i][j].y*20, 20, 20};
+                    dest   = (Rectangle){j*GRID2PIX, i*GRID2PIX, 40, 40};
+                    DrawTexturePro(SPRITES[TILESET_SPRITE], source, dest, (Vector2){0,0}, 0.0f, WHITE);
                     break;
-                
+
                 case '.':
                     DrawRectangleLines(j * cell, i * cell, cell, cell, LIGHTGRAY);
-                    DrawCircle(j * cell + cell/2, i * cell + cell/2, 1.5, WHITE);
+                    DrawTexturePro(SPRITES[PELLET_SPRITE], source, dest, (Vector2){0,0}, 0.0f, WHITE);
                     break;
                 
                 case 'o':
-                    DrawCircle(j * cell + cell/2, i * cell + cell/2, 5, GOLD);
                     DrawRectangleLines(j * cell, i * cell, cell, cell, LIGHTGRAY);
+                    DrawTexturePro(SPRITES[POWER_PELLET_SPRITE], source, dest, (Vector2){0,0}, 0.0f, WHITE);
                     break;
                 
                 case 't':
                     DrawRectangle(j * cell, i * cell, cell, cell, PURPLE);
+                    DrawTexturePro(SPRITES[PORTAL_SPRITE], source, dest, (Vector2){0,0}, 0.0f, WHITE);
                     break;
                     
                 default:
                     DrawRectangleLines(j * cell, i * cell, cell, cell, LIGHTGRAY);
             } 
+        }
     }
 }
 
@@ -52,28 +61,14 @@ void readMap (int level, Map map)
 {
     char temp;
     char path[50];
-    
-    #ifdef _WIN32
-        strcpy(path,"PacMaiden/sprites/maps/map");
-        char nivelString[3];
 
-        itoa(level,nivelString,10);
-        strcat(path,nivelString);
-        strcat(path,".txt");
-    #elif __linux__
-        sprintf(path, "../../sprites/maps/map%d.txt", level);
-        printf(path);
-    #else
-        printf("Sistema operacional não detectado. Proseguindo com configuração do linux");
-        sprintf(path, "../../sprites/maps/map%d.txt", level);
-        printf(path);
-    #endif
+    sprintf(path, getFilePath("../../sprites/maps/map%d.txt"), level);
 
     FILE* arq = fopen(path, "r");
 
     if(arq == NULL)
     {
-        printf("Erro de abertura de arquivo\n");
+        printf("\nErro de abertura de arquivo\n");
         return;
     }
     
@@ -92,8 +87,8 @@ void readMap (int level, Map map)
 
 
 bool isInsideMap(GridVector gridPosition, Map map, GridVector displacement){
-    return (int)gridPosition.y+(int)displacement.y>=0 && (int)gridPosition.y+(int)displacement.y<ALTURA/40
-        && (int)gridPosition.x+(int)displacement.x>=0 && (int)gridPosition.x+(int)displacement.x<LARGURA/40;
+    return (int)gridPosition.y+(int)displacement.y>=0 && (int)gridPosition.y+(int)displacement.y<HEIGHT/40
+        && (int)gridPosition.x+(int)displacement.x>=0 && (int)gridPosition.x+(int)displacement.x<WIDTH/40;
 }
 
 
@@ -162,4 +157,31 @@ void freeMap(Map map){
     for(int i=0; i<20;i++)
         free(*(map+i));
     free(map);
+}
+
+
+Vector2** decideMapCellsSprite(Map map){    
+    Vector2** spriteSheetPos = (Vector2**)malloc(sizeof(Vector2*)*20);
+    for(int i=0;i<20;i++)
+        *(spriteSheetPos+i) = (Vector2*)malloc(sizeof(Vector2)*40);
+    
+    for(int i=0; i<20; i++)
+        for(int j=0; j<40; j++)
+            if(readCoordinatesInMap((GridVector){j, i}, map, (GridVector){0,0}) == '#'){
+                int spriteCollumn;
+                if(!isPositionInsideScreen((Vector2){j*GRID2PIX, i*GRID2PIX}, (Vector2){0,1}) || readCoordinatesInMap((GridVector){j, i}, map, (GridVector){0,1}) == '#'){
+                    // Teto
+                    spriteCollumn = GetRandomValue(0, 4);
+                    spriteSheetPos[i][j] = (Vector2){spriteCollumn, 0};
+                }
+                else{
+                    // Parede
+                    if(GetRandomValue(1, 100) <= 75)
+                        spriteCollumn = 4;
+                    else
+                        spriteCollumn = GetRandomValue(0, 3);
+                    spriteSheetPos[i][j] = (Vector2){spriteCollumn, 1};
+                }
+            }
+    return spriteSheetPos;
 }

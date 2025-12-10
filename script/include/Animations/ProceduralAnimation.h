@@ -1,18 +1,18 @@
 /** @brief Animações procedurais são aquelas que modificam propriedades de um objeto através de funções matemáticas e códigos,
- *         sem renderizar imagens de arquivos externos e alternar entre frames.
- */
+ *         sem renderizar imagens de arquivos externos e alternar entre frames. */
 
 
 #include<raylib.h>
 #include<stdlib.h>
 #include<math.h>
+#include"SpriteAnimation.h"
 
 #pragma once
 
 
 /** @brief Struct que controla uma animação desenhada por código. */
 typedef struct {
-    int initTime;
+    double initTime;
     bool running;
 } ProceduralAnimation;
 
@@ -26,13 +26,29 @@ typedef struct {
  * @param frequency (Hz) Quantas vezes por segundo as cores irão alternar, isso é, quantas vezes a color2 será alcançada por segundo. */
 void blinkAnimation(Color* currentColor, Color color1, Color color2, ProceduralAnimation* animation, int duration, float frequency){
     double timeElapsed = GetTime() - animation->initTime;
-    if(sin(frequency*PI*2*timeElapsed)<0) 
+    if(cos(frequency*PI*2*timeElapsed)<=0) 
         *currentColor = color1;
     else
         *currentColor = color2;
 
     if(timeElapsed>=duration){
         *currentColor = color1;
+        animation->running = false;
+        return;
+    }
+    animation->running = true;
+}
+
+
+void spriteBlinkAnimation(Texture* sprite, Texture spriteSheet1, Texture spriteSheet2, ProceduralAnimation* animation, float duration, float frequency, float power){
+    double timeElapsed = GetTime() - animation->initTime;
+    if(cos(frequency*PI*2*pow(timeElapsed, power))>0) 
+        *sprite = spriteSheet1;
+    else
+        *sprite = spriteSheet2;
+
+    if(timeElapsed>=duration){
+        *sprite = spriteSheet1;
         animation->running = false;
         return;
     }
@@ -68,23 +84,3 @@ void fadeIn(Color* color, ProceduralAnimation* animation, float duration){
         return;
     }
 }
-
-
-// void fadeOutScreen(){
-//     static Color fadeOutColor = BLACK;
-//     fadeOutColor.a = 0;
-//     static ProceduralAnimation fadeOutAnimation = {0, false};
-//     static bool hasPreviousEnded = true;
-    
-//     if(hasPreviousEnded){
-//         fadeOutAnimation = (ProceduralAnimation){GetTime(), true};
-//         hasPreviousEnded = false;
-//     }
-
-//     if(fadeOutAnimation.running)
-//         fadeIn(&fadeOutColor, &fadeOutAnimation, 2.0f);
-//     else if(!hasPreviousEnded)
-//         hasPreviousEnded = true;
-
-//     DrawRectangle(0,0, LARGURA, ALTURA+ALTURAHUD, fadeOutColor);
-// }

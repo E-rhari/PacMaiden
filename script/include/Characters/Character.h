@@ -6,6 +6,7 @@
 #include "../System/WindowControl.h"
 #include "../Map/Map.h"
 #include "../Animations/ProceduralAnimation.h"
+#include "../Animations/SpriteAnimation.h"
 
 #pragma once
 
@@ -39,6 +40,7 @@ typedef struct {
     Color color;
     Vector2 moveDirection;
     ProceduralAnimation procAnimation; 
+    SpriteAnimation sprite;
 } Character;
 
 
@@ -58,10 +60,11 @@ bool checkCharacterCollision(Character chara1, Character chara2){
  * @param color Cor do personagem a partir das definições da Raylib.
  * 
  * @return Objeto inicializado do personagem. */
-Character initCharacter(Vector2 position, int speed, float radius, Color color){
+Character initCharacter(Vector2 position, int speed, float radius, Color color, SpriteName spriteSheet){
     Circle characterCircle = {(Vector2){position.x+radius, position.y+radius}, radius};
+    SpriteAnimation sprite = innitSpriteAnimation(spriteSheet, (Vector2){20, 20}, 5, true);
 
-    return (Character){characterCircle, speed, color, (Vector2){0,0}, (ProceduralAnimation){0,false}};
+    return (Character){characterCircle, speed, color, (Vector2){0,0}, (ProceduralAnimation){0,false}, sprite};
 }
 
 
@@ -103,10 +106,6 @@ bool move(Character* character, Map map){
     // define o ponto em que será detectada a colisão com a parede
     Vector2 movingBound = {destination.x + character->circle.radius * character->moveDirection.x,
                            destination.y + character->circle.radius * character->moveDirection.y};
-    if(DEBUG_MODE){
-        // Coloca a bolinha vermelha na frente do personagem
-        DrawCircleV(movingBound, 5, RED);
-    }
 
     // Encosta o personagem na parede quando ele tentaria atravessá-la. Caso não implementado, o personagem nunca chega na parede
     if (readPositionInMap(movingBound, map, (Vector2){0,0}) == '#') {
@@ -130,6 +129,9 @@ bool move(Character* character, Map map){
 
     character->circle.center.x = destination.x;
     character->circle.center.y = destination.y;
+    
+    if(moved)
+        updateSpriteAnimation(&character->sprite);
 
     return moved;
 }
@@ -140,14 +142,14 @@ bool move(Character* character, Map map){
 void portalBorders(Character* chara){
     // Horizontal
     if(chara->circle.center.x < 0 - chara->circle.radius*2)
-        chara->circle.center.x = LARGURA;
-    else if(chara->circle.center.x > LARGURA)
+        chara->circle.center.x = WIDTH;
+    else if(chara->circle.center.x > WIDTH)
         chara->circle.center.x = 0 - chara->circle.radius*2;
         
     // Vertical
     if(chara->circle.center.y < 0 - chara->circle.radius*2)
-        chara->circle.center.y = ALTURA;
-    else if(chara->circle.center.y > ALTURA)
+        chara->circle.center.y = HEIGHT;
+    else if(chara->circle.center.y > HEIGHT)
         chara->circle.center.y = 0 - chara->circle.radius*2;   
 }
 
@@ -181,7 +183,7 @@ void recklessEscape(Character* escaper, Character threat, Map map){
 
     for(int i=0; i<4; i++)
         if(readPositionInMap(escaper->circle.center, map, directions[i]) != '#'){
-            Vector2 nextPosition = {modulate(escaperGridPosition.x+directions[i].x, LARGURA*PIX2GRID), modulate(escaperGridPosition.y+directions[i].y, ALTURA*PIX2GRID)};
+            Vector2 nextPosition = {modulate(escaperGridPosition.x+directions[i].x, WIDTH*PIX2GRID), modulate(escaperGridPosition.y+directions[i].y, HEIGHT*PIX2GRID)};
             float currentGCost = fabs(nextPosition.x - threatGridPosition.x) + fabs(nextPosition.y - threatGridPosition.y);
 
             if(currentGCost > biggestGCost){
@@ -194,4 +196,17 @@ void recklessEscape(Character* escaper, Character threat, Map map){
     if((escapeDirection.x!=0 && escapeDirection.x==directionToThreat.x) || (escapeDirection.y!=0 && escapeDirection.y==directionToThreat.y))
         return;
     escaper->moveDirection = escapeDirection;
+}
+
+
+void drawCharacterSprite(Character* chara){
+    if(Vector2Equals(chara->moveDirection, (Vector2){0,1}))
+        chara->sprite.lineSelect = 0;
+    else if(Vector2Equals(chara->moveDirection, (Vector2){0,-1}))
+        chara->sprite.lineSelect = 1;
+    else if(Vector2Equals(chara->moveDirection, (Vector2){1,0}))
+        chara->sprite.lineSelect = 2;
+    else if(Vector2Equals(chara->moveDirection, (Vector2){-1,0}))
+        chara->sprite.lineSelect = 3;
+    drawSpriteAnimation(&chara->sprite, Vector2SubtractValue(chara->circle.center, chara->circle.radius) , (Vector2){2,2});
 }
