@@ -67,6 +67,8 @@ void changePacmaidenState(PacMaiden* pacmaiden, PacState state){
             changeSprite(&pacmaiden->chara.sprite, YELLOW_POWERED_PACMAIDEN_SPRITE);
             break;
         case DYING:
+            pacmaiden->canMove=false;
+            pacmaiden->chara.procAnimation.initTime = GetTime();
             break;
         case DEAD: 
             break;
@@ -74,6 +76,8 @@ void changePacmaidenState(PacMaiden* pacmaiden, PacState state){
         case IMMORTAL:
             pacmaiden->chara.moveDirection = (Vector2){0,1};
             pacmaiden->chara.sprite.tint = pacmaiden->initialValues.sprite.tint;
+            pacmaiden->canMove=true;
+            pacmaiden->chara.moveDirection = (Vector2){0,0};
             pacmaiden->chara.procAnimation.initTime = GetTime();
             pacmaiden->chara.circle.center = pacmaiden->initialValues.circle.center;
             break;
@@ -131,8 +135,8 @@ void countPoints(PacMaiden* pacMaiden, Map map, char object, int *pallets, Sound
     switch(object)
     {
         case '.':
-            SetSoundPitch(effects[0], .75 + ((float)(rand() % 5))/10);
-            PlaySound(effects[0]);
+            //SetSoundPitch(effects[0], .75 + ((float)(rand() % 5))/10);
+            //PlaySound(effects[0]);
             addPoints(pacMaiden, 10);
             *pallets=*pallets-1;
             break;
@@ -152,7 +156,7 @@ void countPoints(PacMaiden* pacMaiden, Map map, char object, int *pallets, Sound
 
 /** @brief Dá dano a pacmaiden caso o cooldown seja obedecido.
  * @return Se a pacmaiden levou dano ou não */
-bool hurtPacmaiden(PacMaiden* pacmaiden){
+bool hurtPacmaiden(PacMaiden* pacmaiden, Sound deathEffect){
     pacmaiden->lifes--;
     pacmaiden->timePivot = GetTime();
     addPoints(pacmaiden, -200);
@@ -161,7 +165,9 @@ bool hurtPacmaiden(PacMaiden* pacmaiden){
     
     if(pacmaiden->lifes <= 0)
         changePacmaidenState(pacmaiden, DEAD);
-    
+    else
+        PlaySound(deathEffect);
+        
     return true;
 }
 

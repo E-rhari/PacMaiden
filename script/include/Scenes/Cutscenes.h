@@ -133,6 +133,33 @@ static void drawGameOverCutsceneElements(PacMaiden* pacmaiden, Vector2** mapCell
     DrawText("TAB para pular", WIDTH/2 - 80, HEIGHT+15, 20, RAYWHITE);
 }
 
+void winPVPCutscene(PacMaiden *players){
+    
+    char winnerText[50];
+    PacMaiden winner;
+
+    if(players[0].points>players[1].points){
+        strcpy(winnerText,"Ganhador jogador 1!!!!");
+        winner=players[0];
+    }
+    else{
+       strcpy(winnerText,"Ganhador jogador 2!!!!"); 
+        winner=players[1];
+    }
+
+    while(1){
+        BeginDrawing();
+        ClearBackground(BLACK);
+        DrawRectangle(0,0,WIDTH,HEIGHT,BLUE); 
+        DrawText(winnerText, WIDTH/2 - 250, HEIGHT/2 - 100, 50, winner.initialValues.color);
+        DrawText("Para o perdedor: melhore você é muito ruim", WIDTH/2 - 500, HEIGHT/2 - 50, 50, winner.initialValues.color);
+        DrawText("TAB para volar ao menu", WIDTH/2 - 80, HEIGHT+15, 20, WHITE);
+        if(IsKeyPressed(KEY_TAB))
+            break;
+        EndDrawing();
+    }
+
+}
 
 /** @brief Escreve a mensagem de fim de jogo e toca a música de derrota */
 void gameOverCutscene(PacMaiden* pacmaiden, Vector2** mapCellPosInSprite, Ghost* ghosts, Map map, bool PVP){
