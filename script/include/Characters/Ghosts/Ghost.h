@@ -8,6 +8,7 @@
 #include "../PacMaiden.h"
 #include "../../Map/Map.h"
 #include "../../Map/AStar.h"
+#include "../../System/Audio.h"
 
 #pragma once
 
@@ -85,12 +86,11 @@ void hurtGhost(Ghost* ghost){
 
 
 /** @brief Trata de toda a colisão da pacmaiden com os fantasmas, levando em consideração o seu estado e posição */
-void ghostAttackPacmaiden(PacMaiden* pacmaiden, Ghost* ghost, Map map){
-    if(pacmaiden->state == NORMAL )
-        if(checkCharacterCollision(pacmaiden->chara, ghost->chara)){
-            ghost->canChooseDestination=true;
-            hurtPacmaiden(pacmaiden);
-        }
+void ghostAttackPacmaiden(PacMaiden* pacmaiden, Ghost* ghost, Map map, Sound deathEffect){
+    if(pacmaiden->state != IMMORTAL)
+        if(checkCharacterCollision(pacmaiden->chara, ghost->chara))
+            hurtPacmaiden(pacmaiden, deathEffect);
+}
 
 
 }
@@ -139,7 +139,7 @@ void chooseDestinationByType(Ghost* ghost, Map map, PacMaiden* pacmaiden){
 
 
 /** @brief Todas as ações de comportamento de um fantasma genérico que devem ser rodadas por frame */
-void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden, Sound dyingEffect){
+void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden, Sound* effects){
     if(ghost->state == SPAWNING){
         blinkAnimation(&ghost->chara.color, ghost->initialValues.color, WHITE, &ghost->chara.procAnimation, 3, 1);
         if(!ghost->chara.procAnimation.running)
@@ -161,13 +161,13 @@ void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden, Sound dyingEffe
 
         
         if(checkCharacterCollision(pacmaiden->chara, ghost->chara) && pacmaiden->state==KILLER){
-            PlaySound(dyingEffect);
+            PlaySound(effects[EAT_GHOST]);
             hurtGhost(ghost);
             addPoints(pacmaiden, 100);
         }
     }
     else
-        ghostAttackPacmaiden(pacmaiden, ghost, map);
+        ghostAttackPacmaiden(pacmaiden, ghost, map, effects[DEATH]);
 }
 
 PacMaiden chooseClosestPacMaiden(Ghost *ghost, PacMaiden* players,Map map){

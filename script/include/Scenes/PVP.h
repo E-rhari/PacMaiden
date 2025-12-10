@@ -95,7 +95,7 @@ void drawPVP(Map map,PacMaiden* players, Ghost* ghosts, OptionButton* buttons){
     EndDrawing();
 }
 
-void PVPinteractions(PacMaiden* players){
+void PVPinteractions(PacMaiden* players, Sound* effects){
     int playerArrayPosition;
 
     for(int i=0;i<2;i++){
@@ -106,7 +106,7 @@ void PVPinteractions(PacMaiden* players){
 
         if(checkCharacterCollision(players[0].chara,players[1].chara)){
             if(players[i].state==KILLER && players[playerArrayPosition].state==NORMAL){
-                hurtPacmaiden(&players[playerArrayPosition]);
+                hurtPacmaiden(&players[playerArrayPosition], effects[DEATH]);
                 addPoints(&players[i],400);
                 addPoints(&players[playerArrayPosition],-400);
             }
@@ -131,7 +131,7 @@ void charactersPVPBehaviours(PacMaiden* players, Ghost* ghosts, Map map,int *pal
         getBufferedInput(&players[i].chara.moveDirection, isCharacterInGridCenter(players[i].chara)
                                                 && isCharacterInsideScreen(players[i].chara, (Vector2){0,0}),i,&players[i].bufferedInput);
 
-        PVPinteractions(players);
+        PVPinteractions(players, effects);
 
         pacmaidenBehaviour(&players[i], map);
         for(int j=0; j<4; j++){

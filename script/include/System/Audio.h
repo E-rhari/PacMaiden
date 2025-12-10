@@ -3,7 +3,7 @@
 #pragma once
 
 #define SONG_AMOUT 2    // Quantidade de músicas tocando simultanêamente durante o levels
-#define SOUND_AMOUNT 3  // Quantidade de efeitos sonoros a serem carregados em levels
+#define SOUND_AMOUNT 4  // Quantidade de efeitos sonoros a serem carregados em levels
 
 
 // Enumeração das possíveis músicas a serem tocadas em  levels
@@ -17,7 +17,7 @@ typedef enum {
     PELLET,
     SUPER_PELLET,
     EAT_GHOST,
-    DIE
+    DEATH
 } Sfx;
 
 
@@ -69,8 +69,9 @@ Sound* initiateSFX(Sound* effects){
     effects[PELLET]       = LoadSound(getFilePath("../../audio/SFX/pellet.wav"));
     effects[SUPER_PELLET] = LoadSound(getFilePath("../../audio/SFX/superPellet.wav"));
     effects[EAT_GHOST]    = LoadSound(getFilePath("../../audio/SFX/eatGhost.wav"));
+    effects[DEATH]        = LoadSound(getFilePath("../../audio/SFX/death.wav"));
     
-    for (int i = 0; i < SOUND_AMOUNT; i++)
+    for (int i = 0; i < SOUND_AMOUNT - 1; i++)
         SetSoundVolume(effects[i], .4f);
     return effects;
 }
