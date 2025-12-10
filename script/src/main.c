@@ -32,7 +32,7 @@ int main(){
                 titleScreen();
             break;
             case NEWGAME:
-                file=0;
+                file=2;
                 level(file);
             break;
             case NEXT:
