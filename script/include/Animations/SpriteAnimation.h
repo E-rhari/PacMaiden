@@ -26,6 +26,7 @@ typedef enum {
     POWER_PELLET_SPRITE,
     PORTAL_SPRITE,
 
+    TITLE_SCREEN_SPRITE,
     AMOUNT_OF_SPRITES
 } SpriteName;
 
@@ -172,4 +173,6 @@ void loadAllSprites(){
     SPRITES[PELLET_SPRITE]       = LoadTexture(getFilePath("../../sprites/pellets/Pellet.png"));
     SPRITES[POWER_PELLET_SPRITE] = LoadTexture(getFilePath("../../sprites/pellets/PowerPellet.png"));
     SPRITES[PORTAL_SPRITE]       = LoadTexture(getFilePath("../../sprites/tiles/Portal.png"));
+
+    SPRITES[TITLE_SCREEN_SPRITE] = LoadTexture(getFilePath("../../sprites/title/TitleScreen.png"));
 }
