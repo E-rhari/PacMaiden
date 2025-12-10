@@ -59,24 +59,19 @@ typedef struct {
  * @param frameSize Tamanho de um único frame.
  * @param speed Velocidade da animação. Quantas vezes por segundo a animação muda de frame.
  * @param loop Se a animação reinicia quando termina. */
-SpriteAnimation innitSpriteAnimation(char spriteSheet[], Vector2 frameSize, float speed, bool loop){
-    Image spriteSheetImage = LoadImage(spriteSheet);
-    if(spriteSheetImage.format == 0)
-        spriteSheetImage = LoadImage("../../sprites/WHITE.png");
-    Texture spriteSheetTexture = LoadTextureFromImage(spriteSheetImage); 
-
-
+SpriteAnimation innitSpriteAnimation(SpriteName sprite, Vector2 frameSize, float speed, bool loop){
+    Image spriteSheetImage = LoadImageFromTexture(SPRITES[sprite]);
     Image mask = ImageFromChannel(spriteSheetImage, 3);
     ImageAlphaMask(&mask, mask);
     Texture whiteSpriteSheetTexture = LoadTextureFromImage(mask); 
     
     return (SpriteAnimation) {
-        .spriteSheet=spriteSheetTexture,
+        .spriteSheet=SPRITES[sprite],
         .mask=whiteSpriteSheetTexture,
         .tint = WHITE,
 
         .first=0,
-        .last=(spriteSheetTexture.width/frameSize.x)-1,
+        .last=(SPRITES[sprite].width/frameSize.x)-1,
         .current=0,
         .lineSelect=0,
         .step=1,
@@ -88,11 +83,6 @@ SpriteAnimation innitSpriteAnimation(char spriteSheet[], Vector2 frameSize, floa
         .loop=loop,
         .running=true,
     };
-}
-
-/** Desinstancia uma Sprite Animation */
-void closeSpriteAnimation(SpriteAnimation* spriteAnimation){
-    UnloadTexture(spriteAnimation->spriteSheet);
 }
 
 
@@ -138,33 +128,23 @@ void updateSpriteAnimation(SpriteAnimation* animation){
 }
 
 
-void changeSprite(SpriteAnimation* animation, char spriteSheet[], bool unload){
-    if(unload)
-        UnloadTexture(animation->spriteSheet);
-    animation->spriteSheet = LoadTexture(spriteSheet);
+void changeSprite(SpriteAnimation* animation, SpriteName spriteSheet){
+    animation->spriteSheet = SPRITES[spriteSheet];
 }
 
 
-void changeMask(SpriteAnimation* animation, char maskSheet[], bool unload){
-    if(unload)
-        UnloadTexture(animation->mask);
-    Image maskImage = LoadImage(maskSheet);
+void changeMask(SpriteAnimation* animation, SpriteName maskSheet){
+    Image maskImage = LoadImageFromTexture(SPRITES[maskSheet]);
     ImageAlphaMask(&maskImage, maskImage);
-    animation->spriteSheet = LoadTextureFromImage(maskImage); ;
+    animation->mask = LoadTextureFromImage(maskImage); ;
 }
 
 
-void changeSpriteAndMask(SpriteAnimation* animation, char spriteSheet[], bool unload){
-    changeSprite(animation, spriteSheet, unload);
-    changeMask(animation, spriteSheet, unload);
+void changeSpriteAndMask(SpriteAnimation* animation, SpriteName spriteSheet){
+    changeSprite(animation, spriteSheet);
+    changeMask(animation, spriteSheet);
 }
 
-
-void changeSpriteTexture(SpriteAnimation* animation, Texture texture, bool unload){
-    if(unload)
-        UnloadTexture(animation->spriteSheet);
-    animation->spriteSheet = texture;
-}
 
 void drawSpriteAnimation(SpriteAnimation* sprite, Vector2 position, Vector2 scale){
     Vector2 spriteVirtualSize = {sprite->frameSize.x*scale.x, sprite->frameSize.y*scale.y};

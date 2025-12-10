@@ -60,7 +60,7 @@ bool checkCharacterCollision(Character chara1, Character chara2){
  * @param color Cor do personagem a partir das definições da Raylib.
  * 
  * @return Objeto inicializado do personagem. */
-Character initCharacter(Vector2 position, int speed, float radius, Color color, char spriteSheet[]){
+Character initCharacter(Vector2 position, int speed, float radius, Color color, SpriteName spriteSheet){
     Circle characterCircle = {(Vector2){position.x+radius, position.y+radius}, radius};
     SpriteAnimation sprite = innitSpriteAnimation(spriteSheet, (Vector2){20, 20}, 5, true);
 
