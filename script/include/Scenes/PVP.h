@@ -74,9 +74,9 @@ void drawHudPVP(PacMaiden* players){
 
 void drawCharactersPVP(PacMaiden* players, Ghost* ghosts){
     for(int j=0;j<2;j++)
-        DrawCircleV(players[j].chara.circle.center, players[j].chara.circle.radius, players[j].chara.color);
+        drawCharacterSprite(&players[j].chara);
     for(int i=0; i<4; i++)
-        DrawCircleV(ghosts[i].chara.circle.center, ghosts[i].chara.circle.radius, ghosts[i].chara.color);
+        drawCharacterSprite(&ghosts[i].chara);
 }
 
 
@@ -204,7 +204,7 @@ void StartPVP(){
     gameState=STARTING;
     
     Map map=setUpMap();
-    Vector2** mapCellPosInSprite = decideMapCellsSprite(map);
+
     readMap(level,map);
 
     player2Spawn = rand() % countPallets(map);
@@ -212,8 +212,8 @@ void StartPVP(){
         player1Spawn = rand() % countPallets(map);
     }while(player2Spawn==player1Spawn);
 
-    PacMaiden player1 = initPacMaiden(searchInMap(map, '.')[0], RADIUS, SPEED+1, YELLOW, 3, 0);
-    PacMaiden player2 = initPacMaiden(searchInMap(map, '.')[player2Spawn], RADIUS, SPEED, GREEN, 3, 0);
+    PacMaiden player1 = initPacMaiden(searchInMap(map, '.')[0], RADIUS, SPEED+1, YELLOW, 3, 0,YELLOW_PACMAIDEN_SPRITE);
+    PacMaiden player2 = initPacMaiden(searchInMap(map, '.')[player2Spawn], RADIUS, SPEED, PURPLE, 3, 0,PURPLE_PACMAIDEN_SPRITE);
 
     PacMaiden *players = malloc(sizeof(PacMaiden)*2);
     players[0]=player1;
@@ -225,6 +225,8 @@ void StartPVP(){
 
     changePacmaidenState(&players[0], IMMORTAL);
     changePacmaidenState(&players[1], IMMORTAL);
+
+    Vector2** mapCellPosInSprite = decideMapCellsSprite(map);
 
     Music tracks[SONG_AMOUT];
     initiateMusic(tracks); 
@@ -250,6 +252,6 @@ void StartPVP(){
     free(ghosts);
     free(buttons);
     free(players);
-
+    freeMusic(tracks);
 
 }
