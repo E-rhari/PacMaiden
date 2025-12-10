@@ -61,8 +61,10 @@ void changePacmaidenState(PacMaiden* pacmaiden, PacState state){
 
     switch (state){
         case NORMAL:
+            changeSprite(&pacmaiden->chara.sprite, YELLOW_PACMAIDEN_SPRITE);
             break;
         case KILLER:
+            changeSprite(&pacmaiden->chara.sprite, YELLOW_POWERED_PACMAIDEN_SPRITE);
             break;
         case DYING:
             break;
@@ -104,9 +106,7 @@ char charCollided(PacMaiden pacMaiden, Map map){
 void killerTime(PacMaiden* pacMaiden,int duration){
     double timeElapsed = GetTime() - pacMaiden->chara.procAnimation.initTime;
     if(timeElapsed>=duration)
-       changePacmaidenState(pacMaiden,NORMAL);
-
-    
+       changePacmaidenState(pacMaiden, NORMAL);    
 }
 
 /** @brief Verifica se a pacmaiden está tocando a Pellet */
@@ -194,4 +194,6 @@ void pacmaidenBehaviour(PacMaiden* pacmaiden, Map map){
         if(!pacmaiden->chara.procAnimation.running)
             changePacmaidenState(pacmaiden, NORMAL);
     }
+    else if(pacmaiden->state==KILLER)
+            killerTime(pacmaiden,5);
 }
