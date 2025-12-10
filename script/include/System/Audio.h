@@ -71,7 +71,7 @@ Sound* initiateSFX(Sound* effects){
     effects[EAT_GHOST]    = LoadSound(getFilePath("../../audio/SFX/eatGhost.wav"));
     effects[DEATH]        = LoadSound(getFilePath("../../audio/SFX/death.wav"));
     
-    for (int i = 0; i < SOUND_AMOUNT-1; i++)
+    for (int i = 0; i < SOUND_AMOUNT; i++)
         SetSoundVolume(effects[i], .4f);
     return effects;
 }

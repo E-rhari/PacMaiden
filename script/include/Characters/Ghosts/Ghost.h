@@ -23,7 +23,7 @@ typedef enum {
 typedef enum {
     STALKER,
     AMBUSHER,
-    GREEDY
+    GREEDY,
     AWARE,
     UNAWARE,
 } GhostType;

@@ -31,24 +31,40 @@ void isTitleButtonClicked(titleButton *button){
 }
 
 
-void drawTitleScreen(){
+void drawTitleScreen() {
     titleButton buttons[4];
-    char *optionsText[]={"New Game","Load","PVP","Creditos"};
-    int paddingYButton=110, paddingYTxt=110;
-
-    Vector4 optionMeasures = {450,200,700,70};
-    Rectangle background = {300,50,1000,750};
-
+    char *optionsText[] = {"New Game", "Load", "PVP"};
+    Vector4 optionMeasures = {979, 350, 500, 100};
+    int gapY = 10;
+    Color textColor;
+    Color optionColor;
     ClearBackground(BLACK);
-    DrawRectangleRec(background,DARKBLUE);
 
-    for(int i=0;i<4;i++){
-        buttons[i] = (titleButton){(Rectangle){optionMeasures.x, optionMeasures.y+paddingYButton*i, optionMeasures.z, optionMeasures.w},BUTTONTITLEBASE, BUTTONTITLEHOVER,i};
-        Color optionColor = isTitleButtonHovered(buttons[i])? buttons[i].colorHover : buttons[i].colorBase;
+    Rectangle source = {0, 0, 200, 105};
+    Rectangle dest = {0, 0, WIDTH, HEIGHT + HUDHEIGHT};
+    DrawTexturePro(SPRITES[TITLE_SCREEN_SPRITE], source, dest, (Vector2){0,0}, 0, WHITE);
+
+    for (int i = 0; i < 3; i++) {
+        float posY = optionMeasures.y + (optionMeasures.w + gapY) * i;
+
+        buttons[i] = (titleButton){
+            (Rectangle){optionMeasures.x, posY, optionMeasures.z, optionMeasures.w},
+            BLACK,
+            WHITE,
+            i
+        };
+        if(isTitleButtonHovered(buttons[i])){
+            optionColor = buttons[i].colorHover;
+            textColor = BLACK;
+        }
+        else{
+            optionColor = buttons[i].colorBase;
+            textColor = WHITE;
+        }
+
         DrawRectangleRounded(buttons[i].optionBox, 0.2f, 10, optionColor);
-
-        Vector2 optionSize = MeasureTextEx(GetFontDefault(), optionsText[i], 18, 1);
-        DrawTextEx(GetFontDefault(), optionsText[i], (Vector2){background.x + (background.width - optionSize.x) / 2, background.y + paddingYTxt*i + 180}, 18, 1, BUTTONTITLEBAR);
+        Vector2 textSize = MeasureTextEx(GetFontDefault(), optionsText[i], 50, 5);
+        DrawTextEx(GetFontDefault(), optionsText[i],(Vector2){optionMeasures.x + (optionMeasures.z - textSize.x) / 2,posY + (optionMeasures.w - textSize.y) / 2}, 50, 5, textColor);
     }
 
     isTitleButtonClicked(buttons);
