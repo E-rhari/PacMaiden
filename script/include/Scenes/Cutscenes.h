@@ -125,8 +125,11 @@ static void drawGameOverCutsceneElements(PacMaiden* pacmaiden, Vector2** mapCell
         drawCharacters(pacmaiden, ghosts);
         drawHud(pacmaiden);
     }
+
+    char* messageText = "Game Over";
     DrawRectangle(0, HEIGHT/2 - 100, WIDTH, 200, messageColorRec);
-    DrawText("Se Fodeu", WIDTH/2 - 400, HEIGHT/2 - 100, 200, messageColorText);
+    Vector2 textSize = MeasureTextEx(GetFontDefault(), messageText, 200, 20);
+    DrawTextEx(GetFontDefault(), messageText, (Vector2){(WIDTH - textSize.x) / 2, ((HEIGHT/2 - 100) + (525 - textSize.y)) /2}, 200, 20, messageColorText);
     DrawText("TAB para pular", WIDTH/2 - 80, HEIGHT+15, 20, RAYWHITE);
 }
 
