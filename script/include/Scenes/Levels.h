@@ -89,7 +89,7 @@ void charactersBehaviours(PacMaiden* pacmaiden, Ghost* ghosts, Map map,int *pall
                                                    && isCharacterInsideScreen(pacmaiden->chara, (Vector2){0,0}),0,&pacmaiden->bufferedInput);
     pacmaidenBehaviour(pacmaiden, map);
     for(int i=0; i<4; i++){
-        ghostBehaviour(&ghosts[i], map, pacmaiden, effects[EAT_GHOST]);
+        ghostBehaviour(&ghosts[i], map, pacmaiden, &effects[EAT_GHOST]);
         chooseDestinationByType(&ghosts[i], map, pacmaiden);
     }
 

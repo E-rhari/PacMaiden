@@ -16,7 +16,7 @@ typedef enum {
     PELLET,
     SUPER_PELLET,
     EAT_GHOST,
-    DIE,
+    DEATH,
     SOUND_AMOUNT // Quantidade de efeitos sonoros a serem carregados em levels
 } Sfx;
 

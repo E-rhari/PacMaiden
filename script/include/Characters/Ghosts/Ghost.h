@@ -96,8 +96,6 @@ void ghostAttackPacmaiden(PacMaiden* pacmaiden, Ghost* ghost, Map map, Sound dea
 }
 
 
-}
-
 void flee(Ghost* ghost, Map map, PacMaiden* pacmaiden){
     if(currenctScene==PVP){
         for(int i=0;i<2;i++){
@@ -116,8 +114,9 @@ void flee(Ghost* ghost, Map map, PacMaiden* pacmaiden){
         return;   
     }
 }
-void chooseDestinationByType(Ghost* ghost, Map map, PacMaiden* pacmaiden){
 
+
+void chooseDestinationByType(Ghost* ghost, Map map, PacMaiden* pacmaiden){
     if(ghost->type==STALKER)
         ghost->canChooseDestination=true;
 

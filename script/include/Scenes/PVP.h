@@ -136,7 +136,7 @@ void charactersPVPBehaviours(PacMaiden* players, Ghost* ghosts, Map map,int *pal
         pacmaidenBehaviour(&players[i], map);
         for(int j=0; j<4; j++){
             chooseDestinationByType(&ghosts[j], map, players);
-            ghostBehaviour(&ghosts[j], map, &players[i], effects[EAT_GHOST]);
+            ghostBehaviour(&ghosts[j], map, &players[i], &effects[EAT_GHOST]);
         }
         countPoints(&players[i], map, charCollided(players[i], map), pallets, effects);
     }   
@@ -238,6 +238,10 @@ void StartPVP(){
     updatePVP(players, mapCellPosInSprite, ghosts,map,buttons, tracks, effects);
     if(gameState == GAMEOVER)
         gameOverCutscene(players, mapCellPosInSprite, ghosts, map, true);
+
+
+    if(gameState!=EXIT)
+        winPVPCutscene(players);
 
     for(int i=0;i<20;i++)
         free(*(map+i));
