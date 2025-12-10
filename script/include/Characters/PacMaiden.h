@@ -35,7 +35,9 @@ typedef struct {
     int timePivot;
     Vector2 bufferedInput;
     bool canMove;
+    SpriteName playerColor;
     PacState state;
+
 } PacMaiden;
 
 
@@ -46,11 +48,16 @@ typedef struct {
  * @param color Cor do personagem a partir das definições da Raylib.
  * @param lifes Valor inicial do contador de vidas
  * @param points Valor inicial do contador de pontos */
-PacMaiden initPacMaiden(Vector2 position, int radius, float speed, Color color, int lifes, int points){
-    Character chara = initCharacter((Vector2){position.x, position.y}, speed, radius, color, YELLOW_PACMAIDEN_SPRITE);
-    return (PacMaiden){chara, chara, lifes, points, 0, (Vector2){0,0},true};
+PacMaiden initPacMaiden(Vector2 position, int radius, float speed, Color color, int lifes, int points, SpriteName spriteSheet){
+    Character chara = initCharacter((Vector2){position.x, position.y}, speed, radius, color, spriteSheet);
+    return (PacMaiden){chara, chara, lifes, points, 0, (Vector2){0,0},true,spriteSheet};
 }
 
+SpriteName checkColor(PacMaiden* pacmaiden){
+    if(pacmaiden->playerColor==YELLOW_PACMAIDEN_SPRITE)
+        return YELLOW_POWERED_PACMAIDEN_SPRITE;
+    return PURPLE_POWERED_PACMAIDEN_SPRITE;
+}
 
 /** @brief Além de determinar o valor da propriedade state da pacmaiden, também realiza as operações devidas
  *        na transição entre os estados. Sempre use no lugar de determinar o valor de state manualmente. */
@@ -61,10 +68,10 @@ void changePacmaidenState(PacMaiden* pacmaiden, PacState state){
 
     switch (state){
         case NORMAL:
-            changeSprite(&pacmaiden->chara.sprite, YELLOW_PACMAIDEN_SPRITE);
+            changeSprite(&pacmaiden->chara.sprite, pacmaiden->playerColor);
             break;
         case KILLER:
-            changeSprite(&pacmaiden->chara.sprite, YELLOW_POWERED_PACMAIDEN_SPRITE);
+            changeSprite(&pacmaiden->chara.sprite, checkColor(pacmaiden));
             break;
         case DYING:
             pacmaiden->canMove=false;

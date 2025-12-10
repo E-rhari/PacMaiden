@@ -177,7 +177,7 @@ void level(int levelNumber){
     else if(currenctScene==NEWGAME || currenctScene==NEXT){
         gameState=STARTING;
         readMap(levelNumber,map);
-        pacmaiden = initPacMaiden(searchInMap(map, 'P')[0], RADIUS, SPEED, YELLOW, 3, 0);
+        pacmaiden = initPacMaiden(searchInMap(map, 'P')[0], RADIUS, SPEED, YELLOW, 3, 0,YELLOW_PACMAIDEN_SPRITE);
         ghosts=instantiateGhostsInLevel(map);
         changePacmaidenState(&pacmaiden, IMMORTAL);
     }

@@ -193,6 +193,12 @@ void gameOverCutscene(PacMaiden* pacmaiden, Vector2** mapCellPosInSprite, Ghost*
     StopMusicStream(gameOverTrack);
 }
 
+void redefinePlayerPosition(PacMaiden *players){
+    players->initialValues.circle.center.x= WIDTH/2+320;
+    players->initialValues.circle.center.y= HEIGHT/2 -80;
+
+    //WIDTH/2 - 250, HEIGHT/2 - 100, 
+}
 
 void winPVPCutscene(PacMaiden *players){
     char winnerText[50];
@@ -207,13 +213,16 @@ void winPVPCutscene(PacMaiden *players){
         winner=players[1];
     }
 
+    redefinePlayerPosition(&winner);
+
     while(1){
         BeginDrawing();
         ClearBackground(BLACK);
-        DrawRectangle(0,0,WIDTH,HEIGHT,BLUE); 
-        DrawText(winnerText, WIDTH/2 - 250, HEIGHT/2 - 100, 50, winner.initialValues.color);
-        DrawText("Para o perdedor: melhore você é muito ruim", WIDTH/2 - 500, HEIGHT/2 - 50, 50, winner.initialValues.color);
-        DrawText("TAB para volar ao menu", WIDTH/2 - 80, HEIGHT+15, 20, WHITE);
+        DrawRectangle(0,0,WIDTH,HEIGHT,BLACK); 
+        DrawText(winnerText, WIDTH/2 -250, HEIGHT/2 - 100, 50, winner.initialValues.color);
+        drawCharacterSprite(&winner.initialValues);
+        DrawText("Para o perdedor: melhore você é muito ruim", WIDTH/2 - 500, HEIGHT/2 - 50, 50, WHITE);
+        DrawText("TAB para volar ao menu", WIDTH/2 - 100, HEIGHT+15, 20, WHITE);
         if(IsKeyPressed(KEY_TAB))
             break;
         EndDrawing();
