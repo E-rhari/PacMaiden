@@ -61,8 +61,10 @@ bool load(Map map, PacMaiden* pacMaiden, Ghost* ghost, int saveFile){
 
     char* path=selecSaveFile(saveFile);
     FILE* arq=fopen(path,"rb");
-    if(arq==NULL)
+    if(arq==NULL){
         return false;
+    }
+
     char temp;
     for(int i = 0; i < 20; i++){
         for(int j = 0; j < 40; j++){
@@ -75,5 +77,9 @@ bool load(Map map, PacMaiden* pacMaiden, Ghost* ghost, int saveFile){
     fread(pacMaiden,sizeof(PacMaiden),1,arq);
     fread(ghost,sizeof(Ghost),4,arq);
     free(path);
+
+    changeMask(&pacMaiden->chara.sprite,YELLOW_PACMAIDEN_SPRITE);
+    for(int i=0;i<4;i++)
+        changeMask(&ghost[i].chara.sprite,WAEK_GHOST_SPRITE);
     return true;
 }

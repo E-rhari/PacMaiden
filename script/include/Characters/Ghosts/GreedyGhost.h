@@ -58,8 +58,11 @@ void getState(Ghost* ghost, Map map){
     Vector2 ghostPos = Vector2Scale(ghost->chara.circle.center, PIX2GRID);
 
     GridVector gridPos = vector2ToGridVector(ghost->chara.circle.center);
-    if(!isInsideMap(gridPos,map,(GridVector){0,0}))
+    if(!isInsideMap(gridPos,map,(GridVector){0,0})){
         chooseDestinationAware(ghost, map);
+        return;
+    }
+
 
     if (ghostPos.x >= limitA.x && ghostPos.x <= limitB.x && ghostPos.y >= limitA.y && ghostPos.y <= limitB.y){
         //TraceLog(LOG_INFO, "Dentro do quadrante mais denso.");
@@ -68,10 +71,8 @@ void getState(Ghost* ghost, Map map){
         //TraceLog(LOG_INFO, "Fora do quadrante mais denso.");
         for (int y = (int)limitA.y; y < (int)limitB.y; y++) {
             for (int x = (int)limitA.x; x < (int)limitB.x; x++) {
-                
-                char tile = map[y][x];
-                
-                if (tile != '#' && tile != 't') { 
+                  
+                if (readCoordinatesInMap((GridVector){x,y}, map, (GridVector){0,0}) != '#' && readCoordinatesInMap((GridVector){x,y}, map, (GridVector){0,0}) != 't') { 
                     targetPos = (Vector2){ (float)x, (float)y };
                     foundTarget = true;
                     break;
@@ -85,8 +86,9 @@ void getState(Ghost* ghost, Map map){
         NodeList path = findPath(vector2ToGridVector(ghost->chara.circle.center), vector2ToGridVector(Vector2Scale(targetPos, GRID2PIX)), map);
 
         Node* nextStep = getFromNodeList(&path, 1);
-        if (nextStep != NULL){
+        if (nextStep != NULL)
             ghost->chara.moveDirection = getStalkingDirection(ghost, *nextStep);
-        }
+        else
+            chooseDestinationAware(ghost, map);
     }
 }

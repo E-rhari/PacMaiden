@@ -136,8 +136,9 @@ void changeSprite(SpriteAnimation* animation, SpriteName spriteSheet){
 
 void changeMask(SpriteAnimation* animation, SpriteName maskSheet){
     Image maskImage = LoadImageFromTexture(SPRITES[maskSheet]);
-    ImageAlphaMask(&maskImage, maskImage);
-    animation->mask = LoadTextureFromImage(maskImage); ;
+    Image mask = ImageFromChannel(maskImage, 3);
+    ImageAlphaMask(&mask, mask);
+    animation->mask = LoadTextureFromImage(mask);
 }
 
 

@@ -172,7 +172,11 @@ void level(int levelNumber){
     if(currenctScene==LOAD){
         gameState = RUNNING;
         ghosts = malloc(sizeof(Ghost)*4);
-        load(map, &pacmaiden, ghosts, levelNumber);
+        if(!load(map, &pacmaiden, ghosts, levelNumber)){
+            changeScene(TITLE);
+            return;
+        }
+
     }
     else if(currenctScene==NEWGAME || currenctScene==NEXT){
         gameState=STARTING;
