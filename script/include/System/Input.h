@@ -12,7 +12,7 @@
  * @param lastInput Referência ao último input enviado para o personagem
  * @param refreshCondition Condição para alterar o vetor de input
  * @returns Se o input foi alterado ou não. */
-bool getBufferedInput(Vector2* lastInput, bool refreshCondition,int player,Vector2* bufferedInput ) {
+bool getBufferedInput(Vector2* lastInput, bool refreshCondition, int player, Vector2* bufferedInput ) {
     Vector2 recievedInput = {0,0};
     bool moved = false;
 
