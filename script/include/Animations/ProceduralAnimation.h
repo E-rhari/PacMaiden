@@ -84,3 +84,12 @@ void fadeIn(Color* color, ProceduralAnimation* animation, float duration){
         return;
     }
 }
+
+
+void sineWiggle(ProceduralAnimation* animation, Vector2* position, Vector2 center, float frequency, float amplitude, float start, Vector2 axis){
+    if(!animation->running)
+        return;
+    double timeElapsed = GetTime() - animation->initTime;
+    float sineValue = amplitude*sin(frequency*PI*2*(timeElapsed+ start*0.1f));
+    *position = (Vector2){center.x + (sineValue*axis.x), center.y + (sineValue*axis.y)};
+}

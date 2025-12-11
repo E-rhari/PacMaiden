@@ -31,18 +31,43 @@ void isTitleButtonClicked(titleButton *button){
 }
 
 
-void drawTitleScreen() {
+typedef struct {
+    Texture texture;
+    Vector2 position;
+    ProceduralAnimation animation;
+} movingTexture;
+
+
+void drawTitleScreen(Texture pacmaidenIllustration, Vector2* pacmaidenIllustrationPosition, Texture title, Vector2* titlePosition, Texture ghostPartsBack[], Texture ghostPartsFront[], int ghostPartsAmout, Vector2* ghostPartsPosition,  ProceduralAnimation* animation){
+    ClearBackground(BLACK);
+    Rectangle source = {0, 0, 200, 105};
+    Rectangle dest;
+
+    for(int i=0; i<ghostPartsAmout; i++){
+        sineWiggle(animation, &ghostPartsPosition[i], (Vector2){0,0}, 0.1f, 30, 4.0f*(i+1)*pow(-1, i), (Vector2){0,1});
+        dest = (Rectangle){ghostPartsPosition[i].x, ghostPartsPosition[i].y, WIDTH, HEIGHT + HUDHEIGHT};
+        DrawTexturePro(ghostPartsBack[i], source, dest, (Vector2){0,0}, 0, WHITE);
+    }
+
+    sineWiggle(animation, pacmaidenIllustrationPosition, (Vector2){0,10}, 0.1f, 10, 1.0f, (Vector2){0,1});
+    dest = (Rectangle){pacmaidenIllustrationPosition->x, pacmaidenIllustrationPosition->y, WIDTH, HEIGHT + HUDHEIGHT};
+    DrawTexturePro(pacmaidenIllustration, source, dest, (Vector2){0,0}, 0, WHITE);
+    
+    sineWiggle(animation, titlePosition, (Vector2){0,20}, -0.1f, 10, 0, (Vector2){0,1});
+    dest = (Rectangle){titlePosition->x, titlePosition->y, WIDTH, HEIGHT + HUDHEIGHT};
+    DrawTexturePro(title, source, dest, (Vector2){0,0}, 0, WHITE);
+
+    for(int i=0; i<ghostPartsAmout; i++){
+        dest = (Rectangle){ghostPartsPosition[i].x, ghostPartsPosition[i].y, WIDTH, HEIGHT + HUDHEIGHT};
+        DrawTexturePro(ghostPartsFront[i], source, dest, (Vector2){0,0}, 0, WHITE);
+    }
+
     titleButton buttons[4];
     char *optionsText[] = {"New Game", "Load", "PVP"};
-    Vector4 optionMeasures = {979, 350, 500, 100};
+    Vector4 optionMeasures = {1000, 350, 300, 100};
     int gapY = 10;
     Color textColor;
     Color optionColor;
-    ClearBackground(BLACK);
-
-    Rectangle source = {0, 0, 200, 105};
-    Rectangle dest = {0, 0, WIDTH, HEIGHT + HUDHEIGHT};
-    DrawTexturePro(SPRITES[TITLE_SCREEN_SPRITE], source, dest, (Vector2){0,0}, 0, WHITE);
 
     for (int i = 0; i < 3; i++) {
         float posY = optionMeasures.y + (optionMeasures.w + gapY) * i;
@@ -77,6 +102,26 @@ void titleScreen(){
 
     Color fadeColor = BLACK;
     ProceduralAnimation fadeAnimation = {GetTime(), true};
+    
+    ProceduralAnimation titleAnimation = {GetTime(), true};
+
+    Texture pacmaidenIlustration = LoadTexture(getFilePath("../../sprites/title/PacmaidenTitle.png"));
+    Vector2 pacmaidenIllustrationPosition = {0,0};
+    Texture title = LoadTexture(getFilePath("../../sprites/title/Title.png"));
+    Vector2 titlePosition = {0,0};
+
+    int ghostPartsAmount = 4;
+    Texture ghostPartsBack[ghostPartsAmount];
+    Texture ghostPartsFront[ghostPartsAmount];
+    Vector2 ghostPartsPosition[ghostPartsAmount];
+    for(int i=0; i<ghostPartsAmount; i++){
+        char path[100];
+        sprintf(path, getFilePath("../../sprites/title/DeadGhostParts/Ghost%dBack.png"), i);
+        ghostPartsBack[i] = LoadTexture(path);
+        sprintf(path, getFilePath("../../sprites/title/DeadGhostParts/Ghost%dFront.png"), i);
+        ghostPartsFront[i] = LoadTexture(path);
+        ghostPartsPosition[i] = (Vector2){0,0};
+    }
 
     while(currenctScene == TITLE){
         UpdateMusicStream(titleTheme);
@@ -85,8 +130,8 @@ void titleScreen(){
             fadeOut(&fadeColor, &fadeAnimation, 2.0f);
 
         BeginDrawing();
-        drawTitleScreen();
-        DrawRectangle(0,0, WIDTH, HEIGHT, fadeColor);
+        drawTitleScreen(pacmaidenIlustration, &pacmaidenIllustrationPosition, title, &titlePosition, ghostPartsBack, ghostPartsFront, ghostPartsAmount, ghostPartsPosition, &titleAnimation);
+        DrawRectangle(0,0, WIDTH, HEIGHT+HUDHEIGHT, fadeColor);
         EndDrawing();
     }
     fadeAnimation = (ProceduralAnimation){GetTime(), true};
@@ -96,14 +141,20 @@ void titleScreen(){
         UpdateMusicStream(titleTheme);
 
         BeginDrawing();
-        drawTitleScreen();
-        DrawRectangle(0,0, WIDTH, HEIGHT, fadeColor);
+        drawTitleScreen(pacmaidenIlustration, &pacmaidenIllustrationPosition, title, &titlePosition, ghostPartsBack, ghostPartsFront, ghostPartsAmount, ghostPartsPosition, &titleAnimation);
+        DrawRectangle(0,0, WIDTH, HEIGHT+HUDHEIGHT, fadeColor);
         EndDrawing();
     }
     WaitTime(1);
 
     StopMusicStream(titleTheme);
     UnloadMusicStream(titleTheme);
+
+    UnloadTexture(pacmaidenIlustration);
+    for(int i=0; i<ghostPartsAmount; i++){
+        UnloadTexture(ghostPartsBack[i]);
+        UnloadTexture(ghostPartsFront[i]);
+    }
 }
 
 
