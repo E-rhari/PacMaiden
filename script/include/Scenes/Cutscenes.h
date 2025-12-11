@@ -40,7 +40,7 @@ void teamSplashScreen(){
         drawTeamSplashScreen(fadeColor);
         EndDrawing();
 
-        if(IsKeyPressed(KEY_TAB)){
+        if(IsKeyPressed(KEY_TAB)  || IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)){
             fadeColor.a = 0;
             return;
         }
@@ -53,7 +53,7 @@ void teamSplashScreen(){
         drawTeamSplashScreen(fadeColor);
         EndDrawing();
 
-        if(IsKeyPressed(KEY_TAB)){
+        if(IsKeyPressed(KEY_TAB)  || IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)){
             fadeColor.a = 0;
             return;
         }
@@ -103,7 +103,7 @@ void gameStartCutscene(PacMaiden* pacmaiden, Vector2** mapCellPosInSprite, Ghost
         drawStartCutsceneElements(pacmaiden, mapCellPosInSprite, ghosts, map, PVP);
         EndDrawing();
 
-        if(!IsMusicStreamPlaying(startTrack) || IsKeyPressed(KEY_TAB))
+        if(!IsMusicStreamPlaying(startTrack) || IsKeyPressed(KEY_TAB) || IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN))
             gameState = RUNNING;
     }
     for(int i=0; i<4; i++)
@@ -163,7 +163,7 @@ void gameOverCutscene(PacMaiden* pacmaiden, Vector2** mapCellPosInSprite, Ghost*
         drawGameOverCutsceneElements(pacmaiden, mapCellPosInSprite, ghosts, map, PVP, messageColorRec, messageColorText);
         EndDrawing();
 
-        if(IsKeyPressed(KEY_TAB)){
+        if(IsKeyPressed(KEY_TAB)  || IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)){
             StopMusicStream(gameOverTrack);
             break;
         }
@@ -222,8 +222,8 @@ void winPVPCutscene(PacMaiden *players){
         DrawText(winnerText, WIDTH/2 -250, HEIGHT/2 - 100, 50, winner.initialValues.color);
         drawCharacterSprite(&winner.initialValues);
         DrawText("Para o perdedor: melhore você é muito ruim", WIDTH/2 - 500, HEIGHT/2 - 50, 50, WHITE);
-        DrawText("TAB para volar ao menu", WIDTH/2 - 100, HEIGHT+15, 20, WHITE);
-        if(IsKeyPressed(KEY_TAB))
+        DrawText("TAB para voltar ao menu", WIDTH/2 - 100, HEIGHT+15, 20, WHITE);
+        if(IsKeyPressed(KEY_TAB) || IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN))
             break;
         EndDrawing();
     }
