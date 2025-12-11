@@ -72,7 +72,7 @@ void getState(Ghost* ghost, Map map){
         for (int y = (int)limitA.y; y < (int)limitB.y; y++) {
             for (int x = (int)limitA.x; x < (int)limitB.x; x++) {
                   
-                if (readCoordinatesInMap((GridVector){x,y}, map, (GridVector){0,0}) != '#' && readCoordinatesInMap((GridVector){x,y}, map, (GridVector){0,0}) != 't') { 
+                if (readCoordinatesInMap((GridVector){x,y}, map, (GridVector){0,0}) != '#' && readCoordinatesInMap((GridVector){x,y}, map, (GridVector){0,0}) != 'T') { 
                     targetPos = (Vector2){ (float)x, (float)y };
                     foundTarget = true;
                     break;

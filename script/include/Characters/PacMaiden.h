@@ -21,7 +21,7 @@ typedef enum {
 
 
 /** @brief Personagem do jogador e protagonista do jogo :-
- * @param chara Struct abstrata dos personagens. Lida com a posição, tamanho, velocidade e cor da PacMaiden.
+ * @param chara 
  * @param initialValues Struct constante do tip Character para salver os valores iniciais de posição, tamanho, velocidade e cor.
  * @param life Contador de vidas
  * @param points Contador de pontos

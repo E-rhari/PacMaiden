@@ -41,7 +41,7 @@ void drawMap(Map map, Vector2** mapCellPosInSprite) {
                     DrawTexturePro(SPRITES[POWER_PELLET_SPRITE], source, dest, (Vector2){0,0}, 0.0f, WHITE);
                     break;
                 
-                case 't':
+                case 'T':
                     DrawRectangle(j * cell, i * cell, cell, cell, PURPLE);
                     DrawTexturePro(SPRITES[PORTAL_SPRITE], source, dest, (Vector2){0,0}, 0.0f, WHITE);
                     break;

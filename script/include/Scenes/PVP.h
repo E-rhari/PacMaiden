@@ -19,7 +19,7 @@ GameState gameState;
 
 Ghost* instantiateGhostsInPVP(Map map){
     Ghost *ladies = malloc(sizeof(Ghost)*4); 
-    Vector2* positions = searchInMap(map, 'f');
+    Vector2* positions = searchInMap(map, 'F');
 
     ladies[0] = initGhost(positions[0], RADIUS, SPEED/2, RED, STALKER); //homura
     ladies[1] = initGhost(positions[1], RADIUS, SPEED/2, SKYBLUE, AWARE);//sora
