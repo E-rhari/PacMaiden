@@ -136,7 +136,7 @@ void charactersPVPBehaviours(PacMaiden* players, Ghost* ghosts, Map map,int *pal
         pacmaidenBehaviour(&players[i], map);
         for(int j=0; j<4; j++){
             chooseDestinationByType(&ghosts[j], map, players);
-            ghostBehaviour(&ghosts[j], map, &players[i], &effects[EAT_GHOST]);
+            ghostBehaviour(&ghosts[j], map, &players[i], effects);
         }
         countPoints(&players[i], map, charCollided(players[i], map), pallets, effects);
     }   
