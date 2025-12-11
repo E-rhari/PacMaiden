@@ -145,7 +145,7 @@ void charactersPVPBehaviours(PacMaiden* players, Ghost* ghosts, Map map,int *pal
 bool isPlayersDead(PacMaiden* players){
     for(int i=0;i<2;i++)
         if(players[i].lifes<=0){
-            players[i].points=-100;
+            addPoints(&players[i], -100);
             return true;
         }
 
