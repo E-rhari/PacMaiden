@@ -10,7 +10,6 @@
 #define BUTTONTITLEBAR (Color){100, 180, 255, 255}
 
 
-
 typedef struct {
     Rectangle optionBox;
     Color colorBase;
@@ -18,27 +17,46 @@ typedef struct {
     Scenes id;
 } titleButton;
 
-
-bool isTitleButtonHovered(titleButton button){
-    Vector2 mousePosition = GetMousePosition();
-    return CheckCollisionPointRec(mousePosition,button.optionBox);
+bool isMouseMode() {
+    static bool isMouseMode = true;
+    if (isMouseMode){
+        if(GetGamepadButtonPressed())
+            isMouseMode = false;
+    } else if(GetMouseDelta().x || GetMouseDelta().y)
+        isMouseMode = true;
+    
+    return isMouseMode;
 }
 
-void isTitleButtonClicked(titleButton *button){
-    for(int i=0;i<4;i++)
-        if(isTitleButtonHovered(button[i]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+bool isTitleButtonHovered(titleButton button, int buttonSelected){
+    if (isMouseMode()){
+        Vector2 mousePosition = GetMousePosition();
+        return CheckCollisionPointRec(mousePosition,button.optionBox);
+    } else{
+        return (button.id == buttonSelected);
+    }
+}
+
+void isTitleButtonClicked(titleButton *button, int buttonSelected){
+    if (isMouseMode()){
+        if (!IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+            return;}
+    } else if (!IsGamepadButtonDown(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN))
+        return;
+    for(int i=0;i<3;i++)
+        if(isTitleButtonHovered(button[i], buttonSelected))
             changeScene(button[i].id);
 }
 
+void gamepadNav(int* buttonSelected){
+    *buttonSelected += IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN) - IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_UP);
+    if (*buttonSelected >= 2)
+        *buttonSelected = 2;
+    else if (*buttonSelected <= 0)
+        *buttonSelected = 0;
+}
 
-typedef struct {
-    Texture texture;
-    Vector2 position;
-    ProceduralAnimation animation;
-} movingTexture;
-
-
-void drawTitleScreen(Texture pacmaidenIllustration, Vector2* pacmaidenIllustrationPosition, Texture title, Vector2* titlePosition, Texture ghostPartsBack[], Texture ghostPartsFront[], int ghostPartsAmout, Vector2* ghostPartsPosition,  ProceduralAnimation* animation){
+void drawTitleScreen(Texture pacmaidenIllustration, Vector2* pacmaidenIllustrationPosition, Texture title, Vector2* titlePosition, Texture ghostPartsBack[], Texture ghostPartsFront[], int ghostPartsAmout, Vector2* ghostPartsPosition,  ProceduralAnimation* animation) {
     ClearBackground(BLACK);
     Rectangle source = {0, 0, 200, 105};
     Rectangle dest;
@@ -62,12 +80,15 @@ void drawTitleScreen(Texture pacmaidenIllustration, Vector2* pacmaidenIllustrati
         DrawTexturePro(ghostPartsFront[i], source, dest, (Vector2){0,0}, 0, WHITE);
     }
 
-    titleButton buttons[4];
+    static int buttonSelected = -1;
+    titleButton buttons[3];
     char *optionsText[] = {"New Game", "Load", "PVP"};
     Vector4 optionMeasures = {1000, 350, 300, 100};
     int gapY = 10;
     Color textColor;
     Color optionColor;
+    
+    gamepadNav(&buttonSelected);
 
     for (int i = 0; i < 3; i++) {
         float posY = optionMeasures.y + (optionMeasures.w + gapY) * i;
@@ -78,7 +99,7 @@ void drawTitleScreen(Texture pacmaidenIllustration, Vector2* pacmaidenIllustrati
             WHITE,
             i
         };
-        if(isTitleButtonHovered(buttons[i])){
+        if(isTitleButtonHovered(buttons[i], buttonSelected)){
             optionColor = buttons[i].colorHover;
             textColor = BLACK;
         }
@@ -92,7 +113,7 @@ void drawTitleScreen(Texture pacmaidenIllustration, Vector2* pacmaidenIllustrati
         DrawTextEx(GetFontDefault(), optionsText[i],(Vector2){optionMeasures.x + (optionMeasures.z - textSize.x) / 2,posY + (optionMeasures.w - textSize.y) / 2}, 50, 5, textColor);
     }
 
-    isTitleButtonClicked(buttons);
+    isTitleButtonClicked(buttons, buttonSelected);
 }
 
 
@@ -102,7 +123,7 @@ void titleScreen(){
 
     Color fadeColor = BLACK;
     ProceduralAnimation fadeAnimation = {GetTime(), true};
-    
+
     ProceduralAnimation titleAnimation = {GetTime(), true};
 
     Texture pacmaidenIlustration = LoadTexture(getFilePath("../../sprites/title/PacmaidenTitle.png"));
@@ -149,7 +170,7 @@ void titleScreen(){
 
     StopMusicStream(titleTheme);
     UnloadMusicStream(titleTheme);
-
+    
     UnloadTexture(pacmaidenIlustration);
     for(int i=0; i<ghostPartsAmount; i++){
         UnloadTexture(ghostPartsBack[i]);
