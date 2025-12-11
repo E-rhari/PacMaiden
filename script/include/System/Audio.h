@@ -69,7 +69,7 @@ Sound* initiateSFX(Sound* effects){
     effects[PELLET]       = LoadSound(getFilePath("../../audio/SFX/pellet.wav"));
     effects[SUPER_PELLET] = LoadSound(getFilePath("../../audio/SFX/superPellet.wav"));
     effects[EAT_GHOST]    = LoadSound(getFilePath("../../audio/SFX/eatGhost.wav"));
-    effects[DEATH]        = LoadSound(getFilePath("../../audio/SFX/death.wav"));
+    effects[DEATH]        = LoadSound(getFilePath("../../audio/SFX/death_5.wav"));
     
     for (int i = 0; i < SOUND_AMOUNT - 1; i++)
         SetSoundVolume(effects[i], .4f);
