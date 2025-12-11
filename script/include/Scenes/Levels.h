@@ -207,8 +207,10 @@ void level(int levelNumber){
         
     
     freeMusic(tracks);
+    freeSFX(effects);
     freeMap(map);
-    free(ghosts);
+    freePacmaiden(&pacmaiden);
+    freeGhosts(ghosts, 4);
     free(saveOptions);
     free(buttons);
 

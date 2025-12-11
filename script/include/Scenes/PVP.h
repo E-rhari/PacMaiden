@@ -145,10 +145,9 @@ void charactersPVPBehaviours(PacMaiden* players, Ghost* ghosts, Map map,int *pal
 bool isPlayersDead(PacMaiden* players){
     for(int i=0;i<2;i++)
         if(players[i].lifes<=0){
-            addPoints(&players[i], -100);
+            players[i].points=0;
             return true;
         }
-
     return false;
 }
 
@@ -249,9 +248,11 @@ void StartPVP(){
         free(*(map+i));
     free(map);
 
-    free(ghosts);
+    freeMusic(tracks);
+    freeSFX(effects);
+    freePacmaiden(&player1);
+    freePacmaiden(&player2);
+    freeGhosts(ghosts, 4);
     free(buttons);
     free(players);
-    freeMusic(tracks);
-
 }

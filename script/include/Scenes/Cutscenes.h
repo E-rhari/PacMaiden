@@ -191,6 +191,7 @@ void gameOverCutscene(PacMaiden* pacmaiden, Vector2** mapCellPosInSprite, Ghost*
         UpdateMusicStream(gameOverTrack);
 
     StopMusicStream(gameOverTrack);
+    UnloadMusicStream(gameOverTrack);
 }
 
 void redefinePlayerPosition(PacMaiden *players){

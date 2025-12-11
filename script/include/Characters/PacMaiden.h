@@ -53,6 +53,12 @@ PacMaiden initPacMaiden(Vector2 position, int radius, float speed, Color color, 
     return (PacMaiden){chara, chara, lifes, points, 0, (Vector2){0,0},true,spriteSheet};
 }
 
+
+void freePacmaiden(PacMaiden* pacmaiden){
+    UnloadTexture(pacmaiden->chara.sprite.mask);
+}
+
+
 SpriteName checkColor(PacMaiden* pacmaiden){
     if(pacmaiden->playerColor==YELLOW_PACMAIDEN_SPRITE)
         return YELLOW_POWERED_PACMAIDEN_SPRITE;

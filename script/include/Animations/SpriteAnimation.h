@@ -65,6 +65,9 @@ SpriteAnimation innitSpriteAnimation(SpriteName sprite, Vector2 frameSize, float
     Image mask = ImageFromChannel(spriteSheetImage, 3);
     ImageAlphaMask(&mask, mask);
     Texture whiteSpriteSheetTexture = LoadTextureFromImage(mask); 
+
+    UnloadImage(spriteSheetImage);
+    UnloadImage(mask);
     
     return (SpriteAnimation) {
         .spriteSheet=SPRITES[sprite],
@@ -135,6 +138,7 @@ void changeSprite(SpriteAnimation* animation, SpriteName spriteSheet){
 
 
 void changeMask(SpriteAnimation* animation, SpriteName maskSheet){
+    UnloadTexture(animation->mask);
     Image maskImage = LoadImageFromTexture(SPRITES[maskSheet]);
     Image mask = ImageFromChannel(maskImage, 3);
     ImageAlphaMask(&mask, mask);
@@ -176,4 +180,11 @@ void loadAllSprites(){
     SPRITES[PORTAL_SPRITE]       = LoadTexture(getFilePath("../../sprites/tiles/Portal.png"));
 
     SPRITES[TITLE_SCREEN_SPRITE] = LoadTexture(getFilePath("../../sprites/title/TitleScreen.png"));
+}
+
+
+void unloadAllSprites(){
+    for(int i=0; i<AMOUNT_OF_SPRITES; i++)
+        UnloadTexture(SPRITES[i]);
+    free(SPRITES);
 }

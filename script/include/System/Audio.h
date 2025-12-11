@@ -71,7 +71,14 @@ Sound* initiateSFX(Sound* effects){
     effects[EAT_GHOST]    = LoadSound(getFilePath("../../audio/SFX/eatGhost.wav"));
     effects[DEATH]        = LoadSound(getFilePath("../../audio/SFX/death_5.wav"));
     
+    //Diminui o volume de todos efeitos sonoros, exceto o úlitmo (Som de morte)
     for (int i = 0; i < SOUND_AMOUNT - 1; i++)
         SetSoundVolume(effects[i], .4f);
     return effects;
+}
+
+
+void freeSFX(Sound* effects){
+    for(int i=0; i<SOUND_AMOUNT; i++)
+        UnloadSound(effects[i]);
 }

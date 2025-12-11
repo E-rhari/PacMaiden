@@ -172,6 +172,7 @@ void titleScreen(){
     UnloadMusicStream(titleTheme);
     
     UnloadTexture(pacmaidenIlustration);
+    UnloadTexture(title);
     for(int i=0; i<ghostPartsAmount; i++){
         UnloadTexture(ghostPartsBack[i]);
         UnloadTexture(ghostPartsFront[i]);

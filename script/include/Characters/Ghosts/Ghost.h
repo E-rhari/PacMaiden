@@ -51,6 +51,13 @@ Ghost initGhost(Vector2 position, int radius, float speed, Color color, GhostTyp
 }
 
 
+void freeGhosts(Ghost* ghosts, int amount){
+    for(int i=0; i<amount; i++)
+        UnloadTexture(ghosts[i].chara.sprite.mask);
+    free(ghosts);
+}
+
+
 bool choseDestinationUnaware(Ghost* ghost);
 bool chooseDestinationAware(Ghost* ghost, Map map);
 NodeList stalkPacmaiden(Ghost* ghost, Map map, PacMaiden* pacmaiden);

@@ -50,6 +50,8 @@ int main(){
             break;
         }
     }
+
+    unloadAllSprites();
     CloseAudioDevice();
     CloseWindow();
 }
