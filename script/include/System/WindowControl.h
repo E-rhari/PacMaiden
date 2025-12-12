@@ -27,7 +27,7 @@ typedef enum {
     NEWGAME,
     LOAD,
     PVP,
-    CREDITS,
+    QUITGAME,
     TITLE,
     NEXT
 } Scenes; 
@@ -55,9 +55,9 @@ void changeScene(Scenes screen){
         case NEWGAME: break;
         case LOAD: break;
         case PVP: break;
-        case CREDITS: break;
         case TITLE: break;
         case NEXT: break;
+        case QUITGAME: CloseWindow(); break;
     }
 }
 

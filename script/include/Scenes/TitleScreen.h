@@ -43,7 +43,7 @@ void isTitleButtonClicked(titleButton *button, int buttonSelected){
             return;}
     } else if (!IsGamepadButtonDown(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN))
         return;
-    for(int i=0;i<3;i++)
+    for(int i=0;i<4;i++)
         if(isTitleButtonHovered(button[i], buttonSelected))
             changeScene(button[i].id);
 }
@@ -81,16 +81,16 @@ void drawTitleScreen(Texture pacmaidenIllustration, Vector2* pacmaidenIllustrati
     }
 
     static int buttonSelected = -1;
-    titleButton buttons[3];
-    char *optionsText[] = {"New Game", "Load", "PVP"};
-    Vector4 optionMeasures = {1000, 350, 300, 100};
+    titleButton buttons[4];
+    char *optionsText[] = {"New Game", "Load", "PVP", "Sair"};
+    Vector4 optionMeasures = {1000, 310, 300, 100};
     int gapY = 10;
     Color textColor;
     Color optionColor;
     
     gamepadNav(&buttonSelected);
 
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 4; i++) {
         float posY = optionMeasures.y + (optionMeasures.w + gapY) * i;
 
         buttons[i] = (titleButton){
@@ -268,7 +268,7 @@ void drawTitleSaveStates(Rectangle*savePic){
         bool hovered = CheckCollisionPointRec(mousePos, savePic[i]);
         Color saveColorHovered = hovered ? GRAY : BLACK;
         DrawRectangleRounded(savePic[i], 0.1f, 10, saveColorHovered);
-        DrawRectangleRoundedLinesEx(savePic[i], 0.1f, 10, 3, BLACK);
+        DrawRectangleRoundedLinesEx(savePic[i], 0.1f, 10, 3, WHITE);
 
         char saveText[64];
         snprintf(saveText, sizeof(saveText), "Save %d", i + 1);
@@ -279,4 +279,6 @@ void drawTitleSaveStates(Rectangle*savePic){
         isTitleGameSaved(&savePic[i]);
     }
     EndDrawing();
+    if(IsKeyPressed(KEY_TAB) || IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN))
+        changeScene(TITLE);
 }

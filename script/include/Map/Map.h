@@ -177,7 +177,7 @@ Vector2** decideMapCellsSprite(Map map){
         for(int j=0; j<40; j++)
             if(readCoordinatesInMap((GridVector){j, i}, map, (GridVector){0,0}) == '#'){
                 int spriteCollumn;
-                if(!isPositionInsideScreen((Vector2){j*GRID2PIX, i*GRID2PIX}, (Vector2){0,1}) || readCoordinatesInMap((GridVector){j, i}, map, (GridVector){0,1}) == '#'){
+                if(!isPositionInsideScreen((Vector2){(float)(j)*GRID2PIX, (float)(i)*GRID2PIX}, (Vector2){0,1}) || readCoordinatesInMap((GridVector){j, i}, map, (GridVector){0,1}) == '#'){
                     // Teto
                     spriteCollumn = GetRandomValue(0, 4);
                     spriteSheetPos[i][j] = (Vector2){spriteCollumn, 0};
