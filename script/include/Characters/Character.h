@@ -38,6 +38,7 @@ typedef struct {
  * @param sprite Cuida da animação criada pela transição de múltiplas imagens em rápida sucessão */
 typedef struct {
     Circle circle;
+    Rectangle hitBox;
     float speed;
     Color color;
     Vector2 moveDirection;
@@ -49,8 +50,7 @@ typedef struct {
 /** @brief Detecta a colisão entre dois personagens. 
  * @returns Se os Circles dos personagens estão se tocando. */
 bool checkCharacterCollision(Character chara1, Character chara2){
-    return CheckCollisionCircles(chara1.circle.center, chara1.circle.radius, 
-                                 chara2.circle.center,  chara2.circle.radius);
+    return CheckCollisionRecs(chara1.hitBox, chara2.hitBox);
 }
 
 
@@ -63,9 +63,10 @@ bool checkCharacterCollision(Character chara1, Character chara2){
  * @return Objeto inicializado do personagem. */
 Character initCharacter(Vector2 position, int speed, float radius, Color color, SpriteName spriteSheet){
     Circle characterCircle = {(Vector2){position.x+radius, position.y+radius}, radius};
+    Rectangle characterHitbox = {position.x+radius-14, position.y+radius-20, 28, 40};
     SpriteAnimation sprite = innitSpriteAnimation(spriteSheet, (Vector2){20, 20}, 5, true);
 
-    return (Character){characterCircle, speed, color, (Vector2){0,0}, (ProceduralAnimation){0,false}, sprite};
+    return (Character){characterCircle, characterHitbox, speed, color, (Vector2){0,0}, (ProceduralAnimation){0,false}, sprite};
 }
 
 
@@ -133,6 +134,8 @@ bool move(Character* character, Map map){
     if(moved)
         updateSpriteAnimation(&character->sprite);
 
+    character->hitBox.x = character->circle.center.x-(character->hitBox.width/2);
+    character->hitBox.y = character->circle.center.y-(character->hitBox.height/2);
     return moved;
 }
 
