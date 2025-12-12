@@ -86,7 +86,9 @@ void charactersBehaviours(PacMaiden* pacmaiden, Ghost* ghosts, Map map,int *pall
     killerTime(pacmaiden,5);
 
     getBufferedInput(&pacmaiden->chara.moveDirection, isCharacterInGridCenter(pacmaiden->chara)
-                                                   && isCharacterInsideScreen(pacmaiden->chara, (Vector2){0,0}),0,&pacmaiden->bufferedInput);
+                                                    && isCharacterInsideScreen(pacmaiden->chara, (Vector2){0,0})
+                                                    && readPositionInMap(pacmaiden->chara.circle.center, map, pacmaiden->bufferedInput) != '#', 
+                                                    0, &pacmaiden->bufferedInput);
     pacmaidenBehaviour(pacmaiden, map);
     for(int i=0; i<4; i++){
         ghostBehaviour(&ghosts[i], map, pacmaiden, effects);

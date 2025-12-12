@@ -129,7 +129,10 @@ void charactersPVPBehaviours(PacMaiden* players, Ghost* ghosts, Map map,int *pal
         }
 
         getBufferedInput(&players[i].chara.moveDirection, isCharacterInGridCenter(players[i].chara)
-                                                && isCharacterInsideScreen(players[i].chara, (Vector2){0,0}),i,&players[i].bufferedInput);
+                                                && isCharacterInsideScreen(players[i].chara, (Vector2){0,0})
+                                                && readPositionInMap(players->chara.circle.center, map, players[i].bufferedInput) != '#', 
+                            i, &players[i].bufferedInput);
+        
 
         PVPinteractions(players, effects);
 
