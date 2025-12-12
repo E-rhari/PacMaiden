@@ -37,19 +37,23 @@ bool isTitleButtonHovered(titleButton button, int buttonSelected){
     }
 }
 
-void isTitleButtonClicked(titleButton *button, int buttonSelected){
+void isTitleButtonClicked(titleButton *button, int *buttonSelected){
     if (isMouseMode()){
         if (!IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
             return;}
     } else if (!IsGamepadButtonDown(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN))
         return;
     for(int i=0;i<4;i++)
-        if(isTitleButtonHovered(button[i], buttonSelected))
+        if(isTitleButtonHovered(button[i], *buttonSelected)){
+            *buttonSelected = -1;
             changeScene(button[i].id);
+        }
 }
 
 void gamepadNav(int* buttonSelected){
-    *buttonSelected += IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN) - IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_UP);
+    int delta = IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN) - IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_UP);
+    *buttonSelected += delta;
+    if (!delta) return;
     if (*buttonSelected >= 2)
         *buttonSelected = 2;
     else if (*buttonSelected <= 0)
@@ -113,7 +117,7 @@ void drawTitleScreen(Texture pacmaidenIllustration, Vector2* pacmaidenIllustrati
         DrawTextEx(GetFontDefault(), optionsText[i],(Vector2){optionMeasures.x + (optionMeasures.z - textSize.x) / 2,posY + (optionMeasures.w - textSize.y) / 2}, 50, 5, textColor);
     }
 
-    isTitleButtonClicked(buttons, buttonSelected);
+    isTitleButtonClicked(buttons, &buttonSelected);
 }
 
 
