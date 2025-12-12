@@ -59,12 +59,11 @@ pacman -S mingw-w64-ucrt-x86_64-gcc
 pacman -S mingw-w64-ucrt-x86_64-raylib
 ```
 #### Compilar e rodar
-* Clone o repositório na pasta home do MSYS2
-* Vá para o diretório script/src/
+* Clone o repositório na pasta msys/home/user
 * Dentro do MSYS2, execute
 ```shell
-gcc main.c -o main -lraylib -lwinmm -lgdi32 -lopengl32
-./main.exe
+gcc PacMaiden/script/src/main.c -o PacMaiden/script/src/jogo -lraylib -lwinmm -lgdi32 -lopengl32
+./PacMaiden/script/src/jogo.exe
 ```
 * Alternativamente, você pode executar o arquivo bash runGame, ainda dentro do MSYS2
 ```shell
