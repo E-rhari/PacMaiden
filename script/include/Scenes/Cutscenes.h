@@ -74,7 +74,7 @@ static void drawStartCutsceneElements(PacMaiden* pacmaiden, Vector2** mapCellPos
         drawCharacters(pacmaiden, ghosts);
         drawHud(pacmaiden);
     }
-    DrawText("TAB para pular", WIDTH/2 - 80, HEIGHT+15, 20, RAYWHITE);
+    DrawText("TAB ou (A) para pular", WIDTH/2 - 80, HEIGHT+15, 20, RAYWHITE);
 }
 
 
@@ -130,7 +130,7 @@ static void drawGameOverCutsceneElements(PacMaiden* pacmaiden, Vector2** mapCell
     DrawRectangle(0, HEIGHT/2 - 100, WIDTH, 200, messageColorRec);
     Vector2 textSize = MeasureTextEx(GetFontDefault(), messageText, 200, 20);
     DrawTextEx(GetFontDefault(), messageText, (Vector2){(WIDTH - textSize.x) / 2, ((HEIGHT/2 - 100) + (525 - textSize.y)) /2}, 200, 20, messageColorText);
-    DrawText("TAB para pular", WIDTH/2 - 80, HEIGHT+15, 20, RAYWHITE);
+    DrawText("TAB ou (A) para pular", WIDTH/2 - 80, HEIGHT+15, 20, RAYWHITE);
 }
 
 
@@ -141,7 +141,7 @@ void gameOverCutscene(PacMaiden* pacmaiden, Vector2** mapCellPosInSprite, Ghost*
     gameOverTrack.looping = false;
     
     BeginDrawing();
-    DrawText("TAB para pular", WIDTH/2 - 80, HEIGHT+15, 20, RAYWHITE);
+    DrawText("TAB ou (A) para pular", WIDTH/2 - 80, HEIGHT+15, 20, RAYWHITE);
     EndDrawing();
 
     WaitTime(0.5);
@@ -221,7 +221,7 @@ void winPVPCutscene(PacMaiden *players){
         DrawText(winnerText, WIDTH/2 -250, HEIGHT/2 - 100, 50, winner.initialValues.color);
         drawCharacterSprite(&winner.initialValues);
         DrawText("Para o perdedor: melhore você é muito ruim", WIDTH/2 - 500, HEIGHT/2 - 50, 50, WHITE);
-        DrawText("TAB para voltar ao menu", WIDTH/2 - 100, HEIGHT+15, 20, WHITE);
+        DrawText("TAB ou (A) para voltar ao menu", WIDTH/2 - 100, HEIGHT+15, 20, WHITE);
         if(IsKeyPressed(KEY_TAB) || IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN))
             break;
         EndDrawing();

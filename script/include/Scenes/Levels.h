@@ -100,7 +100,7 @@ void charactersBehaviours(PacMaiden* pacmaiden, Ghost* ghosts, Map map,int *pall
 }
 
 
-/** @brief Pause ou despausa o jogo caso o jogador aperte tab */
+/** @brief Pause ou despausa o jogo caso o jogador aperte tab ou START */
 void gamePause(){
     if(IsKeyPressed(KEY_TAB) || IsGamepadButtonPressed(0, GAMEPAD_BUTTON_MIDDLE_RIGHT)){
         if(gameState==PAUSED)    

@@ -249,18 +249,18 @@ void isTitleGameSaved(Rectangle* save){
         Rectangle saved = {WIDTH/2 - 100, HEIGHT/2 - 50, 200, 100};
         DrawRectangleRounded(saved, 0.3f, 10, (Color){0, 0, 0, finalAlpha});
         DrawRectangleRoundedLines(saved, 0.3f, 10, RAYWHITE);
-        const char* savedText = "Jogo salvo";
+        const char* savedText = "Concluído";
         Vector2 textSize = MeasureTextEx(GetFontDefault(), savedText, 18, 5);
         DrawTextEx(GetFontDefault(), savedText, (Vector2){saved.x+(saved.width - textSize.x) / 2, saved.y+(saved.height - textSize.y)/2}, 18, 5, (Color){255, 255, 255, finalAlpha});
     }
 }
 
 void drawTitleSaveStates(Rectangle*savePic){
-    Rectangle saveBox = {650, 200, 300, 400};
+    Rectangle saveBox = {625, 200, 350, 400};
     DrawRectangleRounded(saveBox, 0.1f, 10, BLACK);
     DrawRectangleRoundedLines(saveBox, 0.1f, 10, RAYWHITE);
 
-    const char* backText = "Pressione TAB para voltar";
+    const char* backText = "Pressione TAB ou (A) para voltar";
     Vector2 textSize = MeasureTextEx(GetFontDefault(), backText, 18, 1);
     DrawTextEx(GetFontDefault(), backText, (Vector2){saveBox.x + (saveBox.width - textSize.x) / 2, saveBox.y + saveBox.height - textSize.y - 20}, 18, 1, RAYWHITE);
     int textOffsetX = 95;
