@@ -113,6 +113,8 @@ void gamePause(){
 
 /** @brief Roda todo frame. */
 void update(PacMaiden* pacmaiden, Vector2** mapCellPosInSprite, Ghost* ghosts, Map map, OptionButton* buttons, Rectangle *saveOptions, Music* tracks, Sound* effects){
+    TraceLog(LOG_INFO, "%d", GetGamepadButtonPressed());
+    
     int fileNumber;
     int pallets = countPallets(map);
 
