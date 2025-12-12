@@ -193,3 +193,10 @@ Vector2** decideMapCellsSprite(Map map){
             }
     return spriteSheetPos;
 }
+
+
+void freeMapCellsSprite(Vector2** mapCellsSprite){
+    for(int i=0; i<20;i++)
+        free(*(mapCellsSprite+i));
+    free(mapCellsSprite);
+}

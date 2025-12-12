@@ -28,6 +28,7 @@ Ghost* instantiateGhostsInLevel(Map map){
     ladies[2] = initGhost(positions[2], RADIUS, SPEED, ORANGE, AWARE);//hikari
     ladies[3] = initGhost(positions[3], RADIUS, SPEED, PINK, GREEDY);//hana
 
+    free(positions);
     return ladies;
 }
 
@@ -212,5 +213,5 @@ void level(int levelNumber){
     freeGhosts(ghosts, 4);
     free(saveOptions);
     free(buttons);
-
+    freeMapCellsSprite(mapCellPosInSprite);
 }
