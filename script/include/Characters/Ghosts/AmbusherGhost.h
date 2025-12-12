@@ -21,8 +21,8 @@ Vector2 predictPacmaidenPosition(PacMaiden* pacmaiden, Map map, int blocksAhead)
     Vector2 currentPosition = pacmaiden->chara.circle.center;
     Vector2 directions[4] = {{-1,0}, {1,0}, {0,-1}, {0,1}};
     for(int i=0; i<blocksAhead; i++){
-        Vector2 testingPosition = {modulate(currentPosition.x+(pacmaiden->chara.moveDirection.x*40), WIDTH),
-                                   modulate(currentPosition.y+(pacmaiden->chara.moveDirection.y*40), HEIGHT)};
+        Vector2 testingPosition = {modulate(currentPosition.x+(pacmaiden->chara.moveDirection.x*GRID2PIX), WIDTH),
+                                   modulate(currentPosition.y+(pacmaiden->chara.moveDirection.y*GRID2PIX), HEIGHT)};
         if(readPositionInMap(testingPosition, map, (Vector2){0,0}) == '#')
             return currentPosition;
         currentPosition = testingPosition;
@@ -30,9 +30,6 @@ Vector2 predictPacmaidenPosition(PacMaiden* pacmaiden, Map map, int blocksAhead)
     return currentPosition;
 }
 
-PacMaiden *closestPlayer(Ghost* ghost, PacMaiden* pacmaiden, Map map){
-
-}
 /** @brief Persegue a PacMaiden através do algorítmo A* */
 void ambushPacmaiden(Ghost* ghost, Map map, PacMaiden* pacmaiden, int blocksAhead){
 

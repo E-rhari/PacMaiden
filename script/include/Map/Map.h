@@ -92,6 +92,10 @@ bool isInsideMap(GridVector gridPosition, Map map, GridVector displacement){
 }
 
 
+/** @brief Lê o valor da matriz na coordenada enviada 
+ * @param position (matrix cell) Vetor da posição a ser lida no mapa.
+ * @param map Mapa do qual será lido o valor.
+ * @param displacement (matrix cell) Deslocamento da posição que será lida na matriz. */
 char readCoordinatesInMap(GridVector gridPosition, Map map, GridVector displacement){
     if(isInsideMap(gridPosition, map, displacement))
         return map[(int)gridPosition.y+(int)displacement.y][(int)gridPosition.x + (int)displacement.x];
@@ -128,6 +132,8 @@ Vector2* searchInMap(Map map, char object){
     return occurrences;
 }
 
+
+/** @brief Conta quantas pellets restam no mapa */
 int countPallets(Map map){
     int length=0;
     for(int i=0;i<20;i++)
@@ -136,6 +142,7 @@ int countPallets(Map map){
                 length++;
     return length;
 }
+
 
 /** @brief Confere se o personagem está no centro de uma célula do grid do jogo. */
 bool isPositionInGridCenter(Vector2 position){
@@ -152,6 +159,7 @@ Map setUpMap(){
     return map;
 }
 
+
 /** @brief Desaloca espaço na memória para o mapa. */
 void freeMap(Map map){
     for(int i=0; i<20;i++)
@@ -159,7 +167,7 @@ void freeMap(Map map){
     free(map);
 }
 
-
+/** @brief Com base na posição dos caracteres #, decide se será uma parede ou um teto e, com base nisso, decide um aleatoriamente do tipo */
 Vector2** decideMapCellsSprite(Map map){    
     Vector2** spriteSheetPos = (Vector2**)malloc(sizeof(Vector2*)*20);
     for(int i=0;i<20;i++)

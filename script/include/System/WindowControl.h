@@ -13,17 +13,16 @@
 #define SCORESIZE 40
 #define SCOREPOSY 10
 
-/** @brief Constante de conversão de pixels para blocos do grid. Cada bloco do grid em 40x40px */
-#define PIX2GRID 0.025f
-/** @brief Constante de conversão de blocos do grid para pixels. Cada bloco do grid em 40x40px */
-#define GRID2PIX 40.0f
+#define PIX2GRID 0.025f // Constante de conversão de pixels para blocos do grid. Cada bloco do grid em 40x40px
+#define GRID2PIX 40.0f  // Constante de conversão de blocos do grid para pixels. Cada bloco do grid em 40x40px
 
-/** Constante de modo debug. Se estiver como true, anotações de debug irão aparecer na tela */
-#define DEBUG_MODE true
+#define DEBUG_MODE true /** Constante de modo debug. Se estiver como true, anotações de debug irão aparecer na tela */
+
 
 #pragma once
 
 
+/** @brief Nome das cenas. Uma cena é uma tela de jogo. Cada uma tem seu próprio loop na main. */
 typedef enum {
     NEWGAME,
     LOAD,
@@ -35,6 +34,7 @@ typedef enum {
 Scenes currenctScene; // Controla a cena em que o jogo atualmente se encontra
 
 
+/** @brief Estado do jogo dentro do levels. Descreve cutscenes, menus e movimentos de tela */
 typedef enum GameState{
     STARTING,
     RUNNING,
@@ -43,7 +43,7 @@ typedef enum GameState{
     LOADING,
     GAMEOVER,
     EXIT
-}GameState;
+} GameState;
 GameState gameState; // Controla o estado de levels
 
 

@@ -28,7 +28,7 @@ Ghost* instantiateGhostsInPVP(Map map){
 
     return ladies;
 }
-
+/** @brief conta a quantidade de mapas que existem*/
 int PVPMapsQuantity(){
 
     DIR *directory;
@@ -79,7 +79,7 @@ void drawCharactersPVP(PacMaiden* players, Ghost* ghosts){
         drawCharacterSprite(&ghosts[i].chara);
 }
 
-
+/** @brief Desenha todos os elementos em pvp*/
 void drawPVP(Map map, Vector2** mapCellPosInSprite, PacMaiden* players, Ghost* ghosts, OptionButton* buttons){
     BeginDrawing();
 
@@ -116,7 +116,7 @@ void PVPinteractions(PacMaiden* players, Sound* effects){
     }
     canPlayersMove(players);
 }
-
+/** @brief rege as ações que os personagens possuem no pvp*/
 void charactersPVPBehaviours(PacMaiden* players, Ghost* ghosts, Map map,int *pallets, Sound* effects){
 
     for(int i=0;i<2;i++){
@@ -191,7 +191,7 @@ void updatePVP(PacMaiden* players, Vector2** mapCellPosInSprite, Ghost* ghosts, 
         }
     }
 }
-
+/** @brief Inicializa os elementos utilizados no pvp*/
 void StartPVP(){
     srand(time(NULL));
 

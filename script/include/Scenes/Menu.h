@@ -9,13 +9,14 @@
 #define BUTTONHOVER (Color){20, 70, 140, 255}
 #define BUTTONBAR (Color){100, 180, 255, 255}
 
+/** @brief representa a ação que um botão faz ao ser clicado*/
 enum optionPress{
     RESUME,
     SAVE,
     LOADSAVE,
     RETURN
 }; 
-
+/** @brief mapeamento do keycode das teclas, para, quando clicadas, desempenharam uma ação*/
 typedef enum KeyCode{
     S=83,
     C=67,
@@ -39,11 +40,6 @@ typedef struct MenuButton {
     Color barColor;
 } menuButton;
 
-
-typedef struct{
-    int optionClicked;
-    int saveState;
-} menuResult;
 
 
 /**
@@ -77,10 +73,7 @@ void gameStateExit(){
 /**
  * @return retorna se o mouse está sobre um botão
  */
-bool isMenuButtonHovered(menuButton button) {
-    Vector2 mousePos = GetMousePosition();
-    return CheckCollisionPointCircle(mousePos, button.center, button.radius);
-}
+
 
 bool isOptionButtonHovered(OptionButton button) {
     Vector2 mousePos = GetMousePosition();
@@ -90,13 +83,6 @@ bool isOptionButtonHovered(OptionButton button) {
 bool isSaveFileHovered(Rectangle save){
     Vector2 mousePos = GetMousePosition();
     return CheckCollisionPointRec(mousePos, save);
-}
-
-/**
- * @return retorna se o mouse está sobre um botão
- */
-bool isMenuButtonClicked(menuButton button) {
-    return isMenuButtonHovered(button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
 }
 
 void isOptionButtonClicked(OptionButton* buttons,int key){
@@ -126,7 +112,7 @@ int isSaveFileClicked(Rectangle* save){
     return -1;
 }
 
-
+/** @brief inicializa os botões do menu */
 void initOptionButton(OptionButton *buttons){
     Vector4 optionMeasures = {700, 250, 200, 50};
     int paddingYButton=90;
@@ -136,7 +122,7 @@ void initOptionButton(OptionButton *buttons){
     buttons[2]=(OptionButton){(Rectangle){optionMeasures.x, optionMeasures.y+paddingYButton*2, optionMeasures.z, optionMeasures.w}, BUTTONBASE, BUTTONHOVER,2,gameStateLoading};
     buttons[3]=(OptionButton){(Rectangle){optionMeasures.x, optionMeasures.y+paddingYButton*3, optionMeasures.z, optionMeasures.w}, BUTTONBASE, BUTTONHOVER,3,gameStateExit};
 }
-
+/** @brief inicializa os botões do save */
 void initSaveButton(Rectangle *save){
     Rectangle saveBox = {600, 175, 400, 450};
     int saveRecx = 75;

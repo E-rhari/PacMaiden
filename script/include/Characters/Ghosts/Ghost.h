@@ -14,22 +14,28 @@
 
 
 typedef enum {
-    SPOOKY,
-    VULNERABLE,
-    SPAWNING
+    SPOOKY,     // Capaz de dar dano
+    VULNERABLE, // Capaz de levar dano
+    SPAWNING    // Parado, imortal e inofensivo
 } GhostState;
 
 
 typedef enum {
-    STALKER,
-    AMBUSHER,
-    GREEDY,
-    AWARE,
-    UNAWARE,
+    STALKER,    // Persegue a PacMaiden através do A*
+    AMBUSHER,   // Encurrala a PacMaiden através do A*
+    GREEDY,     // Fica na região com mais pellets do jogo
+    AWARE,      // Se move aleatoriamente, mas sem voltar pra trás sem necessidade ou bater de cara na parede
+    UNAWARE,    // Se move aleatoriamente sem se importar com nada
 } GhostType;
 
 
-/** @brief Inimigos do jogador */
+/** @brief Inimigos do jogador.
+ * @param chara Componente de movimentação, colisão e representação visaual do personagem
+ * @param initialValues Os valoreis iniciais da propriedade chara.
+ * @param canChooseDestination Restringe o momento que o fantasma pode escolher uma direção, 
+ *                             garantido que ele escolha apenas uma direção por chegada no centro do grid.
+ * @param state Condição atual do fantasma.
+ * @param type Determina o comportamento e visual do fantasma. */
 typedef struct TGhost{
     Character chara;
     Character initialValues;
@@ -40,32 +46,34 @@ typedef struct TGhost{
 
 
 /** @brief Cria a instância do fantasma
- * 
  * @param position Vector de posição.
- * @param speed (px/s) Velocidade, em pixels por segundo, que o personagem se move.
  * @param radius (px) Raio do círculo de colisão do personagem.
- * @param color Cor do personagem a partir das definições da Raylib. */
+ * @param speed (px/s) Velocidade, em pixels por segundo, que o personagem se move. 
+ * @param color [legacy] Cor do círculo do personagem.
+ * @param type Determina o comportamento e visual do fantasma. */
 Ghost initGhost(Vector2 position, int radius, float speed, Color color, GhostType type){
     Character chara = initCharacter((Vector2){position.x, position.y}, speed, radius, color, RED_GHOST_SPRITE+type);
     return (Ghost){chara, chara, true, SPOOKY, type};
 }
 
 
+/** @brief Desaloca o fantasma e descarrega seus recursos. */
 void freeGhosts(Ghost* ghosts, int amount){
     for(int i=0; i<amount; i++)
         UnloadTexture(ghosts[i].chara.sprite.mask);
     free(ghosts);
 }
 
+// Comportamento dos fantasmas. Essas funções estão definidas em seus respectivos arquivos. Foram declaradas aqui para evitar importação circular. 
 
 bool choseDestinationUnaware(Ghost* ghost);
 bool chooseDestinationAware(Ghost* ghost, Map map);
 NodeList stalkPacmaiden(Ghost* ghost, Map map, PacMaiden* pacmaiden);
 void ambushPacmaiden(Ghost* ghost, Map map, PacMaiden* pacmaiden, int blocksAhead);
-void getState(Ghost* ghost, Map map);
+void moveGreedy(Ghost* ghost, Map map);
 
 
-
+/** @brief Muda o estado do fantasma, aplicando as modificações necessárias. Use essa função no lugar de alterar a propriedade state manualmente */
 void changeGhostState(Ghost* ghost, GhostState state){
     ghost->state = state;
     ghost->chara.sprite.tint = ghost->initialValues.sprite.tint;
@@ -104,7 +112,7 @@ void ghostAttackPacmaiden(PacMaiden* pacmaiden, Ghost* ghost, Map map, Sound dea
             hurtPacmaiden(pacmaiden, deathEffect);
 }
 
-
+/** @brief Faz o fantasma se movimentar da direção oposta que o pacman se encontra, se possível */
 void flee(Ghost* ghost, Map map, PacMaiden* pacmaiden){
     if(currenctScene==PVP){
         for(int i=0;i<2;i++){
@@ -125,6 +133,7 @@ void flee(Ghost* ghost, Map map, PacMaiden* pacmaiden){
 }
 
 
+/** @brief Executa a função de comportamente de acordo com o tipo do fantasma */
 void chooseDestinationByType(Ghost* ghost, Map map, PacMaiden* pacmaiden){
     if(ghost->type==STALKER)
         ghost->canChooseDestination=true;
@@ -139,7 +148,7 @@ void chooseDestinationByType(Ghost* ghost, Map map, PacMaiden* pacmaiden){
             case AWARE:     chooseDestinationAware(ghost, map); break;
             case STALKER:   stalkPacmaiden(ghost, map, pacmaiden); break;
             case AMBUSHER:  ambushPacmaiden(ghost, map, pacmaiden, 4); break;
-            case GREEDY:    getState(ghost, map); break;
+            case GREEDY:    moveGreedy(ghost, map); break;
         }
         ghost->canChooseDestination = false;
     }
@@ -148,6 +157,33 @@ void chooseDestinationByType(Ghost* ghost, Map map, PacMaiden* pacmaiden){
         ghost->canChooseDestination=true;
         
 }
+
+
+/** @brief Função para o PVP. Busca qual pacman está mais proximo */
+PacMaiden chooseClosestPacMaiden(Ghost *ghost, PacMaiden* players,Map map){
+            
+    PacMaiden chosenPacmaiden = players[0];
+
+    NodeList path;
+    path.start=NULL;
+    path.size=1000000;
+
+    for(int i=0;i<2;i++){
+
+        NodeList temp;
+        if(players[i].state!=NORMAL)
+            continue;
+        
+        temp = findPath(vector2ToGridVector(ghost->chara.circle.center), vector2ToGridVector(players[i].chara.circle.center), map);
+        
+        if(path.size>temp.size){
+            path=temp;
+            chosenPacmaiden = players[i];
+        }
+    }
+
+    return chosenPacmaiden;
+} 
 
 
 /** @brief Todas as ações de comportamento de um fantasma genérico que devem ser rodadas por frame */
@@ -179,28 +215,3 @@ void ghostBehaviour(Ghost* ghost, Map map, PacMaiden* pacmaiden, Sound* effects)
     else
         ghostAttackPacmaiden(pacmaiden, ghost, map, effects[DEATH]);
 }
-
-PacMaiden chooseClosestPacMaiden(Ghost *ghost, PacMaiden* players,Map map){
-            
-    PacMaiden chosenPacmaiden = players[0];
-
-    NodeList path;
-    path.start=NULL;
-    path.size=1000000;
-
-    for(int i=0;i<2;i++){
-
-        NodeList temp;
-        if(players[i].state!=NORMAL)
-            continue;
-        
-        temp = findPath(vector2ToGridVector(ghost->chara.circle.center), vector2ToGridVector(players[i].chara.circle.center), map);
-        
-        if(path.size>temp.size){
-            path=temp;
-            chosenPacmaiden = players[i];
-        }
-    }
-
-    return chosenPacmaiden;
-} 

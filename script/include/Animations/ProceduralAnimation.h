@@ -10,7 +10,11 @@
 #pragma once
 
 
-/** @brief Struct que controla uma animação desenhada por código. */
+
+/** @brief Struct que controla uma animação desenhada por código. 
+* @param initTime Tempo que marca o início da animação
+* @param running  Boleano que representa se a animação está rodando
+*/
 typedef struct {
     double initTime;
     bool running;
@@ -40,6 +44,15 @@ void blinkAnimation(Color* currentColor, Color color1, Color color2, ProceduralA
 }
 
 
+/** @brief Alterna entre Sprite e a sua mascara
+ * @param sprite Sprite atual do personagem  que é redenrizado 
+ * @param spriteSheet1 Sprite base do personagem
+ * @param spriteSheet2 Mascara da animação de piscar
+ * @param animation A struct que tomará conta da animação.
+ * @param duration (s) Duração da animação.
+ * @param frequency (Hz) Quantas vezes por segundo as cores irão alternar, isso é, quantas vezes a color2 será alcançada por segundo.
+ * @param power potência que serve para aumentar a frequência da animação
+ */
 void spriteBlinkAnimation(Texture* sprite, Texture spriteSheet1, Texture spriteSheet2, ProceduralAnimation* animation, float duration, float frequency, float power){
     double timeElapsed = GetTime() - animation->initTime;
     if(cos(frequency*PI*2*pow(timeElapsed, power))>0) 
@@ -85,7 +98,7 @@ void fadeIn(Color* color, ProceduralAnimation* animation, float duration){
     }
 }
 
-
+/** @brief função de balanço dos elementos da tela de inicio*/
 void sineWiggle(ProceduralAnimation* animation, Vector2* position, Vector2 center, float frequency, float amplitude, float start, Vector2 axis){
     if(!animation->running)
         return;

@@ -33,7 +33,9 @@ typedef struct {
  * @param circle Objeto Circle que define a posição e área da colisão do personagem.
  * @param speed (px/s) Velocidade, em pixels por segundo, que o personagem se move.
  * @param color Cor do personagem a partir das definições da Raylib.
- * @param moveDirection Vetor que indica a direção do movimento. Para cada eixo: -1=trás; 0=parado; 1=frente. Outras valores são inválidos. */
+ * @param moveDirection Vetor que indica a direção do movimento. Para cada eixo: -1=trás; 0=parado; 1=frente. Outras valores são inválidos. 
+ * @param procAnimation Cuida da animação que modificam valores de atributos
+ * @param sprite Cuida da animação criada pela transição de múltiplas imagens em rápida sucessão */
 typedef struct {
     Circle circle;
     float speed;
@@ -53,12 +55,11 @@ bool checkCharacterCollision(Character chara1, Character chara2){
 
 
 /** @brief Cria a instância da Struct personagem a partir dos parâmetros fornecidos.
- * 
  * @param position Vector da posição.
  * @param speed (px/s) Velocidade, em pixels por segundo, que o personagem se move.
  * @param radius (px) Raio do círculo de colisão do personagem.
- * @param color Cor do personagem a partir das definições da Raylib.
- * 
+ * @param color [legacy] Cor do personagem a partir das definições da Raylib.
+ * @param spriteSheetName Valor do enum SpriteName que referência o sprite desejado no array de sprites
  * @return Objeto inicializado do personagem. */
 Character initCharacter(Vector2 position, int speed, float radius, Color color, SpriteName spriteSheet){
     Circle characterCircle = {(Vector2){position.x+radius, position.y+radius}, radius};
@@ -72,6 +73,7 @@ Character initCharacter(Vector2 position, int speed, float radius, Color color, 
 bool isCharacterInGridCenter(Character character){
     return isPositionInGridCenter(character.circle.center);
 }
+
 
 /** @brief Verifica se o personagem está dentro da tela do jogo */
 bool isCharacterInsideScreen(Character character,Vector2 displacement){
@@ -91,11 +93,9 @@ bool setPosition(Character* chara, Vector2 position){
 }
 
 
-/** @brief Move o personagem para um espaço não ocupado por um bloco de parede.
- * 
+/** @brief Move o personagem para um espaço não ocupado por um bloco de parede. Também atualiza a animação de movimento.
  * @param character Referência para a struct de personagem que irá ser movimentada. 
  * @param moveDirection Vetor de módulo 1 que indica a direção do movimento.
- * 
  * @returns Se o personagem foi movimentado ou não. */
 bool move(Character* character, Map map){
     bool moved = true;
@@ -199,6 +199,7 @@ void recklessEscape(Character* escaper, Character threat, Map map){
 }
 
 
+/** @brief Renderiza o sprite do character de acordo com a direção de movimento dele. */
 void drawCharacterSprite(Character* chara){
     if(Vector2Equals(chara->moveDirection, (Vector2){0,1}))
         chara->sprite.lineSelect = 0;

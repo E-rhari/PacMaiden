@@ -7,25 +7,30 @@
 
 #pragma once
 
-/** @brief Tempo de invulnerabilidade da pacmaiden, em segundos. */
-#define HURT_COOLDOWN 3
+
+#define HURT_COOLDOWN 3 // Tempo de invulnerabilidade da pacmaiden, em segundos.
+
+
 
 /** @brief Possibilidades de estados da pacmaiden. Devem ser alterados usando changePacmaidenState() */
 typedef enum {
-    NORMAL,
-    DYING,
-    DEAD,
-    IMMORTAL,
-    KILLER
+    NORMAL,     // Capaz de morrer.
+    DYING,      // Em animação de morte.
+    DEAD,       // Alcançou 0 vidas.
+    IMMORTAL,   // Incapaz de morrer. Spawnando.
+    KILLER      // Capaz de matar.
 } PacState;
 
 
-/** @brief Personagem do jogador e protagonista do jogo :-
- * @param chara 
+/** @brief Personagem do jogador e protagonista do jogo
+ * @param chara Componente de movimentação, colisão e representação visaual do personagem
  * @param initialValues Struct constante do tip Character para salver os valores iniciais de posição, tamanho, velocidade e cor.
- * @param life Contador de vidas
- * @param points Contador de pontos
- * @param timePivot (s) Segundos entre o início do jogo e a última vez que a pacmaiden levou dano.
+ * @param life Contador de vidas.
+ * @param points Contador de pontos.
+ * @param timePivot (s) Marca um momento no tempo desde o início do jogo. Utilizado para a duração de efeitos.
+ * @param bufferedInput Input salvo porém ainda não aplicado.
+ * @param canMove Permite ou trava a movimentação da pacmaiden.
+ * @param playerColor Valor do enum SpriteName que referência o sprite desejado no array de sprites
  * @param state Estado atual da pacmaiden. */
 typedef struct {
     Character chara;
@@ -45,15 +50,17 @@ typedef struct {
  * @param position Vector de posição.
  * @param radius (px) Raio do círculo de colisão do personagem.
  * @param speed (px/s) Velocidade, em pixels por segundo, que o personagem se move.
- * @param color Cor do personagem a partir das definições da Raylib.
+ * @param color [legacy] Cor do personagem a partir das definições da Raylib.
  * @param lifes Valor inicial do contador de vidas
- * @param points Valor inicial do contador de pontos */
+ * @param points Valor inicial do contador de pontos
+ * @param spriteSheet Valor do enum SpriteName que referência o sprite desejado no array de sprites */
 PacMaiden initPacMaiden(Vector2 position, int radius, float speed, Color color, int lifes, int points, SpriteName spriteSheet){
     Character chara = initCharacter((Vector2){position.x, position.y}, speed, radius, color, spriteSheet);
-    return (PacMaiden){chara, chara, lifes, points, 0, (Vector2){0,0},true,spriteSheet};
+    return (PacMaiden){chara, chara, lifes, points, 0, (Vector2){0,0}, true, spriteSheet, NORMAL};
 }
 
 
+/** @brief Descarrega todos os recursos da PacMaiden */
 void freePacmaiden(PacMaiden* pacmaiden){
     UnloadTexture(pacmaiden->chara.sprite.mask);
 }
@@ -140,7 +147,9 @@ bool checkPowerPellet(PacMaiden* pacmaiden, Map map){
 /** @brief Adiciona a quantidade adequada de pontos à pontuação da pacmaiden.
  * @param pacMaiden Personagem do jogador que receberá a pontuação.
  * @param map Mapa de onde será contado o ponto.
- * @param object Caractere que indica o tipo de objeto. */
+ * @param object Caractere que indica o tipo de objeto.
+ * @param pallets Quantidade de pellets
+ * @param effects Array de efeitos sonoros do jogo */
 void countPoints(PacMaiden* pacMaiden, Map map, char object, int *pallets, Sound* effects){
     Vector2 colliderBound = (Vector2){pacMaiden->chara.circle.center.x + pacMaiden->chara.circle.radius*pacMaiden->chara.moveDirection.x,
                                       pacMaiden->chara.circle.center.y + pacMaiden->chara.circle.radius*pacMaiden->chara.moveDirection.y};

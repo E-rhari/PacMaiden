@@ -8,7 +8,7 @@
 
 #pragma once
 
-
+/** @brief Enum dos sprites que os elementos do jogo podem assumir*/
 typedef enum {
     YELLOW_PACMAIDEN_SPRITE,
     YELLOW_POWERED_PACMAIDEN_SPRITE,
@@ -33,25 +33,39 @@ typedef enum {
 
 Texture* SPRITES;
 
+// Todo o lugar que tiver /40, troca pra * PIX2GRID, e todo lugar que tiver *40, troca por GRID2PIX. 💋💋💋💋💖💖💖
 
-
-/** @brief Cuida das propriedades de uma animação baseada numa imagem sprite sheet.*/
+/** @brief Cuida das propriedades de uma animação baseada numa imagem sprite sheet.
+* @param spriteSheet    Textura do spritesheet completo.
+* @param mask           Mscara do sprite
+* @param frameSize      Tamanho de um único frame.
+* @param tint           Coloração procedural do sprite
+* @param first          Index do primeiro frame da animação.
+* @param last           Index do último frame da animação.
+* @param current        Index do frame atual.
+* @param lineSelect     Index da linha de animação a ser percorrida.
+* @param step           Quantidade de frames a ser pulados a cada iteração da animação.
+* @param speed          Velocidade da animação. Quantas vezes por segundo a animação muda de frame.
+* @param timeInFrame    Quantidade de tempo que a animação está no frame atual
+* @param loop           Se a animação reinicia quando termina.
+* @param running        Se a animação deve correr.
+*/
 typedef struct {
-    Texture2D spriteSheet;  // Textura do spritesheet completo.
+    Texture2D spriteSheet;   
     Texture2D mask;
-    Vector2 frameSize;      // Tamanho de um único frame.
-    Color tint;             // Coloração procedural do sprite
+    Vector2 frameSize;      
+    Color tint;            
 
-    int first;              // Index do primeiro frame da animação.
-    int last;               // Index do último frame da animação.
-    int current;            // Index do frame atual.
-    int lineSelect;         // Index da linha de animação a ser percorrida.
-    int step;               // Quantidade de frames a ser pulados a cada iteração da animação.
+    int first;              
+    int last;               
+    int current;            
+    int lineSelect;         
+    int step;              
 
-    float speed;            // Velocidade da animação. Quantas vezes por segundo a animação muda de frame.
-    float timeInFrame;      // Quantidade de tempo que a animação está no frame atual.
-    bool loop;              // Se a animação reinicia quando termina.
-    bool running;           // Se a animação deve correr.
+    float speed;            
+    float timeInFrame;      
+    bool loop;              
+    bool running;           
 } SpriteAnimation; 
 
 

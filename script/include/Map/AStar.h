@@ -8,6 +8,7 @@
 #include "./Map.h"
 #include "../System/PacMath.h"
 
+
 #pragma once
 
 
@@ -207,9 +208,6 @@ Node* getBestNode(NodeList* list){
 NodeList getPathFromNodePile(Node finalNode, Node** nodeMap){
     NodeList path;
     innitNodeList(&path);
-
-    // if(finalNode == NULL)
-    //     return path;
 
     Node currentNode = finalNode;
     

@@ -6,13 +6,14 @@
 #include "../Characters/Ghosts/Ghost.h"
 #include "../Characters/PacMaiden.h"
 
+
 #pragma once
-/**
- * @brief gera o caminho do save 
- * 
+
+
+
+/** @brief Gera o caminho do save 
  * @param saveFile o numero do arquivo.
- * @return o caminho do arquivo a ser acessado
- */
+ * @return o caminho do arquivo a ser acessado */
 char* selecSaveFile(int saveFile){
     char *path= (char*)malloc(sizeof(char)*50);
 
@@ -21,14 +22,12 @@ char* selecSaveFile(int saveFile){
     return path;
 }
 
-/**
- * @brief salva todas as informações das structs: PacMaiden, Ghost e Map em um arquivo .bin
- * 
+
+/** @brief Salva todas as informações das structs: PacMaiden, Ghost e Map em um arquivo .bin
  * @param map o estado mapa atual
  * @param pacMaiden as informações da pacmaiden
  * @param ghost as informações dos fantasmas
- * @param saveFile o numero do arquivo a ser salvo
- */
+ * @param saveFile o numero do arquivo a ser salvo */
 void save(Map map, PacMaiden pacMaiden, Ghost* ghost, int saveFile){
 
     char*path=selecSaveFile(saveFile);
@@ -49,14 +48,13 @@ void save(Map map, PacMaiden pacMaiden, Ghost* ghost, int saveFile){
     free(path);
 
 }
-/**
- * @brief carrega de um arquivo binário todas as informações salvas em um .bin
- * 
+
+
+/** @brief carrega de um arquivo binário todas as informações salvas em um .bin
  * @param map o estado mapa do arquivo
  * @param pacMaiden as informações da pacmaiden do arquivo
  * @param ghost as informações dos fantasmas do arquivo
- * @param saveFile o numero do arquivo a ser lido
- */
+ * @param saveFile o numero do arquivo a ser lido */
 bool load(Map map, PacMaiden* pacMaiden, Ghost* ghost, int saveFile){
 
     char* path=selecSaveFile(saveFile);

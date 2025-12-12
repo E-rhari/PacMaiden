@@ -3,13 +3,11 @@
 
 #include "../System/WindowControl.h"
 
+
 #pragma once
 
-#define BUTTONTITLEBASE (Color){10, 40, 80, 255}
-#define BUTTONTITLEHOVER (Color){20, 70, 140, 255}
-#define BUTTONTITLEBAR (Color){100, 180, 255, 255}
 
-
+/** @brief Struct que compoem os elementos básicos dos botões da tela de inicio */
 typedef struct {
     Rectangle optionBox;
     Color colorBase;
@@ -17,6 +15,7 @@ typedef struct {
     Scenes id;
 } titleButton;
 
+/** @brief alterna entre comandos do controle e comandos do mause */
 bool isMouseMode() {
     static bool isMouseMode = true;
     if (isMouseMode){
@@ -56,6 +55,7 @@ void gamepadNav(int* buttonSelected){
         *buttonSelected = 0;
 }
 
+/** @brief Desenha a tela de inicio e realiza animações que contem ela. Muito de seus parametros são partes que são animadas*/
 void drawTitleScreen(Texture pacmaidenIllustration, Vector2* pacmaidenIllustrationPosition, Texture title, Vector2* titlePosition, Texture ghostPartsBack[], Texture ghostPartsFront[], int ghostPartsAmout, Vector2* ghostPartsPosition,  ProceduralAnimation* animation) {
     ClearBackground(BLACK);
     Rectangle source = {0, 0, 200, 105};
@@ -116,7 +116,7 @@ void drawTitleScreen(Texture pacmaidenIllustration, Vector2* pacmaidenIllustrati
     isTitleButtonClicked(buttons, buttonSelected);
 }
 
-
+/** @brief função base da tela de inicio*/
 void titleScreen(){
     Music titleTheme = LoadMusicStream(getFilePath("../../audio/Music/Title/Title.wav"));
     PlayMusicStream(titleTheme);

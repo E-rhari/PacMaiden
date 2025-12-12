@@ -3,15 +3,14 @@
 #pragma once
  
 
-
-// Enumeração das possíveis músicas a serem tocadas em  levels
+/** @brief Enumeração das possíveis músicas a serem tocadas em  levels */
 typedef enum {
     MAIN_THEME,
     PAUSED_MAIN_THEME,
     SONG_AMOUT // Quantidade de músicas tocando simultanêamente durante o levels
 }Track;
 
-// Enumeração dos possíveis SFX a serem tocadas em  levels
+/** @brief Enumeração dos possíveis SFX a serem tocadas em  levels */
 typedef enum {
     PELLET,
     SUPER_PELLET,
@@ -21,6 +20,7 @@ typedef enum {
 } Sfx;
 
 
+/** @brief Carrega todas as músicas a serem tocas simultanêamente no levels */
 Music* initiateMusic(Music* tracks){
     tracks[MAIN_THEME]        = LoadMusicStream(getFilePath("../../audio/Music/MainTheme/MainTheme.wav"));
     tracks[PAUSED_MAIN_THEME] = LoadMusicStream(getFilePath("../../audio/Music/MainTheme/PausedMainTheme.wav"));
@@ -32,12 +32,14 @@ Music* initiateMusic(Music* tracks){
 }
 
 
+/** @brief Para todas as músicas a serem tocas simultanêamente no levels */
 void stopMusic(Music* tracks){
     for(int i=0; i<SONG_AMOUT; i++)
         StopMusicStream(tracks[i]);
 }
 
 
+/** @brief Descarrega todas as músicas a serem tocas simultanêamente no levels */
 void freeMusic(Music* tracks){
     stopMusic(tracks);
     for(int i=0; i<SONG_AMOUT; i++)

@@ -193,14 +193,12 @@ void gameOverCutscene(PacMaiden* pacmaiden, Vector2** mapCellPosInSprite, Ghost*
     StopMusicStream(gameOverTrack);
     UnloadMusicStream(gameOverTrack);
 }
-
+/** @brief Altera o sprite do jogador para uma posição específica para a tela de vitoria do pvp*/
 void redefinePlayerPosition(PacMaiden *players){
     players->initialValues.circle.center.x= WIDTH/2+320;
     players->initialValues.circle.center.y= HEIGHT/2 -80;
-
-    //WIDTH/2 - 250, HEIGHT/2 - 100, 
 }
-
+/** @brief Tela de vitoria do pvp*/
 void winPVPCutscene(PacMaiden *players){
     char winnerText[50];
     PacMaiden winner;
