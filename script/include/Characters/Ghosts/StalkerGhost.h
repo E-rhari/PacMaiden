@@ -60,7 +60,5 @@ NodeList stalkPacmaiden(Ghost* ghost, Map map, PacMaiden* pacmaiden){
     if(nextStep != NULL)
         ghost->chara.moveDirection = getStalkingDirection(ghost, *nextStep);
 
-
- 
     return path;
 }

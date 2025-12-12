@@ -25,7 +25,7 @@ Ghost* instantiateGhostsInPVP(Map map){
     ladies[1] = initGhost(positions[1], RADIUS, SPEED/2, SKYBLUE, AWARE);//sora
     ladies[2] = initGhost(positions[2], RADIUS, SPEED/2, ORANGE, AWARE);//hikari
     ladies[3] = initGhost(positions[3], RADIUS, SPEED/2, PINK, AMBUSHER);//hana
-
+    free(positions);
     return ladies;
 }
 /** @brief conta a quantidade de mapas que existem*/
@@ -209,7 +209,6 @@ void StartPVP(){
     do{
         player1Spawn = rand() % countPallets(map);
     }while(player2Spawn==player1Spawn);
-
     PacMaiden player1 = initPacMaiden(searchInMap(map, '.')[0], RADIUS, SPEED+1, YELLOW, 3, 0,YELLOW_PACMAIDEN_SPRITE);
     PacMaiden player2 = initPacMaiden(searchInMap(map, '.')[player2Spawn], RADIUS, SPEED, PURPLE, 3, 0,PURPLE_PACMAIDEN_SPRITE);
 
@@ -254,4 +253,5 @@ void StartPVP(){
     freeGhosts(ghosts, 4);
     free(buttons);
     free(players);
+    freeMapCellsSprite(mapCellPosInSprite);
 }

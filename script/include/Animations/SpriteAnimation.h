@@ -33,7 +33,6 @@ typedef enum {
 
 Texture* SPRITES;
 
-// Todo o lugar que tiver /40, troca pra * PIX2GRID, e todo lugar que tiver *40, troca por GRID2PIX. 💋💋💋💋💖💖💖
 
 /** @brief Cuida das propriedades de uma animação baseada numa imagem sprite sheet.
 * @param spriteSheet    Textura do spritesheet completo.

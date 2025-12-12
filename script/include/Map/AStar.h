@@ -8,7 +8,6 @@
 #include "./Map.h"
 #include "../System/PacMath.h"
 
-
 #pragma once
 
 

@@ -37,7 +37,8 @@ bool chooseDestinationAware(Ghost* ghost, Map map){
     else
         // Determina a direção como retrograda
         ghost->chara.moveDirection = Vector2Scale(ghost->chara.moveDirection,-1);
-
+    
+    free(possibleDirections);
     return true;
 
 }
