@@ -99,7 +99,7 @@ void charactersBehaviours(PacMaiden* pacmaiden, Ghost* ghosts, Map map,int *pall
 
 /** @brief Pause ou despausa o jogo caso o jogador aperte tab */
 void gamePause(){
-    if(IsKeyPressed(KEY_TAB)){
+    if(IsKeyPressed(KEY_TAB) || IsGamepadButtonPressed(0, GAMEPAD_BUTTON_MIDDLE_RIGHT)){
         if(gameState==PAUSED)    
             gameState=RUNNING;
         else 
@@ -137,7 +137,6 @@ void update(PacMaiden* pacmaiden, Vector2** mapCellPosInSprite, Ghost* ghosts, M
         switch (gameState)
         {
             case PAUSED:
-                isOptionButtonClicked(buttons, GetKeyPressed());
             break;
             case RUNNING:
                 charactersBehaviours(pacmaiden, ghosts, map, &pallets, effects);

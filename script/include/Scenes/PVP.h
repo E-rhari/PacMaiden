@@ -179,7 +179,6 @@ void updatePVP(PacMaiden* players, Vector2** mapCellPosInSprite, Ghost* ghosts, 
         switch (gameState)
         {
             case PAUSED:
-                isOptionButtonClicked(buttons,GetKeyPressed());
             break;
             case RUNNING:
                 charactersPVPBehaviours(players, ghosts, map, &pallets, effects);

@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include <stdbool.h>
 #include <time.h>
+#include "./TitleScreen.h"
 #include "../System/SaveSystem.h"
 
 #pragma once
@@ -75,9 +76,12 @@ void gameStateExit(){
  */
 
 
-bool isOptionButtonHovered(OptionButton button) {
-    Vector2 mousePos = GetMousePosition();
-    return CheckCollisionPointRec(mousePos, button.optionBox);
+bool isOptionButtonHovered(OptionButton button, int buttonSelected) {
+    if (isMouseMode()){
+        Vector2 mousePos = GetMousePosition();
+        return CheckCollisionPointRec(mousePos, button.optionBox);
+    } else
+        return (button.id == buttonSelected);
 }
 
 bool isSaveFileHovered(Rectangle save){
@@ -85,25 +89,6 @@ bool isSaveFileHovered(Rectangle save){
     return CheckCollisionPointRec(mousePos, save);
 }
 
-void isOptionButtonClicked(OptionButton* buttons,int key){
-
-    switch (key)
-    {
-        case S:
-            gameState=SAVING;
-        break;
-        case Q:
-            gameState=EXIT;
-        break;
-        case C:
-            gameState=LOADING;
-        break;
-    }
-    
-    for(int i=0;i<4;i++)
-        if(isOptionButtonHovered(buttons[i]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-            buttons[i].action();
-}
 int isSaveFileClicked(Rectangle* save){
 
   for(int i=0;i<3;i++)
@@ -134,14 +119,14 @@ void initSaveButton(Rectangle *save){
         save[i] = (Rectangle){saveBox.x + savePicOffset, saveBox.y + padding*(i+1) + saveRecy*i, saveRecx, saveRecy};
 }
 
-void drawOptionButtons(Rectangle menuBox, OptionButton *buttons){
+void drawOptionButtons(Rectangle menuBox, OptionButton *buttons, int buttonSelected){
     int  gapText=50, paddingYText=90;
 
     const char *menuOptions[] = {"Retornar (TAB)", "Salvar (S)", "Carregar (C)", "Sair (Q)"};
 
     for(int i=0;i<4;i++){
         
-        Color optionColor = isOptionButtonHovered(buttons[i]) ? buttons[i].colorHover : buttons[i].colorBase;
+        Color optionColor = isOptionButtonHovered(buttons[i], buttonSelected) ? buttons[i].colorHover : buttons[i].colorBase;
 
         DrawRectangleRounded(buttons[i].optionBox, 0.2f, 10, optionColor);
         DrawRectangleRoundedLinesEx(buttons[i].optionBox, 0.2f, 10, 3, BUTTONBAR);
@@ -154,15 +139,44 @@ void drawOptionButtons(Rectangle menuBox, OptionButton *buttons){
 }
 
 void drawOpenedMenu(OptionButton *buttons) {
+    static int buttonSelected = -1;
+    buttonSelected += IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN) - IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_UP);
+    if (buttonSelected >= 3)
+        buttonSelected = 3;
+    else if (buttonSelected <= 0)
+        buttonSelected = 0;
+    
+    switch (GetKeyPressed())
+    {
+        case S:
+            gameState=SAVING;
+        break;
+        case Q:
+            gameState=EXIT;
+        break;
+        case C:
+            gameState=LOADING;
+        break;
+    }
+   
     Rectangle menuBox = {650, 200, 300, 400};
     DrawRectangle(0, 0, WIDTH, HUDHEIGHT, (Color){0, 20, 60, 150});
     DrawRectangleRounded(menuBox, 0.1f, 10, (Color){ 30, 80, 255, 255 });
     Vector2 textSize = MeasureTextEx(GetFontDefault(), "Menu", 18, 1);
     DrawTextEx(GetFontDefault(), "Menu", (Vector2){menuBox.x + (menuBox.width - textSize.x) / 2, menuBox.y + (50 - textSize.y) / 2}, 18, 1, RAYWHITE);
-    drawOptionButtons(menuBox,buttons);
+    drawOptionButtons(menuBox, buttons, buttonSelected);
+
+    if (isMouseMode()){
+        if (!IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+            return;}
+    } else if (!IsGamepadButtonDown(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN))
+        return;
+    for(int i=0;i<4;i++)
+        if(isOptionButtonHovered(buttons[i], buttonSelected))
+            buttons[i].action();
 }
 
-void drawSaveStates(Rectangle*savePic){
+void drawSaveStates(Rectangle* savePic){
     Rectangle saveBox = {600, 175, 400, 450};
     DrawRectangleRounded(saveBox, 0.1f, 10, (Color){ 30, 80, 255, 255 });
 

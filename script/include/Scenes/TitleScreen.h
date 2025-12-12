@@ -214,7 +214,7 @@ void drawTitleSaveStates(Rectangle*savePic){
     BeginDrawing();
     for(int i = 0; i < 3; i++){
         DrawRectangleRounded(savePic[i], 0.1f, 10, BLACK);
-        DrawRectangleRoundedLinesEx(savePic[i], 0.1f, 10, 3, BUTTONBAR);
+        DrawRectangleRoundedLinesEx(savePic[i], 0.1f, 10, 3, (Color){100, 180, 255, 255});
 
         time_t now = time(NULL);
         struct tm *infoTime = localtime(&now);
