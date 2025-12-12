@@ -23,7 +23,7 @@ Ghost* instantiateGhostsInPVP(Map map){
 
     ladies[0] = initGhost(positions[0], RADIUS, SPEED/2, RED, STALKER); //homura
     ladies[1] = initGhost(positions[1], RADIUS, SPEED/2, SKYBLUE, AWARE);//sora
-    ladies[2] = initGhost(positions[2], RADIUS, SPEED/2, ORANGE, AWARE);//hikari
+    ladies[2] = initGhost(positions[2], RADIUS, SPEED/2, ORANGE, GREEDY);//hikari
     ladies[3] = initGhost(positions[3], RADIUS, SPEED/2, PINK, AMBUSHER);//hana
     free(positions);
     return ladies;

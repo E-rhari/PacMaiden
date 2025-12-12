@@ -33,11 +33,11 @@ int main(){
                 titleScreen();
             break;
             case NEWGAME:
-                file=2;
+                file=0;
                 level(file);
             break;
             case NEXT:
-                file = modulate(file+1, 2) + 1;
+                file = modulate(file+1, 2);
                 level(file);
             break;
             case LOAD:
