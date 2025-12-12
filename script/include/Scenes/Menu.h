@@ -94,6 +94,7 @@ int isSaveFileClicked(Rectangle* save)
     return -1;
 }
 
+/** @brief cria um indicativo visual de que o jogo foi salvo corretamente*/
 void isGameSaved(Rectangle* save){
     static bool showSaved = false;
     static float timer = 0.0f;
