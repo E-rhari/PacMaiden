@@ -54,8 +54,8 @@ void gamepadNav(int* buttonSelected){
     int delta = IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN) - IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_UP);
     *buttonSelected += delta;
     if (!delta) return;
-    if (*buttonSelected >= 2)
-        *buttonSelected = 2;
+    if (*buttonSelected >= 3)
+        *buttonSelected = 3;
     else if (*buttonSelected <= 0)
         *buttonSelected = 0;
 }
@@ -190,7 +190,7 @@ void initSaveTitleButton(Rectangle *save){
     int savePicOffset = 50;
     int padding = 50;
     
-    for(int i=0; i<3;i++)
+    for(int i=0; i<4;i++)
         save[i] = (Rectangle){saveBox.x + savePicOffset, saveBox.y + padding*(i+1) + saveRecy*i, saveRecx, saveRecy};
 }
 
@@ -201,7 +201,7 @@ bool isSaveTitleFileHovered(Rectangle save){
 
 int isSaveTitleFileClicked(Rectangle* save){
 
-  for(int i=0;i<3;i++)
+  for(int i=0;i<4;i++)
      if(isSaveTitleFileHovered(save[i]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
         return i;
      }
@@ -225,7 +225,7 @@ void isTitleGameSaved(Rectangle* save){
             showSaved = false;
         }
     }
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 4; i++)
     {
         if (isSaveTitleFileHovered(save[i]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
@@ -268,7 +268,7 @@ void drawTitleSaveStates(Rectangle*savePic){
 
     Vector2 mousePos = GetMousePosition();
 
-    for(int i = 0; i < 3; i++){
+    for(int i = 0; i < 4; i++){
         bool hovered = CheckCollisionPointRec(mousePos, savePic[i]);
         Color saveColorHovered = hovered ? GRAY : BLACK;
         DrawRectangleRounded(savePic[i], 0.1f, 10, saveColorHovered);
