@@ -3,11 +3,13 @@
 
 #include "../System/WindowControl.h"
 
-
 #pragma once
 
+#define BUTTONTITLEBASE (Color){10, 40, 80, 255}
+#define BUTTONTITLEHOVER (Color){20, 70, 140, 255}
+#define BUTTONTITLEBAR (Color){100, 180, 255, 255}
 
-/** @brief Struct que compoem os elementos básicos dos botões da tela de inicio */
+
 typedef struct {
     Rectangle optionBox;
     Color colorBase;
@@ -15,7 +17,6 @@ typedef struct {
     Scenes id;
 } titleButton;
 
-/** @brief alterna entre comandos do controle e comandos do mause */
 bool isMouseMode() {
     static bool isMouseMode = true;
     if (isMouseMode){
@@ -55,7 +56,6 @@ void gamepadNav(int* buttonSelected){
         *buttonSelected = 0;
 }
 
-/** @brief Desenha a tela de inicio e realiza animações que contem ela. Muito de seus parametros são partes que são animadas*/
 void drawTitleScreen(Texture pacmaidenIllustration, Vector2* pacmaidenIllustrationPosition, Texture title, Vector2* titlePosition, Texture ghostPartsBack[], Texture ghostPartsFront[], int ghostPartsAmout, Vector2* ghostPartsPosition,  ProceduralAnimation* animation) {
     ClearBackground(BLACK);
     Rectangle source = {0, 0, 200, 105};
@@ -116,7 +116,7 @@ void drawTitleScreen(Texture pacmaidenIllustration, Vector2* pacmaidenIllustrati
     isTitleButtonClicked(buttons, buttonSelected);
 }
 
-/** @brief função base da tela de inicio*/
+
 void titleScreen(){
     Music titleTheme = LoadMusicStream(getFilePath("../../audio/Music/Title/Title.wav"));
     PlayMusicStream(titleTheme);
@@ -172,7 +172,6 @@ void titleScreen(){
     UnloadMusicStream(titleTheme);
     
     UnloadTexture(pacmaidenIlustration);
-    UnloadTexture(title);
     for(int i=0; i<ghostPartsAmount; i++){
         UnloadTexture(ghostPartsBack[i]);
         UnloadTexture(ghostPartsFront[i]);
@@ -181,11 +180,11 @@ void titleScreen(){
 
 
 void initSaveTitleButton(Rectangle *save){
-    Rectangle saveBox = {600, 175, 400, 450};
+    Rectangle saveBox = {650, 200, 300, 400};
     int saveRecx = 75;
     int saveRecy = 50;
     int savePicOffset = 50;
-    int padding = 75;
+    int padding = 50;
     
     for(int i=0; i<3;i++)
         save[i] = (Rectangle){saveBox.x + savePicOffset, saveBox.y + padding*(i+1) + saveRecy*i, saveRecx, saveRecy};
@@ -205,28 +204,79 @@ int isSaveTitleFileClicked(Rectangle* save){
     return -1;
 }
 
-void drawTitleSaveStates(Rectangle*savePic){
-    Rectangle saveBox = {600, 175, 400, 450};
-    DrawRectangleRounded(saveBox, 0.1f, 10, (Color){ 30, 80, 255, 255 });
+void isTitleGameSaved(Rectangle* save){
+    static bool showSaved = false;
+    static float timer = 0.0f;
 
+    float dt = GetFrameTime();
+    const float duration = 3.0f;
+    const float fadeTime = 0.3f;
+
+    if (showSaved)
+    {
+        timer -= dt;
+        if (timer <= 0.0f)
+        {
+            timer = 0.0f;
+            showSaved = false;
+        }
+    }
+    for (int i = 0; i < 3; i++)
+    {
+        if (isSaveTitleFileHovered(save[i]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        {
+            showSaved = true;
+            timer = duration;
+        }
+    }
+
+    if (showSaved)
+    {
+        float alpha = 1.0f;
+        if(timer > duration - fadeTime){
+            float t = (duration - timer) / fadeTime;
+            alpha = t;
+        }
+        else if(timer < fadeTime){
+            float t = timer / fadeTime;
+            alpha = t;
+        }
+        unsigned char finalAlpha = (unsigned char)(alpha * 255.0f);
+        Rectangle saved = {WIDTH/2 - 100, HEIGHT/2 - 50, 200, 100};
+        DrawRectangleRounded(saved, 0.3f, 10, (Color){0, 0, 0, finalAlpha});
+        DrawRectangleRoundedLines(saved, 0.3f, 10, RAYWHITE);
+        const char* savedText = "Jogo salvo";
+        Vector2 textSize = MeasureTextEx(GetFontDefault(), savedText, 18, 5);
+        DrawTextEx(GetFontDefault(), savedText, (Vector2){saved.x+(saved.width - textSize.x) / 2, saved.y+(saved.height - textSize.y)/2}, 18, 5, (Color){255, 255, 255, finalAlpha});
+    }
+}
+
+void drawTitleSaveStates(Rectangle*savePic){
+    Rectangle saveBox = {650, 200, 300, 400};
+    DrawRectangleRounded(saveBox, 0.1f, 10, BLACK);
+    DrawRectangleRoundedLines(saveBox, 0.1f, 10, RAYWHITE);
+
+    const char* backText = "Pressione TAB para voltar";
+    Vector2 textSize = MeasureTextEx(GetFontDefault(), backText, 18, 1);
+    DrawTextEx(GetFontDefault(), backText, (Vector2){saveBox.x + (saveBox.width - textSize.x) / 2, saveBox.y + saveBox.height - textSize.y - 20}, 18, 1, RAYWHITE);
     int textOffsetX = 95;
     int textOffsetY = 10;
-    BeginDrawing();
-    for(int i = 0; i < 3; i++){
-        DrawRectangleRounded(savePic[i], 0.1f, 10, BLACK);
-        DrawRectangleRoundedLinesEx(savePic[i], 0.1f, 10, 3, (Color){100, 180, 255, 255});
 
-        time_t now = time(NULL);
-        struct tm *infoTime = localtime(&now);
-        char saveMoment[32];
-        strftime(saveMoment, sizeof(saveMoment), "%d/%m/%Y %H:%M", infoTime);
+    Vector2 mousePos = GetMousePosition();
+
+    for(int i = 0; i < 3; i++){
+        bool hovered = CheckCollisionPointRec(mousePos, savePic[i]);
+        Color saveColorHovered = hovered ? GRAY : BLACK;
+        DrawRectangleRounded(savePic[i], 0.1f, 10, saveColorHovered);
+        DrawRectangleRoundedLinesEx(savePic[i], 0.1f, 10, 3, BLACK);
+
         char saveText[64];
-        snprintf(saveText, sizeof(saveText), "Save %d - %s", i + 1, saveMoment);
+        snprintf(saveText, sizeof(saveText), "Save %d", i + 1);
         DrawTextEx(GetFontDefault(), saveText,
                    (Vector2){savePic[i].x + textOffsetX, savePic[i].y + textOffsetY},
                    18, 1, RAYWHITE);
 
-        Vector2 mousePos = GetMousePosition();
+        isTitleGameSaved(&savePic[i]);
     }
     EndDrawing();
 }
