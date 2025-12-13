@@ -31,11 +31,11 @@ PacMaiden trás 4 tipos de fantasmas:
 * **![Foto](./sprites/readmeimg/Ghost0.png)Stalker (Perseguidor) :** Tenta a todo momento chegar mais próximo do jogador.
 * **![Foto](./sprites/readmeimg/Ghost1.png) Ambusher (Encurralador):** Conjectura a posição que a PacMaiden planeja ir e tenta chegar lá antes dela.
 * **![Foto](./sprites/readmeimg/Ghost2.png) Greedy (Guloso):** Busca sempre estar na região com mais pellets sobrando.
-* **![Foto](./sprites/readmeimg/Ghost3.png) Aware (Conciênte):** Se move aleatóriamente para posições na frente 
+* **![Foto](./sprites/readmeimg/Ghost3.png) Aware (Consciente):** Se move aleatóriamente para posições na frente.
 
 
 ### PVP
-Além da gameplay convencional do PacMan, PacMaiden trambém trás a possibilidade de um multiplayer competitivo. Um jogador controla nas setas ![Amarela](./sprites/readmeimg/PacMaidenYellow.png) e o outro no wasd ![Roxo](./sprites/readmeimg/PacMaidenPurple.png).
+Além da gameplay convencional do PacMan, PacMaiden trambém trás a possibilidade de um multiplayer competitivo. Um jogador controla nas setas ![Amarela](./sprites/readmeimg/PacMaidenYellow.png) e o outro no wasd ![Roxo](./sprites/readmeimg/PacMaidenPurple.png). Alternativamente, os jogadores podem utilizar controles, movendo suas personagens pelas setas do _d-pad_.
 
 Nesse modo, os jogadores podem prender seu oponente e matá-lo ao usar Power Pellets, roubando alguns de seus pontos.
 
